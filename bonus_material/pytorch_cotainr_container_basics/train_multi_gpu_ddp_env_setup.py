@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import os
+import time
 
 import torch
 from torch.distributed import destroy_process_group, init_process_group
@@ -45,15 +46,19 @@ from torch.utils.data.distributed import DistributedSampler
 
 from mnist_model import Net, get_mnist_setup, train, test
 
+rank = int(os.environ["SLURM_PROCID"])
+world_size = int(os.environ["SLURM_NTASKS"])
 init_process_group(  # Setup the process group for distributed training based on environment variables
     backend="nccl",
     init_method="env://",
-    world_size=int(os.environ["SLURM_NTASKS"]),
-    rank=int(os.environ["SLURM_PROCID"]),
+    world_size=world_size,
+    rank=rank,
 )
 
 torch.manual_seed(6021)
-device = int(os.environ["SLURM_LOCALID"])  # <- Select device based on local rank
+device = torch.device(
+    "cuda", int(os.environ["SLURM_LOCALID"])  # <- Select device based on local rank
+)
 torch.cuda.set_device(device)
 train_kwargs = {
     "batch_size": 64,
@@ -84,9 +89,13 @@ train_loader = torch.utils.data.DataLoader(
 )
 test_loader = torch.utils.data.DataLoader(dataset_test, **test_kwargs)
 
+t_start = time.perf_counter()
 for epoch in range(1, epochs + 1):
-    train(log_interval, model, device, train_loader, optimizer, epoch)
-    test(model, device, test_loader)
+    train(log_interval, model, device, train_loader, optimizer, epoch, rank=rank)
+    test(model, device, test_loader, epoch, rank=rank)
     scheduler.step()
+t_end = time.perf_counter()
+if rank == 0:
+    print(f"Training time: {t_end - t_start:.2f} seconds")
 
 destroy_process_group()  # Cleanup the process group

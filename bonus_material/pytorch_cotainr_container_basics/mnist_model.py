@@ -74,7 +74,9 @@ def get_mnist_setup(model, learning_rate, gamma):
     transform = transforms.Compose(
         [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
     )
-    dataset_train = datasets.MNIST("./MNIST_data", train=True, download=True, transform=transform)
+    dataset_train = datasets.MNIST(
+        "./MNIST_data", train=True, download=True, transform=transform
+    )
     dataset_test = datasets.MNIST("./MNIST_data", train=False, transform=transform)
 
     optimizer = Adadelta(model.parameters(), lr=learning_rate)
@@ -83,7 +85,7 @@ def get_mnist_setup(model, learning_rate, gamma):
     return dataset_train, dataset_test, optimizer, scheduler
 
 
-def train(log_interval, model, device, train_loader, optimizer, epoch):
+def train(log_interval, model, device, train_loader, optimizer, epoch, rank=0):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
@@ -92,7 +94,7 @@ def train(log_interval, model, device, train_loader, optimizer, epoch):
         loss = F.nll_loss(output, target)
         loss.backward()
         optimizer.step()
-        if device == 0 and batch_idx % log_interval == 0:
+        if rank == 0 and device.index == 0 and batch_idx % log_interval == 0:
             print(
                 "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
                     epoch,
@@ -104,7 +106,7 @@ def train(log_interval, model, device, train_loader, optimizer, epoch):
             )
 
 
-def test(model, device, test_loader):
+def test(model, device, test_loader, epoch, rank=0):
     model.eval()
     test_loss = 0
     correct = 0
@@ -122,11 +124,13 @@ def test(model, device, test_loader):
 
     test_loss /= len(test_loader.dataset)
 
-    print(
-        "\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
-            test_loss,
-            correct,
-            len(test_loader.dataset),
-            100.0 * correct / len(test_loader.dataset),
+    if rank == 0 and device.index == 0:
+        print(
+            "\nTest set Epoch: {} Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
+                epoch,
+                test_loss,
+                correct,
+                len(test_loader.dataset),
+                100.0 * correct / len(test_loader.dataset),
+            )
         )
-    )

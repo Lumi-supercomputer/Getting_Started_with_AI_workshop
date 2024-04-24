@@ -36,12 +36,14 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+import time
+
 import torch
 
 from mnist_model import Net, get_mnist_setup, train, test
 
 torch.manual_seed(6021)
-device = torch.device("cuda")
+device = torch.device("cuda", 0)
 train_kwargs = {
     "batch_size": 64,
     "num_workers": 0,
@@ -66,7 +68,10 @@ dataset_train, dataset_test, optimizer, scheduler = get_mnist_setup(
 train_loader = torch.utils.data.DataLoader(dataset_train, **train_kwargs)
 test_loader = torch.utils.data.DataLoader(dataset_test, **test_kwargs)
 
+t_start = time.perf_counter()
 for epoch in range(1, epochs + 1):
     train(log_interval, model, device, train_loader, optimizer, epoch)
-    test(model, device, test_loader)
+    test(model, device, test_loader, epoch)
     scheduler.step()
+t_end = time.perf_counter()
+print(f"Training time: {t_end - t_start:.2f} seconds")
