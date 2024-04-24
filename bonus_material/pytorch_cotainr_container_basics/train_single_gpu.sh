@@ -6,7 +6,7 @@
 #SBATCH --gpus-per-node=1
 #SBATCH --mem=64G
 #SBATCH --output="output_%x_%j.txt"
-#SBATCH --partition=dev-g  # small-g
+#SBATCH --partition=small-g
 #SBATCH --time=00:05:00
 #SBATCH --account=project_465001063
 
