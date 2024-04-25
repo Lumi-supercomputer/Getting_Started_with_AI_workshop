@@ -11,8 +11,6 @@ module purge
 module use /appl/local/csc/modulefiles/
 module load pytorch
 
-export PATH="/projappl/project_465001063/lukaspre/bin:$PATH"
-
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
 
 export DATADIR=$SCRATCH/data/users/$USER
