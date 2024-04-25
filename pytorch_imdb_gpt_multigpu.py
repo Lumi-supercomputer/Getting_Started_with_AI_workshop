@@ -31,9 +31,9 @@ world_size = int(os.environ["WORLD_SIZE"])
 
 print('Using PyTorch version:', torch.__version__)
 if torch.cuda.is_available():
-    print('Using GPU, device name:', torch.cuda.get_device_name(0))
-    device = torch.device('cuda')
     print(f"Rank {rank} of {world_size} (local: {local_rank}) sees {torch.cuda.device_count()} devices")
+    print('Using GPU, device name:', torch.cuda.get_device_name(local_rank))
+    device = torch.device(f"cuda:{local_rank}")
 else:
     print('No GPU found, using CPU instead.')
     device = torch.device('cpu')
