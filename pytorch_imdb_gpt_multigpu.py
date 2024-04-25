@@ -51,8 +51,8 @@ os.makedirs(user_datapath, exist_ok=True)
 # Database, split into 25,000 reviews for training and 25,000 reviews
 # for testing and 50,000 without labels (unsupervised).
 
-train_dataset = load_dataset("imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=False)
-eval_dataset = load_dataset("imdb", split="test", trust_remote_code=False, keep_in_memory=False)
+train_dataset = load_dataset("imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True)
+eval_dataset = load_dataset("imdb", split="test", trust_remote_code=False, keep_in_memory=True)
 
 # Let's print one sample from the dataset.
 if rank == 0:
@@ -124,7 +124,7 @@ eval_dataset_tok = eval_dataset.map(tokenize,
 
 # we split a small amount of data as "validation" test set to keep track of evoluation of the loss on non-training data during training
 # this is purely because computing the loss on the full evaluation dataset takes much longer
-train_validate_splits = train_dataset_tok.train_test_split(test_size=1000, seed=42, keep_in_memory=False)
+train_validate_splits = train_dataset_tok.train_test_split(test_size=1000, seed=42, keep_in_memory=True)
 train_dataset_tok = train_validate_splits['train']
 validate_dataset_tok = train_validate_splits['test']
 
