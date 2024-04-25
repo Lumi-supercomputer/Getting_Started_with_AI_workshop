@@ -87,10 +87,9 @@ training_args = TrainingArguments(
 )
 
 
-# We'll use the distilgpt2 model from the Hugging Face library:
-# https://huggingface.co/distilgpt2
+# We'll use the gpt-neo-1.3B model from the Hugging Face library:
+# https://huggingface.co/EleutherAI/gpt-neo-1.3B
 # Let's start with getting the appropriate tokenizer.
-#pretrained_model = "distilgpt2"
 pretrained_model = "EleutherAI/gpt-neo-1.3B"
 
 tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
