@@ -1,0 +1,10 @@
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - accelerate~=0.29.1
+  - datasets~=2.18.0
+  - python~=3.10.14
+  - pytorch~=2.2.2
+  - transformers~=4.39.3

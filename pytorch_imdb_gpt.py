@@ -20,8 +20,9 @@ from transformers import (AutoTokenizer, AutoModelForCausalLM,
                           TrainingArguments, Trainer, DataCollatorForLanguageModeling)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--datadir", type=str, help="The root directory under which participants' model checkpoints are stored.")
-parser.add_argument("--num_workers", type=int, default=7, help="The number of CPU worker processes to use.")
+parser.add_argument("--datadir", type=str, help="The root directory under which model checkpoints are stored.")
+parser.add_argument("--model-name", type=str, default="gpt-imdb-model", help="A name to store the trained model under.")
+parser.add_argument("--num_workers", type=int, default=1, help="The number of CPU worker processes to use.")
 args, _ = parser.parse_known_args()
 
 print('Using PyTorch version:', torch.__version__)
@@ -32,7 +33,7 @@ else:
     print('No GPU found, using CPU instead.')
     device = torch.device('cpu')
 
-user_datapath = os.path.join(args.datadir, "users", os.getenv('USER'))
+user_datapath = args.datadir
 os.makedirs(user_datapath, exist_ok=True)
 
 
@@ -45,8 +46,8 @@ os.makedirs(user_datapath, exist_ok=True)
 # Database, split into 25,000 reviews for training and 25,000 reviews
 # for testing and 50,000 without labels (unsupervised).
 
-train_dataset = load_dataset("imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True)
-eval_dataset = load_dataset("imdb", split="test", trust_remote_code=False, keep_in_memory=True)
+train_dataset = load_dataset("imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=False)
+eval_dataset = load_dataset("imdb", split="test", trust_remote_code=False, keep_in_memory=False)
 
 # Let's print one sample from the dataset.
 print('Sample from dataset')
@@ -55,29 +56,36 @@ for b in train_dataset:
     break
 
 # We set up the training configuration here
-output_dir = os.path.join(user_datapath, "gpt-imdb-model")
-train_batch_size = 16
+output_dir = os.path.join(user_datapath, args.model_name)
+logging_dir = os.path.join(user_datapath, "runs", args.model_name)
+train_batch_size = 32
 eval_batch_size = 128
 
 training_args = TrainingArguments(
     output_dir=output_dir,
     overwrite_output_dir=True,
+    save_strategy="no",  # transformers bug causes crash while saving checkpoints in multinode scenarios (pre 4.40, https://github.com/huggingface/transformers/issues/28119)
+    logging_dir=logging_dir,
     evaluation_strategy="steps",
-    eval_steps=1000,
+    eval_steps=200,
     learning_rate=2e-5,
     weight_decay=0.01,
+    bf16=True,
+    ddp_find_unused_parameters=False,
     per_device_train_batch_size=train_batch_size,
     per_device_eval_batch_size=eval_batch_size,
-    max_steps=5000,
-    dataloader_num_workers=args.num_workers, #tokenizer doesn't like this sometimes?
+    max_steps=1000,
+    dataloader_num_workers=args.num_workers,
     dataloader_pin_memory=True,
+    report_to=["tensorboard"],
 )
 
 
 # We'll use the distilgpt2 model from the Hugging Face library:
 # https://huggingface.co/distilgpt2
 # Let's start with getting the appropriate tokenizer.
-pretrained_model = "distilgpt2"
+#pretrained_model = "distilgpt2"
+pretrained_model = "EleutherAI/gpt-neo-1.3B"
 
 tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
 tokenizer.pad_token = tokenizer.eos_token
@@ -110,7 +118,7 @@ eval_dataset_tok = eval_dataset.map(tokenize,
 
 # we split a small amount of data as "validation" test set to keep track of evoluation of the loss on non-training data during training
 # this is purely because computing the loss on the full evaluation dataset takes much longer
-train_validate_splits = train_dataset_tok.train_test_split(test_size=1000, seed=42, keep_in_memory=True)
+train_validate_splits = train_dataset_tok.train_test_split(test_size=1000, seed=42, keep_in_memory=False)
 train_dataset_tok = train_validate_splits['train']
 validate_dataset_tok = train_validate_splits['test']
 
@@ -121,7 +129,7 @@ for b in train_dataset_tok:
     break
 print('Length of dataset (tokenized)', len(train_dataset_tok))
 
-num_batches = len(train_dataset) // 16
+num_batches = len(train_dataset) // train_batch_size
 print(f"Training set is comprised of {num_batches} batches")
 
 
@@ -151,8 +159,9 @@ print("Training done, you can find all the model checkpoints in", output_dir)
 with torch.no_grad():
     # Calculate perplexity
     eval_results = trainer.evaluate()
-    print(f'Perplexity on validation: {math.exp(eval_results["eval_loss"]):.2f}')
     test_results = trainer.evaluate(eval_dataset_tok)
+
+    print(f'Perplexity on validation: {math.exp(eval_results["eval_loss"]):.2f}')
     print(f'Perplexity on test: {math.exp(test_results["eval_loss"]):.2f}')
 
     # Let's print a few sample generated reviews

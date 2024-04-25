@@ -1,24 +1,25 @@
 #!/bin/bash
 #SBATCH --account=project_465001063
 #SBATCH --partition=small-g
-#SBATCH --ntasks=1
+#SBATCH --gpus-per-node=1
+#SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=7
-#SBATCH --gpus-per-task=1
-#SBATCH --mem=60G
-#SBATCH --time=0:20:00
+#SBATCH --mem-per-gpu=60G
+#SBATCH --time=1:00:00
 
 module purge
 module use /appl/local/csc/modulefiles/
 module load pytorch
 
-COURSE_SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
+export PATH="/projappl/project_465001063/lukaspre/bin:$PATH"
 
-export DATADIR=$COURSE_SCRATCH/data
-export TORCH_HOME=$COURSE_SCRATCH/torch-cache
-export HF_HOME=$COURSE_SCRATCH/hf-cache
-#export MLFLOW_TRACKING_URI=$COURSE_SCRATCH/data/users/$USER/mlruns  # this causes an MLFlow exception during imdb training
+SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
 
-mkdir -p $TORCH_HOME $HF_HOME $MLFLOW_TRACKING_URI
+export DATADIR=$SCRATCH/data/users/$USER
+export TORCH_HOME=$SCRATCH/torch-cache
+export HF_HOME=$SCRATCH/hf-cache
+mkdir -p $TORCH_HOME $HF_HOME
+export TOKENIZERS_PARALLELISM=false
 
 set -xv
-python3 $* --datadir $DATADIR --num_workers ${SLURM_CPUS_PER_TASK}
+srun python pytorch_imdb_gpt.py --datadir $DATADIR --model-name gpt-imdb-model-${SLURM_JOBID} --num_workers ${SLURM_CPUS_PER_TASK}
