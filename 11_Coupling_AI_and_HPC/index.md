@@ -1,4 +1,4 @@
-# 09 Extreme scale AI
+# 11 Coupling AI & HPC
 
 ## Examples
 

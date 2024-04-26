@@ -1,4 +1,4 @@
-# 10 Coupling AI & HPC
+# 09 Hyper-parameter tuning using Ray
 
 ## Examples
 
