@@ -4,7 +4,7 @@ This is a short introduction to building a PyTorch container with cotainr and ru
 
 ### WARNING: Custom LUMI modules are used in this example
 
-This assumes `module use /project/project_465001063/...` with installed modules:
+This assumes `module use /project/project_465001063/EB/modules` with installed modules:
 
 - An updated installation of the `cotainr` module that sets `--system=lumi-g` to use the LUMI ROCm base image (/appl/local/`containers/sif-images/lumi-rocm-rocm-5.6.1.sif`)
 - The new `singularity-userfilesystems` module that bind mounts user file system paths, i.e. `/project`, `/scratch`, and `/flash`.

@@ -94,7 +94,7 @@ def train(log_interval, model, device, train_loader, optimizer, epoch, rank=0):
         loss = F.nll_loss(output, target)
         loss.backward()
         optimizer.step()
-        if rank == 0 and device.index == 0 and batch_idx % log_interval == 0:
+        if rank == 0 and batch_idx % log_interval == 0:
             print(
                 "Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}".format(
                     epoch,
@@ -124,7 +124,7 @@ def test(model, device, test_loader, epoch, rank=0):
 
     test_loss /= len(test_loader.dataset)
 
-    if rank == 0 and device.index == 0:
+    if rank == 0:
         print(
             "\nTest set Epoch: {} Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n".format(
                 epoch,
