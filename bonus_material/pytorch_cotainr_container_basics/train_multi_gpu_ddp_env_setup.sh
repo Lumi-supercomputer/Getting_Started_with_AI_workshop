@@ -22,4 +22,4 @@ c=fe
 bind_mask="0x${c}000000000000,0x${c}00000000000000,0x${c}0000,0x${c}000000,0x${c},0x${c}00,0x${c}00000000,0x${c}0000000000"
 
 # Run the training script
-srun --cpu-bind=mask_cpu:$bind_mask singularity exec minimal_pytorch.sif python3 train_multi_gpu_ddp_env_setup.py
+srun --cpu-bind=mask_cpu:$bind_mask singularity exec minimal_pytorch.sif bash -c "ROCR_VISIBLE_DEVICES=\$SLURM_LOCALID python3 train_multi_gpu_ddp_env_setup.py"

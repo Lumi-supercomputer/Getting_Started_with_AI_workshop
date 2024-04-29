@@ -55,6 +55,10 @@ In order to scale the training to multiple GCDs in a single node on LUMI, the Py
 
 The `train_multi_gpu_ddp_env_setup.py` Python script together with the `train_multi_gpu_ddp_env_setup.sh` SLURM batch script provides an example of how to launch this training using a single node in the `standard-g` partition, setting up the distributed environment manually based on SLURM environment variables.
 
+### NOTE: GPU visibility on LUMI and choosing the right PyTorch device
+
+The PyTorch (GPU) device is automatically chosen based on the ROCR_VISIBLE_DEVICES environment variable if not explicitly defined in the Python code, e.g. via `torch.device()`. Ideally, SLURM should be able to correctly set ROCR_VISIBLE_DEVICES for each rank if requesting a single GPU per rank. However, as of 20240424, this is not the case on LUMI since GPUs are constrained using cgroups. See <https://bugs.schedmd.com/show_bug.cgi?id=17875> for more details. Consequently, we need to manually set `ROCR_VISIBLE_DEVICES=\$SLURM_LOCALID` just before running our Python training script.
+
 ## 5. Scale to multiple nodes
 
 To scale to multiple nodes, you may simple request more nodes in the `train_multi_gpu_ddp_env_setup.sh` SLURM batch script. The PyTorch DDP training in `train_multi_gpu_ddp_env_setup.py` should automatically scale to all available nodes. However, in practice, a few other things are needed to get optimal performance and workaround some know issues with running such a training on multiple nodes on LUMI:

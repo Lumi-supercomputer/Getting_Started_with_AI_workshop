@@ -43,7 +43,7 @@ import torch
 from mnist_model import Net, get_mnist_setup, train, test
 from env_utils import print_slurm_env
 
-#print_slurm_env()  # Uncomment to print SLURM environment
+print_slurm_env()  # Print SLURM environment
 
 torch.manual_seed(6021)
 device = torch.device("cuda", 0)
