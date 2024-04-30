@@ -7,7 +7,7 @@ It is subject to the below license.
 ------------------------------------------------------------------------------
 BSD 3-Clause License
 
-Copyright (c) 2017, 
+Copyright (c) 2017,
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -49,18 +49,17 @@ from env_utils import print_slurm_env
 
 print_slurm_env()  # Print SLURM environment
 
+# Setup the process group for distributed training based on SLURM environment variables
 rank = int(os.environ["SLURM_PROCID"])
 init_process_group(
-    # Setup the process group for distributed training based on SLURM
-    # environment variables
     backend="nccl",
     init_method="env://",
     world_size=int(os.environ["SLURM_NTASKS"]),
     rank=rank,
 )
+device = torch.device("cuda")  # <- Device ID is chosen based on ROCR_VISIBLE_DEVICES
 
 torch.manual_seed(6021)
-device = torch.device("cuda")  # <- Device ID is chosen based on ROCR_VISIBLE_DEVICES
 train_kwargs = {
     "batch_size": 64,
     "num_workers": 0,

@@ -10,8 +10,11 @@
 #SBATCH --time=00:05:00
 #SBATCH --account=project_465001063
 
+# Load custom modules that are not (yet) part of the central LUMI stack (singularity-userfilesystems)
+module use /project/project_465001063/modules
+
 # Bind mount user filesystems in the container
-export SINGULARITY_BINDPATH="/pfs,/scratch,/projappl,/project,/flash,/appl,$SINGULARITY_BINDPATH"  # or module load singularity-userfilesystems
+module load singularity-userfilesystems  # corresponds to specifying --bind /pfs,/scratch,/projappl,/project,/flash,/appl when running the containr
 
 # Run the training script
 srun singularity exec minimal_pytorch.sif python3 train_single_gpu.py
