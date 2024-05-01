@@ -22,6 +22,9 @@ module load singularity-CPEbits  # corresponds to specifying --bind /var/spool/s
 # Set network interfaces to be used by RCCL to workaround RCCL failing to auto-detect the correct interface
 export NCCL_SOCKET_IFNAME=hsn
 
+# Tune when GPU Direct RDMA between NIC and GPU is used
+export NCCL_NET_GDR_LEVEL=PHB
+
 # Workaround MIOpen DB issue when using multiple processes
 export MIOPEN_USER_DB_PATH=/tmp/${USER}-miopen-cache-${SLURM_JOB_ID}
 export MIOPEN_CUSTOM_CACHE_DIR=${MIOPEN_USER_DB_PATH}

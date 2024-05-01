@@ -51,7 +51,7 @@ In order to get access to user file systems, i.e. project folders under /project
 
 ## 4. Scale to multiple GPUs (GCDs) within a single node using DDP
 
-In order to scale the training to multiple GCDs in a single node on LUMI, the Python training code must be adapted to use some distributed training strategy, e.g. Distributed Data Parallel (DDP). When launching such a distributed training, the distributed environment, i.e. the handling of processes and their communication, must be setup correctly. We recommend to launch one process per GCD and use RCCL for communication between GPUs/GCDs. Since there are 8 GCDs per LUMI-G node, this results in 8 processes that need to communicate via RCCL. To get the shortest communication path, and thus optimal performance, these processes must be bound to the CPU cores that are closest (in terms for communication latency) to their corresponding GCDs. There are multiple ways to setup such a distributed training, e.g.
+In order to scale the training to multiple GCDs in a single node on LUMI, the Python training code must be adapted to use some distributed training strategy, e.g. Distributed Data Parallel (DDP). When launching such a distributed training, the distributed environment, i.e. the handling of processes and their communication, must be setup correctly. We recommend to launch one process per GCD and use RCCL for communication between GPUs/GCDs. Since there are 8 GCDs per LUMI-G node, this results in 8 processes that need to communicate via RCCL. Optionally, to get the shortest communication path, and thus optimal performance, these processes must be bound to the CPU cores that are closest (in terms for communication latency) to their corresponding GCDs. There are multiple ways to setup such a distributed training, e.g.
 
 - **SLURM environment setup**: Let SLURM handle the process management and bindings, and use the relevant SLURM environment variables in your Python script when calling `torch.distributed.init_process_group()`. The `train_multi_gpu_ddp_env_setup.py` Python script together with the `train_multi_gpu_ddp_env_setup.sh` SLURM batch script provides an example of how to launch a training using a single node in the `standard-g` partition based on this approach.
 - **torchrun setup**: Have SLURM launch a single process with all CPU cores and GPUs allocated. Have `torchrun` manange the processes and manually set the correct bindings from within your Python script based on the environment variables set by `torchrun`. The `train_multi_gpu_ddp_torchrun.py` Python script together with the `train_multi_gpu_ddp_torchrun.sh` SLURM batch script provides an example of how to launch a training using a single node in the `standard-g` partition based on this approach.
@@ -64,14 +64,17 @@ The PyTorch (GPU) device is automatically chosen based on the ROCR_VISIBLE_DEVIC
 
 ## 5. Scale to multiple nodes
 
-To scale to multiple nodes, you may simply request more nodes in the `train_multi_gpu_ddp_env_setup.sh` SLURM batch script when using the **SLURM environment setup** approach. When using the **torchrun setup** approach, you also need to setup the torchrun randezvous correctly. The PyTorch DDP training in `train_multi_gpu_ddp_env_setup.py`/`train_multi_gpu_ddp_torchrun.py` should automatically scale to all available nodes. However, in practice, a few other things are needed to get optimal performance and workaround some know issues with running such a training on multiple nodes on LUMI:
+To scale to multiple nodes, you may simply request more nodes in the `train_multi_gpu_ddp_env_setup.sh` SLURM batch script when using the **SLURM environment setup** approach. When using the **torchrun setup** approach, you also need to setup the torchrun randezvous correctly. The PyTorch DDP training in `train_multi_gpu_ddp_env_setup.py`/`train_multi_gpu_ddp_torchrun.py` should automatically scale to all available nodes. However, in practice, a few other things are needed to get optimal performance when running such a training on multiple nodes on LUMI:
 
 - To have hardware acceleration for inter node communication via RCCL (`backend="nccl"` in PyTorch's `init_process_group`) over the Slingshot 11 interconnect, the `aws-ofi-rccl` plugin that bridges RCCL with libfabric (which is the transport layer used with Slingshot 11) must be available. The `asw-ofi-rccl` plugin is installed in the LUMI ROCm base image. Additionally some of the HPE Slingshot libraries must also be available for this to work. Due to licenses restrictions imposed by HPE, we cannot (yet) include these libraries in the container. Instead they must be bind mounted from LUMI at runtime. A shortcut to obtaining these bind mounts are `module load singularity-CPEbits`.
-- One must also explicitly set the environment variable `NCCL_SOCKET_IFNAME=hsn` to workaround RCCL not being able to automatically identify the correct network interfaces to use.
+- When using the `aws-ofi-rccl` plugin, one must also explicitly set the environment variable `NCCL_SOCKET_IFNAME=hsn` to workaround RCCL not being able to automatically identify the correct network interfaces to use.
+- For increased performance for large message sizes, it may be necessary to tune when RCCL uses GPU Direct RDMA between a NIC and a GPU by setting the environment variable `NCCL_NET_GDR_LEVEL=PHB`. More details about `NCCL_NET_GDR_LEVEL` in [the Nvidia docs](https://docs.nvidia.com/deeplearning/nccl/user-guide/docs/env.html#nccl-net-gdr-level-formerly-nccl-ib-gdr-level). Note, though, that this setting is known to cause crashes/hangs when using more than 256 nodes.
+
+All of these are optional. If they are not used, RCCL falls back to communication via TCP/IP sockets, which may significantly degrade performance.
 
 This entire setup is shown in the `train_multi_node_ddp_env_setup.sh`/`train_multi_node_ddp_torchrun.sh` SLURM batch scripts which launch the training on 4 nodes in standard-g for a total of 4 x 8 = 32 GCDs used in the training.
 
-### NOTE: Checking correct load of aws-ofi-rccl plugin
+### NOTE: Checking that the aws-ofi-rccl plugin has been correctly loaded
 
 To check if the `aws-ofi-rccl` plugin is being used in the training, you may set the following NCCL/RCCL debug environment variables and inspect the standard output from the training.
 
@@ -84,7 +87,7 @@ The standard output includes lines like `NCCL INFO NET/OFI Using aws-ofi-rccl 1.
 
 ## Other workarounds that may be needed
 
-A few other workaround may - or may not - be needed for the training on LUMI-G nodes to succeed:
+A few other workarounds may - or may not - be needed for the training on LUMI-G nodes to succeed:
 
 - It may be necessary to "warm start" the GPUs before running the training, e.g by calling rocm-smi.
 - It may be necessary to set/unset the `CXI_FORK_SAFE/CXI_FORK_SAFE_HP` environment variables when using multiple PyTorch `Dataloader` workers. Both of these are set to `1` in the LUMI ROCm container base image, which may lead to crashes if specifying `workers` > 0 as an argument to PyTorch `Dataloader`s.
