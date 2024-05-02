@@ -23,6 +23,9 @@ module load singularity-CPEbits  # corresponds to specifying --bind /var/spool/s
 export MASTER_ADDR=$(hostname)
 export MASTER_PORT=29500
 
+# Enable asynchronous error handling for RCCL to bring down communitaions in case of hangs
+export TORCH_NCCL_ASYNC_ERROR_HANDLING=1
+
 # Set network interfaces to be used by RCCL to workaround RCCL failing to auto-detect the correct interface
 export NCCL_SOCKET_IFNAME=hsn
 

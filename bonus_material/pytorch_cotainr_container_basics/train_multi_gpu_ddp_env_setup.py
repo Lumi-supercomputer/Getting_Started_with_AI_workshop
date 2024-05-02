@@ -36,6 +36,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+import datetime
 import os
 import time
 
@@ -56,6 +57,7 @@ init_process_group(
     init_method="env://",
     world_size=int(os.environ["SLURM_NTASKS"]),
     rank=rank,
+    timeout=datetime.timedelta(seconds=60),  # <- You may need to tune this
 )
 device = torch.device("cuda")  # <- Device ID is chosen based on ROCR_VISIBLE_DEVICES
 

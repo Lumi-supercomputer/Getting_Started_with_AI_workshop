@@ -36,6 +36,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+import datetime
 import os
 import time
 
@@ -70,7 +71,10 @@ print_slurm_env()  # Print SLURM environment
 
 # Setup the process group for distributed training based on torchrun
 rank = int(os.environ["RANK"])
-init_process_group(backend="nccl")
+init_process_group(
+    backend="nccl",
+    timeout=datetime.timedelta(seconds=60),  # <- You may need to tune this
+)
 device = torch.device("cuda", local_rank)
 
 torch.manual_seed(6021)
