@@ -10,12 +10,12 @@
 
 ## Hands-on exercises
 
-1. Run the `Hello_LUMI_GPU_World.py` Python script using the LUMI PyTorch container on:
+1. Run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch containers on:
    * A LUMI login node
    * A LUMI-G compute node
 
 2. Pick a container from [Docker Hub](https://hub.docker.com/) and pull it to LUMI using Singularity. Make sure the Singularity cache is not filling up your home folder (hint: see https://docs.lumi-supercomputer.eu/software/containers/singularity/#pulling-container-images-from-a-registry)
 
-3. Open an interactive Python interpreter in the LUMI TensorFlow+Horovod container and (successfully) `import horovod.tensorflow`.
+3. Open an interactive Python interpreter in the LUMI TensorFlow+Horovod container and (successfully) `import horovod.tensorflow`
 
 Suggested solutions to the exercises are given in `05_exercise_solutions.md`.
