@@ -81,7 +81,7 @@ which generates the `alpine_3.19.1.sif` container.
 
 **Remember that there is no automatic cleaning of `/tmp` on the LUMI login nodes. You have to delete the Singularity temp/cache files under `/tmp/$USER` yourself when you are done pull/building containers!**
 
-# Exercise 3
+## Exercise 3
 
 ```text
 Open an interactive Python interpreter in the LUMI TensorFlow+Horovod container and (successfully) `import horovod.tensorflow`
