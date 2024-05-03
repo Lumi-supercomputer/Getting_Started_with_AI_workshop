@@ -1,3 +1,0 @@
-
-
-# singularity exec -B /project/project_465001063 /appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.1.0.sif bash -c "\$WITH_CONDA; python3 /project/project_465001063/schouoxv/Hello_LUMI_GPU_World.py"
