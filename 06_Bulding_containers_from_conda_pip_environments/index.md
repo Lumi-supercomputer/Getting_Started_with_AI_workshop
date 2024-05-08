@@ -4,7 +4,9 @@
 
 * An example of a complete PandasAI conda environment specification is provided in `PandasAI.yml`.
 * An absolute minimal conda environment specification only including Python 3.12 is provided in `python312.yml`.
-* The minimal PyTorch recipe conda environment is provided in `minimal_pytorch.yml`.
+* The minimal conda environment PyTorch recipe for LUMI-G is provided in `minimal_pytorch.yml`.
+* The minimal conda environment TensorFlow recipe for LUMI-G is provided in `minimal_tensorflow.yml`.
+* The minimal conda environment JAX/Flax recipe for LUMI-G is provided in `minimal_jaxflax.yml`.
 
 ## Hands-on exercises
 
