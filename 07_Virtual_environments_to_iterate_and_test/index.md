@@ -4,7 +4,7 @@
 This is a short overview of how to extend the containers used in lecture 06 with additional python packages via virtual environments. This approach can be useful for developing and testing as it doesn't require rebuilding a container from scratch every time a new package is added.
 
 > [!WARNING]
-> This should not be the defualt way of installing python packages as it puts a lot of strain on the Lustre file system. Once you have a complete set of python packages and their versions, alwasy create a new container.
+> This should not be the default way of installing python packages as it puts a lot of strain on the Lustre file system. Once you have a complete set of python packages and their versions, always create a new container.
 
 ## Requirements
 
@@ -20,7 +20,7 @@ First we run a shell inside the container
 ```bash
 singularity shell --bind /pfs,/scratch,/projappl,/project,/flash,/appl minimal_pytorch.sif
 ```
-Note that setting `--bind` is optional and can be done alternatively via laoding `singularity-userfilesystems`, if you want to keep the virtual environment files in your current folder it is however necesarry.
+Note that setting `--bind` is optional and can be done alternatively via loading `singularity-userfilesystems`, if you want to keep the virtual environment files in your current folder it is however necessary.
 
 First, let us take a look at all installed python packages in the container via `pip list`
 ```bash
@@ -111,4 +111,4 @@ rm -rf myenv
 ```
 
 ## Exercise
-Extend one of yoru existing containers with a python package of your choise following this approach.
+Extend one of your existing containers with a python package of your choice following this approach.
