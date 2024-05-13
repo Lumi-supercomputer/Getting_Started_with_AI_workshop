@@ -4,7 +4,7 @@
 This is a short overview of how to extend the containers used in lecture 06 with additional python packages via virtual environments. This approach can be useful for developing and testing as it doesn't require rebuilding a container from scratch every time a new package is added.
 
 > [!WARNING]
-> This should not be the defualt way of installing python packages as it puts a lot of strain on the Lustre file system. Once you have a complete set of python packages and its versions, alwasy create a new container.
+> This should not be the defualt way of installing python packages as it puts a lot of strain on the Lustre file system. Once you have a complete set of python packages and their versions, alwasy create a new container.
 
 ## Requirements
 
@@ -109,3 +109,6 @@ After having found all packages needed for our purpose, we should create a new c
 ```bash
 rm -rf myenv
 ```
+
+## Exercise
+Extend one of yoru existing containers with a python package of your choise following this approach.
