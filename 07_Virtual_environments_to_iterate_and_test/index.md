@@ -1,7 +1,10 @@
 # 07 Virtual environments to iterate and test
 
 
-This is a short overview of how to extend the containers used in lecture 06 with additional python packages via virtual environments. This approach might be useful for developing and testing as it doesn't require rebuilding a container from scratch every time a new package is added.
+This is a short overview of how to extend the containers used in lecture 06 with additional python packages via virtual environments. This approach can be useful for developing and testing as it doesn't require rebuilding a container from scratch every time a new package is added.
+
+> [!CAUTION]
+> This should not be the defualt way for installing python packages as it puts a lot of strain on the Lustre file system. Once you have a complete set of python packages and its versions, alwasy create a new container.
 
 ## Requirements
 
@@ -102,7 +105,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 As we can see, the new package is installed in our virtual environment whereas the other packages are installed in the container.
 
 ## Cleaning up
-After having found all packages needed for our needs, one should create a new container with an updated conda environment file. The cirtual environment should then be deleted
+After having found all packages needed for our purpose, we should create a new container with an updated conda environment file. The virtual environment should then be deleted
 ```bash
 rm -rf myenv
 ```
