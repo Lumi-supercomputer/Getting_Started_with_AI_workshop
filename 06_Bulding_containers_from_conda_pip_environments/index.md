@@ -18,3 +18,5 @@
      * Directly on LUMI
 2. Using cotainr, update the container you built using the `python312.yml` conda environment to contain a few extra packages of your choice. Open an interactive Python interpreter in the container and import your newly added packages.
 3. Create a conda environment file for installing [panopticapi](https://github.com/cocodataset/panopticapi) and use it to build a container for LUMI-C using cotainr.
+
+Suggested solutions to the exercises are given in `06_exercise_solutions.md`.
