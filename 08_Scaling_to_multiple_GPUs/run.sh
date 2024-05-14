@@ -3,7 +3,12 @@
 #SBATCH --partition=...
 ## <!!! ACTION REQUIRED: SPECIFY ADDITIONAL SLURM PARAMETERS HERE!!!>
 
-# TODO: loading the environment
+# Set up the software environment
+module purge
+module use /project/project_465001063/modules
+module load singularity-userfilesystems singularity-CPEbits
+
+CONTAINER=/scratch/project_465001063/containers/pytorch_transformers.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
@@ -21,4 +26,3 @@ export LOGGING_DIR=$SCRATCH/$USER/runs/
 export MODEL_NAME=gpt-imdb-model-${SLURM_JOBID}
 
 ## <!!! ACTION REQUIRED: RUN THE TRAINING SCRIPT HERE !!!>
-

@@ -39,7 +39,7 @@
     - the correct slurm partition
     - number of GPUs requested (8)
     - number of CPUs requested
-    - RAM requested (you can use `-1` to reserve all memory on the node)
+    - RAM requested (you can use `0` to reserve all memory on the node)
     - requested runtime
 
    It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.

@@ -27,11 +27,12 @@
     - number of CPUs requested
     - number of GPUs requested (1)
     - RAM requested
-    - requested runtime (recommended: 10 minutes, for sub-exercise 4 below)
+    - requested runtime (recommended: 15 minutes, for sub-exercise 4 below)
   
     It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 
-    You will also need to add the relevant parts for setting up the PyTorch software environment.
+    The Python command needs to be run in a singularity container with the required software packages installed. The slurm batch file sets up a variable `CONTAINER`
+    with the container you should use.
     
     **Task**: Start the training using `sbatch run.sh` from a login node shell (LUMI web interface or SSH).
 
@@ -55,6 +56,9 @@
     Your earlier training job should by now have timed out without completing the training.
     
     **Task**: Use your modified script to resume training from the last checkpoint.
+
+    > [!IMPORTANT]
+    > Make sure to use the same `MODEL_NAME` (and paths) when resuming training from the checkpoint.
 
     > [!NOTE]
     > If your earlier training job is still running, you can stop it using the `scancel` command.
