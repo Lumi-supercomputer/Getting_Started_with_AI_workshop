@@ -31,7 +31,7 @@
 
     You will also need to add the relevant parts for setting up the PyTorch software environment.
     
-    Fill in the missing pieces and start the training using `sbatch run.sh` from a login node shell (LUMI web interface or SSH).
+    Fill in the missing pieces (marked with `<!!! ACTION REQUIRED ... !!!>`) and start the training using `sbatch run.sh` from a login node shell (LUMI web interface or SSH).
 
 3. Check your job.
 
@@ -42,7 +42,7 @@
     > [!NOTE]
     > We will cover more details about checking the status and progress of your job in a later exercise.
 
-4. Modify the script to enable it to continue from a check point.
+4. Modify the script to enable it to continue from a checkpoint.
 
     The script currently always starts training with the GPT-neo model.
     
