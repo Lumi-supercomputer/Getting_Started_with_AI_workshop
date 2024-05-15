@@ -28,18 +28,13 @@ export HF_HOME=$SCRATCH/hf-cache
 mkdir -p $TORCH_HOME $HF_HOME
 export TOKENIZERS_PARALLELISM=false
 
-# Launch the training using accelerate
-# Note: --machine_rank must be evaluated on each node
-export LAUNCH_CMD="
+srun singularity exec hf_exercise_container.sif \
     accelerate launch \
-        --config_file=train_hf_trainer_accelerate_config.yaml \
-        --num_machines=${SLURM_NNODES} \
-        --num_processes=$(expr ${SLURM_NNODES} \* ${SLURM_GPUS_PER_NODE}) \
-        --machine_rank=\${SLURM_NODEID} \
-        --main_process_ip=$(hostname) \
+        --config_file=accelerate_hf_trainer_config.yaml \
+        --num_machines=1 \
+        --num_processes=${SLURM_GPUS_PER_NODE} \
+        --machine_rank=0 \
         train_hf_imdb_gpt.py \
             --datadir ${DATADIR} \
             --model-name gpt-imdb-model-${SLURM_JOBID} \
-            --num_workers 1 \
-    "
-srun singularity exec hf_exercise_container.sif bash -c "${LAUNCH_CMD}"
+            --num_workers $(expr ${SLURM_CPUS_PER_TASK} / ${SLURM_GPUS_PER_NODE}) \
