@@ -21,8 +21,9 @@ CPU_BIND_MASKS="0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
+FLASH="/flash/${SLURM_JOB_ACCOUNT}"
 export TORCH_HOME=$SCRATCH/torch-cache
-export HF_HOME=$SCRATCH/hf-cache
+export HF_HOME=$FLASH/hf-cache
 mkdir -p $TORCH_HOME $HF_HOME
 
 # Disable internal parallelism of huggingface's tokenizer since we

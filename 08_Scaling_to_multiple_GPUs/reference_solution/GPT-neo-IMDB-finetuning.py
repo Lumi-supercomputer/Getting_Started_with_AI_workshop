@@ -16,18 +16,20 @@ import os
 import psutil
 import math
 import argparse
+import time
 
 from pprint import pprint
 from datasets import load_dataset
 from transformers import (AutoTokenizer, AutoModelForCausalLM,
                           TrainingArguments, Trainer, DataCollatorForLanguageModeling)
 
-def convert_bitmask_to_list(x: int) -> list[int]:
-    """ Helper function for converting a bit mask into a list of integers.
+def cpu_list(mask: str) -> list[int]:
+    """ Helper function for converting a bit mask string into a list of integers.
     
     Used below to set up CPU binding/affinity.
     """
     bits = []
+    x = int(mask, 16)
     i = 0
     while x > 0:
         if x & 1 == 1:
@@ -46,7 +48,7 @@ if __name__ == '__main__':
     parser.add_argument("--output-path", type=str, help="The root directory under which model checkpoints are stored.")
     parser.add_argument("--logging-path", type=str, help="The root directory under which logging data (for tensorboard) are stored.")
     parser.add_argument("--num-workers", type=int, default=1, help="The number of CPU worker processes to use.")
-    parser.add_argument("--cpu-bind-masks", type=int, default=None, nargs="*", help="A list of bitmasks (represented as an integer) of the CPUs to which to bind each local process rank. Optional, but if set must provide a mask for each local rank.")
+    parser.add_argument("--cpu-bind-masks", type=cpu_list, default=None, nargs="*", help="A list of bitmasks (represented as an integer) of the CPUs to which to bind each local process rank. Optional, but if set must provide a mask for each local rank.")
     args, _ = parser.parse_known_args()
 
     # Read the environment variables provided by torchrun
@@ -57,11 +59,11 @@ if __name__ == '__main__':
 
     # Set up CPU binding if --cpu-bind-masks is given
     if args.cpu_bind_masks:
-        if len(args.cpu_bind_mask) < local_world_size:
+        if len(args.cpu_bind_masks) < local_world_size:
             print(f"ERROR: Only {len(args.cpu_bind_mask)} CPU bind masks where provided but there are {local_world_size} local processes.")
             exit(1)
 
-        cpu_list = convert_bitmask_to_list(args.cpu_bind_mask[local_rank])
+        cpu_list = args.cpu_bind_masks[local_rank]
         print(f"Rank {rank} (local {local_rank}) binding to cpus: {cpu_list}")
         psutil.Process().cpu_affinity(cpu_list)
 
@@ -107,13 +109,19 @@ if __name__ == '__main__':
     # Let's start with getting the appropriate tokenizer.
     pretrained_model = "EleutherAI/gpt-neo-1.3B"
 
+    start = time.time()
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
     tokenizer.pad_token = tokenizer.eos_token
     special_tokens = tokenizer.special_tokens_map
 
     # Load the actual base model from Hugging Face
+    if rank == 0:
+        print("Loading model and tokenizer")
     model = AutoModelForCausalLM.from_pretrained(pretrained_model)
     model.to(device)
+    stop = time.time()
+    if rank == 0:
+        print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
 
     # #### Setting up the training configuration
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
@@ -136,6 +144,7 @@ if __name__ == '__main__':
         dataloader_num_workers=args.num_workers, # NOTE: setting this causes a crash with LUST EasyBuild PyTorch on multinode. For that software, comment this (but then set num_procs for the data mappings below)
         dataloader_pin_memory=True,
         report_to=["tensorboard"], # log statistics for tensorboard
+        ddp_find_unused_parameters=False, # there are no unused parameters, causing PyTorch to issue a warning should this be set to True
     )
 
     # #### Setting up preprocessing of training data

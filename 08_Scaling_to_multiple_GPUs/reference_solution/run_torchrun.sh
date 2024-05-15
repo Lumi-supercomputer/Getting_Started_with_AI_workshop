@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=8
 #SBATCH --ntasks-per-node=1    # we start a single torchrun process, which will take care of spawning more
-#SBATCH --cpus=56              # 7 cores per GPU
+#SBATCH --cpus-per-task=56     # 7 cores per GPU
 #SBATCH --mem=0
 #SBATCH --time=0:15:00
 
@@ -17,12 +17,13 @@ module load singularity-userfilesystems singularity-CPEbits
 CONTAINER=/scratch/project_465001063/containers/pytorch_transformers.sif
 
 # Set up the CPU bind masks
-CPU_BIND_MASKS="0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000"
+CPU_BIND_MASKS="0x00fe000000000000 0xfe00000000000000 0x0000000000fe0000 0x00000000fe000000 0x00000000000000fe 0x000000000000fe00 0x000000fe00000000 0x0000fe0000000000"
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
+FLASH="/flash/${SLURM_JOB_ACCOUNT}"
 export TORCH_HOME=$SCRATCH/torch-cache
-export HF_HOME=$SCRATCH/hf-cache
+export HF_HOME=$FLASH/hf-cache
 mkdir -p $TORCH_HOME $HF_HOME
 
 # Disable internal parallelism of huggingface's tokenizer since we
@@ -44,5 +45,5 @@ srun singularity exec $CONTAINER \
              --model-name $MODEL_NAME \
              --output-path $OUTPUT_DIR \
              --logging-path $LOGGING_DIR \
-             --num-workers ${SLURM_CPUS_PER_TASK} \
+	     --num-workers $(( SLURM_CPUS_PER_TASK / SLURM_GPUS_PER_NODE )) \
              --cpu-bind-masks $CPU_BIND_MASKS
