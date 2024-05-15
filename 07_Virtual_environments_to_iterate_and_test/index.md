@@ -58,7 +58,7 @@ source myenv/bin/activate
 The `--system-site-packages` flag gives the virtual environment access to the system site packages.
 After activating the virtual environment we can now install custom packages via pip, for example:
 ```bash
-pip install torchvision
+pip install torchmetrics
 ```
 The new package will then be available along side the packages in the container
 ```bash 
