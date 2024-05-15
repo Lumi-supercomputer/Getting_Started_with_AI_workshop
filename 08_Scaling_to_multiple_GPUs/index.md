@@ -2,9 +2,13 @@
 
 ## Examples
 
-[comment]: <> (List your examples from the lecture here and provide the necessary links to scripts, notebooks, etc. to run them on LUMI)
-
-* ...
+- For a native PyTorch DDP example (without using HuggingFace modules), see [bonus_material/pytorch_cotainr_container_basics](bonus_material/pytorch_cotainr_container_basics), specifically
+  - for torchrun usage, check
+    - [train_multi_gpu_ddp_torchrun.py](bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.py)
+    - [train_multi_gpu_ddp_torchrun.sh](bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.sh)
+  - for manual process setup, check
+    - [train_multi_gpu_ddp_env_setup.py](bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.py)
+    - [train_multi_gpu_ddp_env_setup.sh](bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.sh)
 
 ## Hands-on exercises
 

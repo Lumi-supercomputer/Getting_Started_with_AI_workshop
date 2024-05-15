@@ -4,7 +4,11 @@
 
 [comment]: <> (List your examples from the lecture here and provide the necessary links to scripts, notebooks, etc. to run them on LUMI)
 
-* ...
+
+- For a native PyTorch DDP example (without using HuggingFace modules), see [bonus_material/pytorch_cotainr_container_basics](bonus_material/pytorch_cotainr_container_basics), specifically check
+  - [train_single_gpu.py](bonus_material/pytorch_cotainr_container_basics/train_single_gpu.py)
+  - [pytorch_cotainr_container_basics/train_single_gpu.sh](bonus_material/pytorch_cotainr_container_basics/train_single_gpu.sh)
+
 
 ## Hands-on exercises
 
@@ -13,6 +17,7 @@
    **Task**: Check the training script [03_Your_first_AI_training_job_on_LUMI/GPT-neo-IMDB-finetuning.py](03_Your_first_AI_training_job_on_LUMI/GPT-neo-IMDB-finetuning.py). 
    
    You can open it via
+   - the built-in editor of the [LUMI web interface](https://lumi.csc.fi) file explorer: ![Open the LUMI web interface file editor by navigating to a file, clicking the "three dots" menu button and then selecting "Edit"](images/lumi_web_interface_edit_file.png)
    - any command line editor from a login node shell, either via the [LUMI web interface](https://lumi.csc.fi) or an [SSH connection](https://docs.lumi-supercomputer.eu/firststeps/loggingin/).
    - the Visual Studio Code app in the LUMI web interface (use the `interactive` partition)
 
