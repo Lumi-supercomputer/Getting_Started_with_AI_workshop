@@ -23,7 +23,10 @@ from transformers import (AutoTokenizer, AutoModelForCausalLM,
                           TrainingArguments, Trainer, DataCollatorForLanguageModeling)
 
 def convert_bitmask_to_list(x: int) -> list[int]:
-    """ Helper function for converting a bit mask into a list of integers. """
+    """ Helper function for converting a bit mask into a list of integers.
+    
+    Used below to set up CPU binding/affinity.
+    """
     bits = []
     i = 0
     while x > 0:
@@ -58,14 +61,16 @@ if __name__ == '__main__':
             print(f"ERROR: Only {len(args.cpu_bind_mask)} CPU bind masks where provided but there are {local_world_size} local processes.")
             exit(1)
 
-        psutil.Process().cpu_affinity(convert_bitmask_to_list(args.cpu_bind_mask[local_rank]))
+        cpu_list = convert_bitmask_to_list(args.cpu_bind_mask[local_rank])
+        print(f"Rank {rank} (local {local_rank}) binding to cpus: {cpu_list}")
+        psutil.Process().cpu_affinity(cpu_list)
 
     # Then we determine the device on which to train the model.
     print('Using PyTorch version:', torch.__version__)
     if torch.cuda.is_available():
         print(f"Rank {rank} of {world_size} (local: {local_rank}) sees {torch.cuda.device_count()} devices")
         print('Using GPU, device name:', torch.cuda.get_device_name(local_rank))
-        device = torch.device(f'cuda:{local_rank}')
+        device = torch.device('cuda', local_rank)
     else:
         print('No GPU found, using CPU instead.')
         device = torch.device('cpu')
