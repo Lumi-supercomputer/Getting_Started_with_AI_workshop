@@ -15,6 +15,7 @@ import torch
 import os
 import math
 import argparse
+import time
 
 from pprint import pprint
 from datasets import load_dataset
@@ -73,13 +74,18 @@ if __name__ == '__main__':
     # Let's start with getting the appropriate tokenizer.
     pretrained_model = "EleutherAI/gpt-neo-1.3B"
 
+    start = time.time()
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
     tokenizer.pad_token = tokenizer.eos_token
     special_tokens = tokenizer.special_tokens_map
 
     # Load the actual base model from Hugging Face
+    print("Loading model and tokenizer")
     model = AutoModelForCausalLM.from_pretrained(pretrained_model)
     model.to(device)
+    stop = time.time()
+    print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
+
 
     # #### Setting up the training configuration
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats

@@ -12,8 +12,9 @@ CONTAINER=/scratch/project_465001063/containers/pytorch_transformers.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
+FLASH="/flash/${SLURM_JOB_ACCOUNT}"
 export TORCH_HOME=$SCRATCH/torch-cache
-export HF_HOME=$SCRATCH/hf-cache
+export HF_HOME=$FLASH/hf-cache
 mkdir -p $TORCH_HOME $HF_HOME
 
 # Disable internal parallelism of huggingface's tokenizer since we
