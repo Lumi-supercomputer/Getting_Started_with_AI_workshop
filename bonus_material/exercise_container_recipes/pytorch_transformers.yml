@@ -1,4 +1,4 @@
-name: hf_exercise_env
+name: pytorch_transformers
 channels:
   - conda-forge
 dependencies:
