@@ -1,13 +1,4 @@
 # 09 Hyper-parameter tuning using Ray
 
-## Examples
+These slides are loosely based on Kaare Mikkelsen's slides (https://www.au.dk/en/mikkelsen.kaare@ece.au.dk) <span style="color:red">Ask for link to slides</span>.
 
-[comment]: <> (List your examples from the lecture here and provide the necessary links to scripts, notebooks, etc. to run them on LUMI)
-
-* ...
-
-## Hands-on exercises
-
-[comment]: <> (List your hands-on exercises for the lecture here and provide the necessary links to scripts, notebooks, etc. to run them on LUMI)
-
-* ...
