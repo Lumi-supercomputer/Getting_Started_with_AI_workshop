@@ -118,9 +118,9 @@ rm -rf myenv
 ```
 
 ## Pros and Cons
-+ Quick (and easy) approach for installing additional packages to existing containers
-- Additional packages are installed directly on Lustre file system which can lead to bad performance
-- Necessary to source the `venv` every time you run the container to get access to the `venv` installed packages
++ Pro: Quick (and easy) approach for installing additional packages to existing containers
+- Con: Additional packages are installed directly on Lustre file system which can lead to bad performance
+- Con: Necessary to source the `venv` every time you run the container to get access to the `venv` installed packages
 
 ## Exercise
 Extend one of your existing containers with a python package of your choice following this approach.
