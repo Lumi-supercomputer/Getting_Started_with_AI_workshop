@@ -8,7 +8,7 @@ This is a short overview of how to extend the containers used in lecture 06 with
 
 ## Requirements
 
-For this exercise we assume you have built a container from a conda environment file via something like:
+For this exercise we assume you have built a container from a `conda` environment file via something like:
 ```bash
 module load LUMI/23.03 cotainr
 cotainr build minimal_pytorch.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-5.6.1.sif --conda-env=minimal_pytorch.yml
@@ -112,10 +112,15 @@ As we can see, the new package is installed in our virtual environment whereas t
 Quick side node: This `venv` approach may also be used with the LUMI application containers, e.g. `/appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif`. For these containers it is required to activating the `conda` environment (`$WITH_CONDA`) before creating the `venv`. Also, building a (final) container from e.g. `/appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` + a `venv` is not directly supported by `cotainr`.
 
 ## Cleaning up
-After having found all packages needed for our purpose, we should create a new container with an updated conda environment file. The virtual environment should then be deleted
+After having found all packages needed for our purpose, we should create a new container with an updated `conda` environment file. The virtual environment should then be deleted
 ```bash
 rm -rf myenv
 ```
+
+## Pros and Cons
++ Quick (and easy) approach for installing additional packages to existing containers
+- Additional packages are installed directly on Lustre file system which can lead to bad performance
+- Necessary to source the `venv` every time you run the container to get access to the `venv` installed packages
 
 ## Exercise
 Extend one of your existing containers with a python package of your choice following this approach.
