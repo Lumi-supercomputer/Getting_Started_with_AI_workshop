@@ -20,7 +20,12 @@ First we run a shell inside the container
 ```bash
 singularity shell --bind /pfs,/scratch,/projappl,/project,/flash,/appl minimal_pytorch.sif
 ```
-Note that setting `--bind` is optional and can be done alternatively via loading `singularity-userfilesystems`, if you want to keep the virtual environment files in your current folder it is however necessary.
+Note that setting `--bind` is optional, if you want to keep the virtual environment files in your current folder it is however necessary. Alternatively, you achive the same by
+```bash
+module use /project/project_465001063/modules
+module load singularity-userfilesystems
+singularity shell minimal_pytorch.sif
+```
 
 First, let us take a look at all installed python packages in the container via `pip list`
 ```bash
