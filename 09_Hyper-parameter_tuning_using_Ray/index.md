@@ -295,7 +295,7 @@ Set up jobscript
 #SBATCH --mem=50G
 #SBATCH --partition=small-g
 #SBATCH --gpus-per-node=8
-#SBATCH --output=1_tasks_56_cpu.txt
+#SBATCH --output=output.txt
 
 srun singularity exec --bind /pfs,/scratch,/projappl,/project,/flash,/appl ray_container.sif python ray_mnist_parallel.py
 ```
