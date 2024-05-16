@@ -329,6 +329,8 @@ Current best trial: 0b98f90c with mean_accuracy=69.33333333333333 and params={'l
 Best config is: {'lr': 0.0041376522033940745, 'lastSize': 41}  with accuracy:  69.33333333333333
 ```
 
-### Ray on multiple nodes
+## Ray on multiple nodes
 still work in progress. based on community supported implementation https://docs.ray.io/en/latest/cluster/vms/user-guides/community/slurm.html#walkthrough-using-ray-with-slurm
 
+## Exercise
+incorporate ray in users python code of choice or let them toy arround with different search space configurations for existing MNIST setup.
