@@ -333,4 +333,4 @@ Best config is: {'lr': 0.0041376522033940745, 'lastSize': 41}  with accuracy:  6
 still work in progress. based on community supported implementation https://docs.ray.io/en/latest/cluster/vms/user-guides/community/slurm.html#walkthrough-using-ray-with-slurm
 
 ## Exercise
-incorporate ray in users python code of choice or let them toy arround with different search space configurations for existing MNIST setup.
+Use LLM from exercise 3 and expand paraqmeter space, run multiple instances in parallel with ray on single node.
