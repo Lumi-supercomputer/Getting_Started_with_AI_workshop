@@ -20,7 +20,7 @@ First we run a shell inside the container
 ```bash
 singularity shell --bind /pfs,/scratch,/projappl,/project,/flash,/appl minimal_pytorch.sif
 ```
-Note that setting `--bind` is optional, if you want to keep the virtual environment files in your current folder it is however necessary. Alternatively, you achive the same by
+Note that setting `--bind` is optional, if you want to keep the virtual environment files in your current folder it is however necessary. Alternatively, you achieve the same by
 ```bash
 module use /project/project_465001063/modules
 module load singularity-userfilesystems
@@ -108,6 +108,8 @@ Type "help", "copyright", "credits" or "license" for more information.
 '/pfs/lustrep4/projappl/project_465001063/decristo/contaienr_virt_env/myenv/lib/python3.11/site-packages/torchmetrics/__init__.py'
 ```
 As we can see, the new package is installed in our virtual environment whereas the other packages are installed in the container.
+
+Quick side node: This `venv` approach may also be used with the LUMI application containers, e.g. `/appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif`. For these containers it is required to activating the `conda` environment (`$WITH_CONDA`) before creating the `venv`. Also, building a (final) container from e.g. `/appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` + a `venv` is not directly supported by `cotainr`.
 
 ## Cleaning up
 After having found all packages needed for our purpose, we should create a new container with an updated conda environment file. The virtual environment should then be deleted
