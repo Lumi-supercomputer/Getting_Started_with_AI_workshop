@@ -112,7 +112,7 @@ def main():
     )
     pretrained_model = "EleutherAI/gpt-neo-1.3B"
 
-    # Load the IMDb data set
+    # Load the IMDB data set
     # Next we'll load the IMDB data set, this time using the Hugging Face
     # datasets library: https://huggingface.co/docs/datasets/index.
     #

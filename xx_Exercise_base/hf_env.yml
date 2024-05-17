@@ -1,4 +1,4 @@
-name: hf_exercise_env
+name: hf_env
 channels:
   - conda-forge
 dependencies:

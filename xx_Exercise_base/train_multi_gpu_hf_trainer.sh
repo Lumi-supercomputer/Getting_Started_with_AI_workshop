@@ -28,7 +28,7 @@ export HF_HOME=$SCRATCH/hf-cache
 mkdir -p $TORCH_HOME $HF_HOME
 export TOKENIZERS_PARALLELISM=false
 
-srun singularity exec hf_exercise_container.sif \
+srun singularity exec hf_env_container.sif \
     accelerate launch \
         --config_file=accelerate_hf_trainer_config.yaml \
         --num_machines=1 \

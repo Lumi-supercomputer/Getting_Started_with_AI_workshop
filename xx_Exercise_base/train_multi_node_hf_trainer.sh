@@ -1,6 +1,6 @@
 #!/usr/bin/env -S bash -e
 #SBATCH --job-name=train_multi_node_hf_trainer
-#SBATCH --nodes=4
+#SBATCH --nodes=2
 #SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task=56
 #SBATCH --gpus-per-node=8
@@ -51,4 +51,4 @@ export LAUNCH_CMD="
             --model-name gpt-imdb-model-${SLURM_JOBID} \
             --num_workers $(expr ${SLURM_CPUS_PER_TASK} / ${SLURM_GPUS_PER_NODE})\
     "
-srun singularity exec hf_exercise_container.sif bash -c "${LAUNCH_CMD}"
+srun singularity exec hf_env_container.sif bash -c "${LAUNCH_CMD}"

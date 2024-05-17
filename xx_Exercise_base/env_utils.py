@@ -18,9 +18,6 @@ def print_slurm_env():
             f"{os.environ.get('SLURM_JOB_GPUS', 'N/A')=}",
             f"{os.sched_getaffinity(0)=}",
             f"{os.environ.get('TORCH_NCCL_ASYNC_ERROR_HANDLING', 'N/A')=}",
-            f"{os.environ.get('CXI_FORK_SAFE', 'N/A')=}",
-            f"{os.environ.get('CXI_FORK_SAFE_HP', 'N/A')=}",
-            f"{os.environ.get('FI_CXI_DISABLE_CQ_HUGETLB', 'N/A')=}",
             "-" * 80 + "\n",
         ]
     )
