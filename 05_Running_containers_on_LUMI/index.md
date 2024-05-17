@@ -14,7 +14,7 @@
    * A LUMI login node
    * A LUMI-G compute node
 
-2. Pick a container from [Docker Hub](https://hub.docker.com/) and pull it to LUMI using Singularity. Make sure the Singularity cache is not filling up your home folder (hint: see https://docs.lumi-supercomputer.eu/software/containers/singularity/#pulling-container-images-from-a-registry)
+2. Pick a container from [Docker Hub](https://hub.docker.com/), e.g. [the official Alpine Docker image](https://hub.docker.com/_/alpine), and pull it to LUMI using Singularity. Make sure the Singularity cache is not filling up your home folder (hint: see https://docs.lumi-supercomputer.eu/software/containers/singularity/#pulling-container-images-from-a-registry)
 
 3. Open an interactive Python interpreter in the LUMI TensorFlow+Horovod container and (successfully) `import horovod.tensorflow`
 

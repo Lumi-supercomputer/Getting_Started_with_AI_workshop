@@ -2,11 +2,9 @@
 
 ## Exercise 1
 
-```text
-Run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch containers on:
-* A LUMI login node
-* A LUMI-G compute node
-```
+> Run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch containers on:
+> * A LUMI login node
+> * A LUMI-G compute node
 
 To run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch container, we must remember to:
 
@@ -44,13 +42,11 @@ Hello LUMI GPU World from nid005027
 
 Note that the number of GPUs/GCDs available to PyTorch is based on how many you request from SLURM. The default is 0!
 
-**Remember that it is a good idea to copy the `lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` container to your project folder and run it from there to enable you to reproduce your results. We may remove or replace `lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` at any point!**
+**Remember that it is a good idea to copy the `lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` container to your project folder and run it from there to enable you to reproduce your results. We may remove or replace `lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` at any point in time!**
 
 ## Exercise 2
 
-```text
-Pick a container from Docker Hub and pull it to LUMI using Singularity. Make sure the Singularity cache is not filling up your home folder (hint: see https://docs.lumi-supercomputer.eu/software/containers/singularity/#pulling-container-images-from-a-registry)
-```
+> Pick a container from [Docker Hub](https://hub.docker.com/), e.g. [the official Alpine Docker image](https://hub.docker.com/_/alpine), and pull it to LUMI using Singularity. Make sure the Singularity cache is not filling up your home folder (hint: see https://docs.lumi-supercomputer.eu/software/containers/singularity/#pulling-container-images-from-a-registry)
 
 To pull containers from Docker Hub without filling up our home folder with Singularity temp/cache files, we must remember to:
 
@@ -83,9 +79,7 @@ which generates the `alpine_3.19.1.sif` container.
 
 ## Exercise 3
 
-```text
-Open an interactive Python interpreter in the LUMI TensorFlow+Horovod container and (successfully) `import horovod.tensorflow`
-```
+> Open an interactive Python interpreter in the LUMI TensorFlow+Horovod container and (successfully) `import horovod.tensorflow`
 
 To successfully import Horovod+Tensorflow in the container, we must remember to:
 
