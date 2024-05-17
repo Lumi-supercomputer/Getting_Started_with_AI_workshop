@@ -2,20 +2,18 @@
 
 ## Exercise 1
 
-```text
-Using the provided `python312.yml` conda environment:
-* Use cotainr to build a container (interactively) on a login node
-* Use cotainr to build the same container (non-intactively) on a compute node
-* Compare the output of running `python3 -c "import sys; print(sys.executable); print(sys.version)"` on a login node:
-  * In the container you build
-  * Directly on LUMI
-```
+> Using the provided `python312.yml` conda environment:
+> * Use cotainr to build a container (interactively) on a login node
+> * Use cotainr to build the same container (non-intactively) on a compute node
+> * Compare the output of running `python3 -c "import sys; print(sys.executable); print(sys.version)"` on a login node:
+>   * In the container you build
+>   * Directly on LUMI
 
 To build a container using cotainr on LUMI, we must remember to:
 
 1. Load the cotainr module on LUMI
 2. Determine the relevant system (LUMI-C/LUMI-G) or, alternatively, pick a suitable base image
-3. Run cotainr using `srun`, pipe stdout/stderr, and accept all licenses up-front when building non-interactively on a compute node
+3. Run cotainr using `srun`, redirect stdout/stderr, and accept all licenses up-front when building non-interactively on a compute node
 
 Since the `python312.yml` environment only contains Python 3.12, we don't need ROCm or other special system libraries, so using `--system=lumi-c` with cotainr is sufficient for getting a fairly minimal base image.
 
@@ -34,11 +32,12 @@ On a LUMI-C compute node, we may build the container non-interactively by:
 ```bash
 $ module use /project/project_465001063/modules
 $ module load LUMI cotainr
-$ srun --output=cotainr.out --error=cotainr.err --account=project_465001063 --time=00:05:00 --mem=64G --cpus-per-task=32 --partition=debug cotainr build python312.sif --system=lumi-c --conda-env=python312.yml --accept-licenses
+$ srun --output=cotainr.out --error=cotainr.err --account=project_465001063 --time=00:05:00 --mem=60G --cpus-per-task=8 --partition=dev-g cotainr build python312.sif --system=lumi-c --conda-env=python312.yml --accept-licenses
 ```
 
 Note that cotainr will ask for permission to overwrite the `python312.sif` container if it already exists. Since cotainr currently does not provide a way to non-interactively accept this, when building non-interactively, it will get stuck until it is terminated by SLURM due to the time limit, if the `python312.sif` container already exists.
 
+As an alternative to directly calling `srun`, you may consider creating a SLURM batch script to setup your cotainr build on a compute node.
 
 Now, if we run the `python3 -c "import sys; print(sys.executable); print(sys.version)"` command to show which version of Python we are using, when running in the container, we get:
 
@@ -69,13 +68,12 @@ since the cotainr module loads the cray-python module to get a Python >= 3.8 whi
 
 ## Exercise 2
 
-```text
-Using cotainr, update the container you built using the `python312.yml` conda environment to contain a few extra packages of your choice. Open an interactive Python interpreter in the container and import your newly added packages.
-```
+> Using cotainr, update the container you built using the `python312.yml` conda environment to contain a few extra packages of your choice, e.g. pandas and scikit-learn. Open an interactive Python interpreter in the container and import your newly added packages.
+
 
 To update our container with extra packages, we must remember to:
 
-1. Update the conda environment yaml file and rebuild the container - by design cotainr does not offer a way to change/update an existing container in order to maximize the reproducibility of the software environment in the container.
+1. Update the conda environment yaml file and rebuild the container - by design cotainr does not offer a way to change/update an existing container in order to maximize the reproducibility of the software environment in the container and [minimize the risk of ending up with a broken conda environment](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#using-pip-in-an-environment).
 2. Pin versions of the packages we add when updating the conda environment yaml file to maximize reproducibility.
 
 Assuming we would like to add the `pandas`, `scikit-learn`, and `env-var` Python packages to the container, we may update the `python312.yml` to:
@@ -177,8 +175,7 @@ prefix: /opt/conda/envs/conda_container_env
 
 ## Exercise 3
 
-```text
-Create a conda environment file for installing [panopticapi](https://github.com/cocodataset/panopticapi) and use it to build a container for LUMI-C using cotainr.
+> Create a conda environment file for installing [panopticapi](https://github.com/cocodataset/panopticapi) and use it to build a container for LUMI-C using cotainr.
 ```
 
 To build a container for panopticapi using cotainr on LUMI, we must remember to:
@@ -193,12 +190,13 @@ name: panopticapi
 channels:
   - conda-forge
 dependencies:
+  - git=2.45.1
   - numpy=1.26.4
   - pillow=10.3.0
   - pip=24.0
   - python=3.9
   - pip:
-    - https://github.com/cocodataset/panopticapi/archive/master.zip
+    - git+https://github.com/cocodataset/panopticapi.git
 ```
 
 Note that panopticapi is a somewhat old package that does not have any specific release and no pinned versions of dependencies. Thus, one may need some trial & error to install versions of numpy and pillow that are compatible with the current master branch of panopticapi. Maybe the above works...
@@ -211,4 +209,4 @@ $ module load LUMI cotainr
 $ cotainr build panopticapi.sif --system=lumi-c --conda-env=panopticapi.yml
 ```
 
-Note that when you install directly from (private) Git(Hub) repos, you may need to install extra Conda packages needed by pip to connect to the repo, e.g. git and openssh. See the [cotainr conda environment documentation](https://cotainr.readthedocs.io/en/latest/user_guide/conda_env.html#pip-packages-from-private-repositories) for an example.
+Note that when you install directly from (private) Git(Hub) repos, you may need to install extra Conda packages needed by pip to connect to the repo, e.g. git and openssh. Alternatively, you can also install directly from a zip archive of the repo, e.g. specifying https://github.com/cocodataset/panopticapi/archive/master.zip instead of git+https://github.com/cocodataset/panopticapi.git. See the [cotainr conda environment documentation](https://cotainr.readthedocs.io/en/latest/user_guide/conda_env.html#pip-packages-from-private-repositories) for a more elaborate example.
