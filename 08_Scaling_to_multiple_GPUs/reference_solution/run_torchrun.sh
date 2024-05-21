@@ -17,9 +17,6 @@ module load singularity-userfilesystems singularity-CPEbits
 
 CONTAINER=/scratch/project_465001063/containers/pytorch_transformers.sif
 
-# Set up the CPU bind masks (can only be used with full node runs (standard-g or small-g with slurm argument `--exclusive`))
-CPU_BIND_MASKS="0x00fe000000000000 0xfe00000000000000 0x0000000000fe0000 0x00000000fe000000 0x00000000000000fe 0x000000000000fe00 0x000000fe00000000 0x0000fe0000000000"
-
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
 FLASH="/flash/${SLURM_JOB_ACCOUNT}"
@@ -38,6 +35,9 @@ export MODEL_NAME=gpt-imdb-model-${SLURM_JOBID}
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
+# Since we start only one task with slurm which then starts subprocesses, we cannot use slurm to configure CPU binds.
+# Therefore we need to set them up in the Python code itself.
+
 srun singularity exec $CONTAINER \
     torchrun --standalone \
              --nnodes=1 \
@@ -47,4 +47,4 @@ srun singularity exec $CONTAINER \
              --output-path $OUTPUT_DIR \
              --logging-path $LOGGING_DIR \
              --num-workers $(( SLURM_CPUS_PER_TASK / SLURM_GPUS_PER_NODE )) \
-             --cpu-bind-masks $CPU_BIND_MASKS
+             --set-cpu-binds  # enable setting of the CPU binds in the training script (can only be used with full node runs (standard-g or small-g with slurm argument `--exclusive`))

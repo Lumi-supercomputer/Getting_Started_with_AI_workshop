@@ -23,20 +23,25 @@ from datasets import load_dataset
 from transformers import (AutoTokenizer, AutoModelForCausalLM,
                           TrainingArguments, Trainer, DataCollatorForLanguageModeling)
 
-def cpu_list(mask: str) -> list[int]:
-    """ Helper function for converting a bit mask string into a list of integers.
-    
-    Used below to set up CPU binding/affinity.
-    """
-    bits = []
-    x = int(mask, 16)
-    i = 0
-    while x > 0:
-        if x & 1 == 1:
-            bits.append(i)
-        i += 1
-        x >>= 1
-    return bits
+def set_cpu_affinity(local_rank):
+    LUMI_GPU_CPU_map = {
+        # A mapping from GCD to the closest CPU cores in a LUMI-G node
+        # Note that CPU cores 0, 8, 16, 24, 32, 40, 48, 56 are reserved for the
+        # system and not available for the user
+        # See https://docs.lumi-supercomputer.eu/hardware/lumig/
+        0: [49, 50, 51, 52, 53, 54, 55],
+        1: [57, 58, 59, 60, 61, 62, 63],
+        2: [17, 18, 19, 20, 21, 22, 23],
+        3: [25, 26, 27, 28, 29, 30, 31],
+        4: [1, 2, 3, 4, 5, 6, 7],
+        5: [9, 10, 11, 12, 13, 14, 15],
+        6: [33, 34, 35, 36, 37, 38, 39],
+        7: [41, 42, 43, 44, 45, 46, 47],
+    }
+    cpu_list = LUMI_GPU_CPU_map[local_rank]
+    print(f"Rank {rank} (local {local_rank}) binding to cpus: {cpu_list}")
+    psutil.Process().cpu_affinity(cpu_list)
+
 
 
 if __name__ == '__main__':
@@ -48,7 +53,7 @@ if __name__ == '__main__':
     parser.add_argument("--output-path", type=str, help="The root directory under which model checkpoints are stored.")
     parser.add_argument("--logging-path", type=str, help="The root directory under which logging data (for tensorboard) are stored.")
     parser.add_argument("--num-workers", type=int, default=1, help="The number of CPU worker processes to use.")
-    parser.add_argument("--cpu-bind-masks", type=cpu_list, default=None, nargs="*", help="A list of bitmasks (represented as an integer) of the CPUs to which to bind each local process rank. Optional, but if set must provide a mask for each local rank.")
+    parser.add_argument("--set-cpu-binds", type=bool, default=False, action="store_true", help="A list of bitmasks (represented as an integer) of the CPUs to which to bind each local process rank. Optional, but if set must provide a mask for each local rank.")
     args, _ = parser.parse_known_args()
 
     # Read the environment variables provided by torchrun
@@ -57,15 +62,9 @@ if __name__ == '__main__':
     world_size = int(os.environ["WORLD_SIZE"])
     local_world_size = int(os.environ["LOCAL_WORLD_SIZE"])
 
-    # Set up CPU binding if --cpu-bind-masks is given
-    if args.cpu_bind_masks:
-        if len(args.cpu_bind_masks) < local_world_size:
-            print(f"ERROR: Only {len(args.cpu_bind_mask)} CPU bind masks where provided but there are {local_world_size} local processes.")
-            exit(1)
-
-        cpu_list = args.cpu_bind_masks[local_rank]
-        print(f"Rank {rank} (local {local_rank}) binding to cpus: {cpu_list}")
-        psutil.Process().cpu_affinity(cpu_list)
+    # Set up CPU binding if --set-cpu-binds is given
+    if args.set_cpu_binds:
+        set_cpu_affinity(local_rank)
 
     # Then we determine the device on which to train the model.
     print('Using PyTorch version:', torch.__version__)
