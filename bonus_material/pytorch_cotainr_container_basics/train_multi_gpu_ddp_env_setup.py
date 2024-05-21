@@ -48,54 +48,69 @@ from torch.utils.data.distributed import DistributedSampler
 from mnist_model import Net, get_mnist_setup, train, test
 from env_utils import print_slurm_env
 
-print_slurm_env()  # Print SLURM environment
 
-# Setup the process group for distributed training based on SLURM environment variables
-rank = int(os.environ["SLURM_PROCID"])
-init_process_group(
-    backend="nccl",
-    init_method="env://",
-    world_size=int(os.environ["SLURM_NTASKS"]),
-    rank=rank,
-    timeout=datetime.timedelta(seconds=60),  # <- You may need to tune this
-)
-device = torch.device("cuda")  # <- Device ID is chosen based on ROCR_VISIBLE_DEVICES
+def setup_and_run_training():
+    # Print SLURM environment
+    print_slurm_env()
 
-torch.manual_seed(6021)
-train_kwargs = {
-    "batch_size": 64,
-    "num_workers": 0,
-    "pin_memory": True,
-}
-test_kwargs = {
-    "batch_size": 1000,
-    "num_workers": 0,
-    "pin_memory": True,
-    "shuffle": True,
-}
-log_interval = 10
-epochs = 14
-learning_rate = 1.0
-gamma = 0.7
+    # Setup the process group for distributed training based on SLURM environment variables
+    rank = int(os.environ["SLURM_PROCID"])
+    init_process_group(
+        backend="nccl",
+        init_method="env://",
+        world_size=int(os.environ["SLURM_NTASKS"]),
+        rank=rank,
+        timeout=datetime.timedelta(seconds=60),  # <- You may need to tune this
+    )
+    device = torch.device(
+        "cuda"  # <- Device ID is chosen based on ROCR_VISIBLE_DEVICES
+    )
 
-model = DDP(Net().to(device))  # <- We need to wrap the model with DDP
-dataset_train, dataset_test, optimizer, scheduler = get_mnist_setup(
-    model, learning_rate, gamma
-)
-train_loader = torch.utils.data.DataLoader(
-    dataset_train,
-    **train_kwargs,
-    sampler=DistributedSampler(dataset_train),  # <- We need to use a DistributedSampler
-)
-test_loader = torch.utils.data.DataLoader(dataset_test, **test_kwargs)
+    torch.manual_seed(6021)
+    train_kwargs = {
+        "batch_size": 64,
+        "num_workers": 7,
+        "pin_memory": True,
+    }
+    test_kwargs = {
+        "batch_size": 1000,
+        "num_workers": 7,
+        "pin_memory": True,
+        "shuffle": True,
+    }
+    log_interval = 10
+    epochs = 14
+    learning_rate = 1.0
+    gamma = 0.7
 
-t_start = time.perf_counter()
-for epoch in range(1, epochs + 1):
-    train(log_interval, model, device, train_loader, optimizer, epoch, rank=rank)
-    test(model, device, test_loader, epoch, rank=rank)
-    scheduler.step()
-t_end = time.perf_counter()
-if rank == 0:
-    print(f"Training time: {t_end - t_start:.2f} seconds")
+    model = DDP(Net().to(device))  # <- We need to wrap the model with DDP
+    dataset_train, dataset_test, optimizer, scheduler = get_mnist_setup(
+        model, learning_rate, gamma
+    )
+    train_loader = torch.utils.data.DataLoader(
+        dataset_train,
+        **train_kwargs,
+        sampler=DistributedSampler(  # <- We need to use a DistributedSampler
+            dataset_train
+        ),
+    )
+    test_loader = torch.utils.data.DataLoader(dataset_test, **test_kwargs)
 
-destroy_process_group()  # Cleanup the process group
+    t_start = time.perf_counter()
+    for epoch in range(1, epochs + 1):
+        train(log_interval, model, device, train_loader, optimizer, epoch, rank=rank)
+        test(model, device, test_loader, epoch, rank=rank)
+        scheduler.step()
+    t_end = time.perf_counter()
+    if rank == 0:
+        print(f"Training time: {t_end - t_start:.2f} seconds")
+
+    destroy_process_group()  # Cleanup the process group
+
+
+if __name__ == "__main__":
+    # Workaround "fork" not being safe with Slingshot 11 when using multiple
+    # PyTorch DataLoader workers
+    torch.multiprocessing.set_start_method("spawn")
+
+    setup_and_run_training()

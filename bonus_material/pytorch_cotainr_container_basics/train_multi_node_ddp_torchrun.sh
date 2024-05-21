@@ -19,9 +19,6 @@ module load singularity-userfilesystems  # corresponds to specifying --bind /pfs
 # Bind mount CPE bits to enable RCCL communication using the Slingshot interconnect via the aws-ofi-rccl plugin
 module load singularity-CPEbits  # corresponds to specifying --bind /var/spool/slurmd,/opt/cray,/usr/lib64/libcxi.so.1,/usr/lib64/libjansson.so.4 when running the container
 
-# Enable asynchronous error handling for RCCL to bring down communitaions in case of hangs
-export TORCH_NCCL_ASYNC_ERROR_HANDLING=1
-
 # Set network interfaces to be used by RCCL to workaround RCCL failing to auto-detect the correct interface
 export NCCL_SOCKET_IFNAME=hsn
 

@@ -48,74 +48,88 @@ from torch.utils.data.distributed import DistributedSampler
 from mnist_model import Net, get_mnist_setup, train, test
 from env_utils import print_slurm_env
 
-# Set CPU bindings based on LOCAL_RANK which is also used to set GPU device
-local_rank = int(os.environ["LOCAL_RANK"])
-LUMI_GPU_CPU_map = {
-    # A mapping from GCD to the closest CPU cores in a LUMI-G node
-    # Note that CPU cores 0, 8, 16, 24, 32, 40, 48, 56 are reserved for the
-    # system and not available for the user
-    # See https://docs.lumi-supercomputer.eu/hardware/lumig/
-    0: [49, 50, 51, 52, 53, 54, 55],
-    1: [57, 58, 59, 60, 61, 62, 63],
-    2: [17, 18, 19, 20, 21, 22, 23],
-    3: [25, 26, 27, 28, 29, 30, 31],
-    4: [1, 2, 3, 4, 5, 6, 7],
-    5: [9, 10, 11, 12, 13, 14, 15],
-    6: [33, 34, 35, 36, 37, 38, 39],
-    7: [41, 42, 43, 44, 45, 46, 47],
-}
-os.sched_setaffinity(
-    0, LUMI_GPU_CPU_map[local_rank]  # Set CPU binding for the current process (0)
-)
-print_slurm_env()  # Print SLURM environment
 
-# Setup the process group for distributed training based on torchrun
-rank = int(os.environ["RANK"])
-init_process_group(
-    backend="nccl",
-    timeout=datetime.timedelta(seconds=60),  # <- You may need to tune this
-)
-device = torch.device("cuda", local_rank)
+def setup_and_run_training():
+    # Set CPU bindings based on LOCAL_RANK which is also used to set GPU device
+    local_rank = int(os.environ["LOCAL_RANK"])
+    LUMI_GPU_CPU_map = {
+        # A mapping from GCD to the closest CPU cores in a LUMI-G node
+        # Note that CPU cores 0, 8, 16, 24, 32, 40, 48, 56 are reserved for the
+        # system and not available for the user
+        # See https://docs.lumi-supercomputer.eu/hardware/lumig/
+        0: [49, 50, 51, 52, 53, 54, 55],
+        1: [57, 58, 59, 60, 61, 62, 63],
+        2: [17, 18, 19, 20, 21, 22, 23],
+        3: [25, 26, 27, 28, 29, 30, 31],
+        4: [1, 2, 3, 4, 5, 6, 7],
+        5: [9, 10, 11, 12, 13, 14, 15],
+        6: [33, 34, 35, 36, 37, 38, 39],
+        7: [41, 42, 43, 44, 45, 46, 47],
+    }
+    os.sched_setaffinity(
+        0, LUMI_GPU_CPU_map[local_rank]  # Set CPU binding for the current process (0)
+    )
 
-torch.manual_seed(6021)
-train_kwargs = {
-    "batch_size": 64,
-    "num_workers": 0,
-    "pin_memory": True,
-}
-test_kwargs = {
-    "batch_size": 1000,
-    "num_workers": 0,
-    "pin_memory": True,
-    "shuffle": True,
-}
-log_interval = 10
-epochs = 14
-learning_rate = 1.0
-gamma = 0.7
+    # Print SLURM environment
+    print_slurm_env()
 
-model = DDP(  # <- We need to wrap the model with DDP
-    Net().to(device),
-    device_ids=[local_rank],  # <- and specify the device_ids/output_device
-    output_device=local_rank,
-)
-dataset_train, dataset_test, optimizer, scheduler = get_mnist_setup(
-    model, learning_rate, gamma
-)
-train_loader = torch.utils.data.DataLoader(
-    dataset_train,
-    **train_kwargs,
-    sampler=DistributedSampler(dataset_train),  # <- We need to use a DistributedSampler
-)
-test_loader = torch.utils.data.DataLoader(dataset_test, **test_kwargs)
+    # Setup the process group for distributed training based on torchrun
+    rank = int(os.environ["RANK"])
+    init_process_group(
+        backend="nccl",
+        timeout=datetime.timedelta(seconds=60),  # <- You may need to tune this
+    )
+    device = torch.device("cuda", local_rank)
 
-t_start = time.perf_counter()
-for epoch in range(1, epochs + 1):
-    train(log_interval, model, device, train_loader, optimizer, epoch, rank=rank)
-    test(model, device, test_loader, epoch, rank=rank)
-    scheduler.step()
-t_end = time.perf_counter()
-if rank == 0:
-    print(f"Training time: {t_end - t_start:.2f} seconds")
+    torch.manual_seed(6021)
+    train_kwargs = {
+        "batch_size": 64,
+        "num_workers": 7,
+        "pin_memory": True,
+    }
+    test_kwargs = {
+        "batch_size": 1000,
+        "num_workers": 7,
+        "pin_memory": True,
+        "shuffle": True,
+    }
+    log_interval = 10
+    epochs = 14
+    learning_rate = 1.0
+    gamma = 0.7
 
-destroy_process_group()  # Cleanup the process group
+    model = DDP(  # <- We need to wrap the model with DDP
+        Net().to(device),
+        device_ids=[local_rank],  # <- and specify the device_ids/output_device
+        output_device=local_rank,
+    )
+    dataset_train, dataset_test, optimizer, scheduler = get_mnist_setup(
+        model, learning_rate, gamma
+    )
+    train_loader = torch.utils.data.DataLoader(
+        dataset_train,
+        **train_kwargs,
+        sampler=DistributedSampler(  # <- We need to use a DistributedSampler
+            dataset_train
+        ),
+    )
+    test_loader = torch.utils.data.DataLoader(dataset_test, **test_kwargs)
+
+    t_start = time.perf_counter()
+    for epoch in range(1, epochs + 1):
+        train(log_interval, model, device, train_loader, optimizer, epoch, rank=rank)
+        test(model, device, test_loader, epoch, rank=rank)
+        scheduler.step()
+    t_end = time.perf_counter()
+    if rank == 0:
+        print(f"Training time: {t_end - t_start:.2f} seconds")
+
+    destroy_process_group()  # Cleanup the process group
+
+
+if __name__ == "__main__":
+    # Workaround "fork" not being safe with Slingshot 11 when using multiple
+    # PyTorch DataLoader workers
+    torch.multiprocessing.set_start_method("spawn")
+
+    setup_and_run_training()
