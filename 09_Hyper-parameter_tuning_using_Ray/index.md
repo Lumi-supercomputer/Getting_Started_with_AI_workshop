@@ -2,7 +2,7 @@
 
 ## Hands-on exercises
 
-In this exercise we perform Hyper-parameter tuning of the for the model used in lecture 03. The python code in this lecture, `GPT-neo-ray-tune.py` is based on a trimmed down version of `GPT-neo-IMDB-finetuning.py` from lecture 03.
+In this exercise we perform Hyper-parameter tuning for the model used in lecture 03. The python code in this lecture, `GPT-neo-ray-tune.py` is based on a trimmed down version of `GPT-neo-IMDB-finetuning.py` from lecture 03.
 
 1. In order to run the ray example we need to extend the `pytorch_transformers.sif` container with the pip package `ray[tune]`.
 
