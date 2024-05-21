@@ -121,6 +121,7 @@ def model_training(config):
 
     trainer.train(resume_from_checkpoint=args.resume)
 
+    # report results back to ray
     eval_results = trainer.evaluate()
     train.report(
         dict(
@@ -162,19 +163,19 @@ if __name__ == "__main__":
     )
     args, _ = parser.parse_known_args()
 
-    # We need to manually set the number of CPUs and GPUs. Othewise, ray tries to use the whole node and crashes.
-    ray.init(num_cpus=56, num_gpus=8, log_to_driver=False)
+    # TODO: set up number of CPUs and GPUs correctly
+    ray.init(num_cpus=, num_gpus=, log_to_driver=False)
 
     config = {
-        "learning_rate": tune.uniform(
-            1e-6, 1e-3
-        ),  # define search space for learning_rate
+        #TODO define search space for learning_rate
+        "learning_rate": ,
         "args": args,
     }
 
     analysis = tune.run(
         model_training,
-        resources_per_trial={"cpu": 7, "gpu": 1},  # set resources for every trial run
+        # TODO: set up number of CPUs and GPUs correctly for trial runs
+        resources_per_trial={"cpu": , "gpu": },
         config=config,
         num_samples=8,
         metric="perplexity",

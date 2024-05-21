@@ -121,6 +121,7 @@ def model_training(config):
 
     trainer.train(resume_from_checkpoint=args.resume)
 
+    # report results back to ray
     eval_results = trainer.evaluate()
     train.report(
         dict(

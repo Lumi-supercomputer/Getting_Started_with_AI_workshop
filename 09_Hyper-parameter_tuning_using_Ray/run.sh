@@ -1,13 +1,7 @@
 #!/bin/bash
 #SBATCH --account=project_465001063
-#SBATCH --partition=standard-g
-#SBATCH --nodes=1
-#SBATCH --gpus-per-node=8
-#SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=56
-#SBATCH --mem=0
-#SBATCH --time=0:15:00
-#SBATCH --output=output_ray.txt
+#SBATCH --partition=...
+## TODO: SPECIFY ADDITIONAL SLURM PARAMETERS HERE
 
 # Set up the software environment
 module purge
@@ -34,10 +28,4 @@ export MODEL_NAME=gpt-imdb-model
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
-# source venv to include ray package
-srun singularity exec $CONTAINER bash -c "source myenv/bin/activate && python ray_script.py \
-        --model-name $MODEL_NAME \
-        --output-path $OUTPUT_DIR \
-        --logging-path $LOGGING_DIR \
-        --num-workers ${SLURM_CPUS_PER_TASK}"
-
+## TODO: RUN THE TRAINING SCRIPT HERE
