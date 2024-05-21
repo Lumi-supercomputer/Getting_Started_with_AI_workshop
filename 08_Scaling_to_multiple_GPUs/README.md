@@ -73,7 +73,8 @@
    - set the environment variables mentioned above manually,
    - replace the `torchrun` invocation with direct `python` commands to run the training script.
    
-   > [!NOTE]
+   > **Note**
+   >
    > You can get the hostname of the node running the rank 0 process using the command
    > ```
    > scontrol show hostname ${SLURM_NODELIST} | head -n 1

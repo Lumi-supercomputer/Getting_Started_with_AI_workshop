@@ -47,7 +47,8 @@
   
     Please set the paths to some destination of your choice within your `/scratch/project_465001063/<username>` directory.
   
-    > [!TIP]
+    > **Tip**
+    >
     > Slurm sets the environment variable `SLURM_CPUS_PER_TASK` to the value of allocated CPU cores per task.
     
     **Task**: Start the training using `sbatch run.sh` from a login node shell (LUMI web interface or SSH).
@@ -58,7 +59,8 @@
 
     You can also check your active jobs from the LUMI web interface: Navigate to Jobs > Active Jobs.
 
-    > [!NOTE]
+    > **Note**
+    >
     > We will cover more details about checking the status and progress of your job in a later exercise.
 
 4. Modify the script to enable it to continue from a checkpoint.
@@ -73,8 +75,10 @@
     
     **Task**: Use your modified script to resume training from the last checkpoint.
 
-    > [!IMPORTANT]
+    > **Important**
+    >
     > Make sure to use the same `MODEL_NAME` (and paths) when resuming training from the checkpoint.
 
-    > [!NOTE]
+    > **Note**
+    >
     > If your earlier training job is still running, you can stop it using the `scancel` command.

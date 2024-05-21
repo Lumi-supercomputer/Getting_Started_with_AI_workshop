@@ -31,7 +31,8 @@
         - Virtual environment path: leave empty
     2. Wait for the session to start, then press `Connect to Jupyter`
         
-        > [!NOTE]
+        > **Note**
+        >
         > Jupyter will open in a new tab. Note that your interactive job will not stop if you close the tab, so you can always reconnect to Jupyter via the `My Interactive Session` page of the LUMI web interface. You also have to explicitly `Cancel` the running job from there in order to stop Jupyter when you are done - otherwise your job will continue to consume the allocated resources until the time limit you gave is reached.
 
     3. Open and run the `<username>/Getting_Started_with_AI_workshop/02_Using_the_LUMI_web_interface/GPT-neo-IMDB-introduction.ipynb` notebook, which introduces our ongoing example for the remaining exercises. Familiarise yourself with the code. You can try to
