@@ -47,7 +47,7 @@ srun singularity exec $CONTAINER \
              --nproc-per-node=${SLURM_GPUS_PER_NODE} \
              --rdzv-id=${SLURM_JOBID} \
              --rdzv-backend=c10d \
-             --rdzv-endpoint=$RDZV_ADDR:$RDZV_PORT
+             --rdzv-endpoint=$RDZV_ADDR:$RDZV_PORT \
              GPT-neo-IMDB-finetuning.py \
              --model-name $MODEL_NAME \
              --output-path $OUTPUT_DIR \

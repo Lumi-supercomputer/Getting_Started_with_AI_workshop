@@ -78,7 +78,6 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--set-cpu-binds",
-        type=bool,
         default=False,
         action="store_true",
         help="A list of bitmasks (represented as an integer) of the CPUs to which to bind each local process rank. Optional, but if set must provide a mask for each local rank.",
@@ -179,7 +178,7 @@ if __name__ == "__main__":
         per_device_train_batch_size=train_batch_size // world_size,
         per_device_eval_batch_size=eval_batch_size,
         max_steps=1000,
-        dataloader_num_workers=args.num_workers,  # NOTE: setting this causes a crash with LUST EasyBuild PyTorch on multinode. For that software, comment this (but then set num_procs for the data mappings below)
+        dataloader_num_workers=args.num_workers,
         dataloader_pin_memory=True,
         report_to=["tensorboard"],  # log statistics for tensorboard
         ddp_find_unused_parameters=False,  # there are no unused parameters, causing PyTorch to issue a warning should this be set to True

@@ -140,7 +140,7 @@ if __name__ == "__main__":
         per_device_train_batch_size=train_batch_size,
         per_device_eval_batch_size=eval_batch_size,
         max_steps=1000,
-        dataloader_num_workers=args.num_workers,  # NOTE: setting this causes a crash with LUST EasyBuild PyTorch on multinode. For that software, comment this (but then set num_procs for the data mappings below)
+        dataloader_num_workers=args.num_workers,
         dataloader_pin_memory=True,
         report_to=["tensorboard"],  # log statistics for tensorboard
     )
