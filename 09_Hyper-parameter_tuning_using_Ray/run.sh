@@ -28,4 +28,4 @@ export MODEL_NAME=gpt-imdb-model
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
-## TODO: RUN THE TRAINING SCRIPT HERE
+## TODO: RUN THE PYTHON SCRIPT HERE
