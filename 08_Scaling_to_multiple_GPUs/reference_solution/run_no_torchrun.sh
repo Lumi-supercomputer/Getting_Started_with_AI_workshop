@@ -56,4 +56,3 @@ srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS \  # tell slurm to configure the cpu 
                 --output-path $OUTPUT_DIR \
                 --logging-path $LOGGING_DIR \
                 --num-workers ${SLURM_CPUS_PER_TASK}"
-# note that here 
