@@ -10,7 +10,7 @@ To run these examples, it is assumed that you `module use /project/project_46500
 - The new `singularity-userfilesystems` module that bind mounts user file system paths, i.e. `/project`, `/scratch`, and `/flash`.
 - The new `singularity-CPEbits` module that bind mounts the parts of the Cray Programming Environment from the host that are missing in the official LUMI container images due to license restrictions imposed by HPE.
 
-After the AI workshop and the LUMI maintenance break in September, these module will hopefully be available in the central LUMI stack.
+After the AI workshop and the LUMI maintenance break in August/September, these module will hopefully be available in the central LUMI stack.
 
 ## 1. Build a container for the example using cotainr
 
@@ -25,7 +25,7 @@ More details about building conda/pip environment containers using cotainr may b
 
 ## 2. Launch the training on multiple GPUs (GCDs) within a single node
 
-To launch the training via `accelerate` on a single node, using all avialable GCDs, we need to:
+To launch the training via `accelerate` on a single node, using all available GCDs, we need to:
 
 - Set the HuggingFace and Torch cache locations, i.e. set the `HF_HOME` and `TORCH_HOME` environment variables.
 - Set all "the usual" workarounds needed, e.g. setting the MIOpen DB and cache paths.
@@ -58,7 +58,7 @@ Launching the training using the above approach, the following automagically hap
 - Within the `accelerate.Accelerator`:
   - [The model is transferred to the relevant GPU](https://github.com/huggingface/accelerate/blob/4ba436eccc1f6437503e66474d8ca86292f4acc1/src/accelerate/accelerator.py#L1412)
   - [The dataset batches are transferred to the relevant GPU using a DataloaderDispatcher](https://github.com/huggingface/accelerate/blob/4ba436eccc1f6437503e66474d8ca86292f4acc1/src/accelerate/data_loader.py#L685) which [set up in the `Accelerator`](https://github.com/huggingface/accelerate/blob/4ba436eccc1f6437503e66474d8ca86292f4acc1/src/accelerate/accelerator.py#L1958)
-- Within the `accelerate.AcceleratorState`/`accelerate.PartialState` [used in the `accelerate.Accelerator` to define the training environement](https://github.com/huggingface/accelerate/blob/4ba436eccc1f6437503e66474d8ca86292f4acc1/src/accelerate/accelerator.py#L378)
+- Within the `accelerate.AcceleratorState`/`accelerate.PartialState` [used in the `accelerate.Accelerator` to define the training environment](https://github.com/huggingface/accelerate/blob/4ba436eccc1f6437503e66474d8ca86292f4acc1/src/accelerate/accelerator.py#L378)
   - [The PyTorch process group is set up](https://github.com/huggingface/accelerate/blob/4ba436eccc1f6437503e66474d8ca86292f4acc1/src/accelerate/state.py#L213) with [backend setup to `nccl`](https://github.com/huggingface/accelerate/blob/4ba436eccc1f6437503e66474d8ca86292f4acc1/src/accelerate/state.py#L730)
   - [The CUDA/ROCm device is set based on the local process index](https://github.com/huggingface/accelerate/blob/4ba436eccc1f6437503e66474d8ca86292f4acc1/src/accelerate/state.py#L784) which is [based on `LOCAL_RANK`](https://github.com/huggingface/accelerate/blob/4ba436eccc1f6437503e66474d8ca86292f4acc1/src/accelerate/state.py#L278) set by [torchrun](https://pytorch.org/docs/stable/elastic/run.html#environment-variables)
 - Within `accelerate launch`:
@@ -68,17 +68,17 @@ Launching the training using the above approach, the following automagically hap
   - Sets the [torchrun environment variables](https://pytorch.org/docs/stable/elastic/run.html#environment-variables) somewhere in the torch code base...
   - [Launches the training processes using torch elastic](https://github.com/pytorch/pytorch/blob/6c503f1dbbf9ef1bf99f19f0048c287f419df600/torch/distributed/run.py#L891)
 
-And possibly also a lot of other things as well depending on the launch and `transformer.Trainer` configuration, you use...
+and possibly also a lot of other things as well depending on the launch and `transformer.Trainer` configuration, you use...
 
 ## Launching using torchrun instead of accelerate
 
-Launching a `trainsformers.Trainer` training using `torchrun` instead of `accelerate` only requires calling `torchrun` instead of `accelerate launch` with all `accelerate` configurations converted to the corresponding `torchrun` arguments.
+Launching a `transformers.Trainer` training using `torchrun` instead of `accelerate` only requires calling `torchrun` instead of `accelerate launch` with all `accelerate` configurations converted to the corresponding `torchrun` arguments.
 
 **This is probably the easiest way to launch your `transformers.Trainer` training on LUMI.**
 
 ## Launching using Python directly instead of torchrun/accelerate
 
-Launching a `trainsformers.Trainer` training using `python` directly requires a bit more work, as you need to manually:
+Launching a `transformers.Trainer` training using `python` directly requires a bit more work, as you need to manually:
 
 - Launch all processes (one for each GPU) using SLURM.
 - Set the `RANK` `LOCAL_RANK`, and `WORLD_SIZE`, environment variables for each process such that the `Accelerator` sets up the PyTorch process group correctly.

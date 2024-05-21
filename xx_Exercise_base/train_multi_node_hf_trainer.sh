@@ -7,7 +7,7 @@
 #SBATCH --mem=480G
 #SBATCH --output="output_%x_%j.txt"
 #SBATCH --partition=standard-g
-#SBATCH --time=00:30:00
+#SBATCH --time=00:45:00
 #SBATCH --account=project_465001063
 
 # Load custom modules that are not (yet) part of the central LUMI stack (singularity-userfilesystems)

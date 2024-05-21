@@ -1,7 +1,6 @@
 import argparse
 from functools import partial
 import math
-import multiprocessing
 from pathlib import Path
 from pprint import pprint
 import os
@@ -55,7 +54,7 @@ def main():
     args = parser.parse_args()
 
     # Setup distributed environment
-    multiprocessing.set_start_method(
+    torch.multiprocessing.set_start_method(
         # Workaround "fork" not being safe with Slingshot 11 when using multiple
         # PyTorch DataLoader workers
         "spawn"
