@@ -11,19 +11,21 @@
         - Use the built-in file explorer, or
         - Use a login node shell.
    3. Clone the exercise repository to your scratch folder `/scratch/project_465001063/<username>`. You can either
-        - Clone directly from github using a login node shell, or
-        - Copy the `/scratch/project_465001063/Getting_Started_with_AI_workshop` via a login node shell or the build-in file explorer.
+        - use a login node shell, or
+        - start a Jupyter lab job and use the Jupyter lab UI for cloning Git repositories (check [this blog post](https://blog.reviewnb.com/jupyterlab-git-extension/) for a visual guide for how it works). See point 2.1 below for instructions on how to start the job from the LUMI web interface.
    4. Get familiar with the exercise repository layout.
 
-2. Start a an interactive Jupyter notebook job and run inference with GPT-neo.
+2. Start a an interactive Jupyter lab job and run inference with GPT-neo.
 
-    In this exercise you will learn how to reserve resources for and start an interactive job via the LUMI web interface via starting a Jupyter notebook. The notebook itself introduces you to our running example of finetuning a language model using PyTorch and the training libraries provided by Huggingface. In this exercise you will not do any training, but familiarise yourself a bit with the software and the base model.
+    In this exercise you will learn how to reserve resources for and start an interactive job to run a Jupyter notebook via the LUMI web interface. The notebook itself introduces you to our running example of finetuning a language model using PyTorch and the training libraries provided by Huggingface. In this exercise you will not do any training, but familiarise yourself a bit with the software and the base model.
 
     1. Start an interactive Jupyter session: Open the Jupyter app in the LUMI webinterface and set the following settings before pressing `Launch`
         - Project: `project_465001063`
+        - Reservation: Use the course reservation (there should only be one option)
         - Partition: `dev-g` or `small-g`
         - Number of CPU cores: `7`
         - Memory (GB): `8`
+        - Time: `0:30:00`
         - Working directory: `/scratch/project_465001063/`
         - Python: `pytorch (Via CSC stack, limited support available)`
         - Virtual environment path: leave empty

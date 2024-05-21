@@ -45,6 +45,7 @@
     - number of CPUs requested
     - RAM requested (you can use `0` to reserve all memory on the node)
     - requested runtime
+    - the course reservation
 
    It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 

@@ -8,6 +8,7 @@
 #SBATCH --time=0:15:00
 
 # Set up the software environment
+# NOTE: these modules will be available from the LUMI system stack after July 2024 and the "module use" line will no longer work
 module purge
 module use /project/project_465001063/modules
 module load singularity-userfilesystems singularity-CPEbits

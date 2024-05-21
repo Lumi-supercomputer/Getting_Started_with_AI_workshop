@@ -33,11 +33,22 @@
     - number of GPUs requested (1)
     - RAM requested
     - requested runtime (recommended: 15 minutes, for sub-exercise 4 below)
+    - the course reservation
   
     It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 
     The Python command needs to be run in a singularity container with the required software packages installed. The slurm batch file sets up a variable `CONTAINER`
     with the container you should use.
+    
+    For the Python script itself you will need to provide the following command line arguments:
+    - `--output_path` (for the trained model and checkpoints)
+    - `--logging_path` (for tensorboard logging data)
+    - `--num_workers`
+  
+    Please set the paths to some destination of your choice within your `/scratch/project_465001063/<username>` directory.
+  
+    > [!TIP]
+    > Slurm sets the environment variable `SLURM_CPUS_PER_TASK` to the value of allocated CPU cores per task.
     
     **Task**: Start the training using `sbatch run.sh` from a login node shell (LUMI web interface or SSH).
 
