@@ -20,8 +20,14 @@ import time
 
 from pprint import pprint
 from datasets import load_dataset
-from transformers import (AutoTokenizer, AutoModelForCausalLM,
-                          TrainingArguments, Trainer, DataCollatorForLanguageModeling)
+from transformers import (
+    AutoTokenizer,
+    AutoModelForCausalLM,
+    TrainingArguments,
+    Trainer,
+    DataCollatorForLanguageModeling,
+)
+
 
 def set_cpu_affinity(local_rank):
     LUMI_GPU_CPU_map = {
@@ -43,17 +49,40 @@ def set_cpu_affinity(local_rank):
     psutil.Process().cpu_affinity(cpu_list)
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # First we set up some command line arguments to allow us to specify data/output paths
     # and the number of worker processes without changing the code.
     parser = argparse.ArgumentParser()
-    parser.add_argument("--model-name", type=str, default="gpt-imdb-model", help="A name for the trained model under. A subdirectory with the given name will be created under the `output-path`.")
-    parser.add_argument("--output-path", type=str, help="The root directory under which model checkpoints are stored.")
-    parser.add_argument("--logging-path", type=str, help="The root directory under which logging data (for tensorboard) are stored.")
-    parser.add_argument("--num-workers", type=int, default=1, help="The number of CPU worker processes to use.")
-    parser.add_argument("--set-cpu-binds", type=bool, default=False, action="store_true", help="A list of bitmasks (represented as an integer) of the CPUs to which to bind each local process rank. Optional, but if set must provide a mask for each local rank.")
+    parser.add_argument(
+        "--model-name",
+        type=str,
+        default="gpt-imdb-model",
+        help="A name for the trained model under. A subdirectory with the given name will be created under the `output-path`.",
+    )
+    parser.add_argument(
+        "--output-path",
+        type=str,
+        help="The root directory under which model checkpoints are stored.",
+    )
+    parser.add_argument(
+        "--logging-path",
+        type=str,
+        help="The root directory under which logging data (for tensorboard) are stored.",
+    )
+    parser.add_argument(
+        "--num-workers",
+        type=int,
+        default=1,
+        help="The number of CPU worker processes to use.",
+    )
+    parser.add_argument(
+        "--set-cpu-binds",
+        type=bool,
+        default=False,
+        action="store_true",
+        help="A list of bitmasks (represented as an integer) of the CPUs to which to bind each local process rank. Optional, but if set must provide a mask for each local rank.",
+    )
     args, _ = parser.parse_known_args()
 
     # Read the environment variables provided by torchrun
@@ -67,20 +96,25 @@ if __name__ == '__main__':
         set_cpu_affinity(local_rank)
 
     # Then we determine the device on which to train the model.
-    print('Using PyTorch version:', torch.__version__)
+    print("Using PyTorch version:", torch.__version__)
     if torch.cuda.is_available():
-        print(f"Rank {rank} of {world_size} (local: {local_rank}) sees {torch.cuda.device_count()} devices")
-        print('Using GPU, device name:', torch.cuda.get_device_name(local_rank))
-        device = torch.device('cuda', local_rank)
+        print(
+            f"Rank {rank} of {world_size} (local: {local_rank}) sees {torch.cuda.device_count()} devices"
+        )
+        device = torch.device("cuda", local_rank)
+        print("Using GPU, device name:", torch.cuda.get_device_name(device))
     else:
-        print('No GPU found, using CPU instead.')
-        device = torch.device('cpu')
+        print("No GPU found, using CPU instead.")
+        device = torch.device("cpu")
 
     # We also ensure that output paths exist
-    output_dir = os.path.join(args.output_path, args.model_name)  # this is where trained model and checkpoints will go
+
+    # this is where trained model and checkpoints will go
+    output_dir = os.path.join(args.output_path, args.model_name)
     os.makedirs(output_dir, exist_ok=True)
 
-    logging_dir = os.path.join(args.logging_path, args.model_name)  # this is where tensorboard logging outputs will go
+    # this is where tensorboard logging outputs will go
+    logging_dir = os.path.join(args.logging_path, args.model_name)
     os.makedirs(logging_dir, exist_ok=True)
 
     # #### Loading the IMDb data set
@@ -91,12 +125,16 @@ if __name__ == '__main__':
     # Database, split into 25,000 reviews for training and 25,000 reviews
     # for testing and 50,000 without labels (unsupervised) that we also use for training.
 
-    train_dataset = load_dataset("imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True)
-    eval_dataset = load_dataset("imdb", split="test", trust_remote_code=False, keep_in_memory=True)
+    train_dataset = load_dataset(
+        "imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True
+    )
+    eval_dataset = load_dataset(
+        "imdb", split="test", trust_remote_code=False, keep_in_memory=True
+    )
 
     # Let's print one sample from the dataset.
     if rank == 0:
-        print('Sample from dataset')
+        print("Sample from dataset")
         for b in train_dataset:
             pprint(b)
             break
@@ -137,13 +175,14 @@ if __name__ == '__main__':
         learning_rate=2e-5,
         weight_decay=0.01,
         bf16=True,  # use 16-bit floating point precision
-        per_device_train_batch_size=train_batch_size // world_size,  # divide the total training batch size by the number of GCDs for the per-device batch size
+        # divide the total training batch size by the number of GCDs for the per-device batch size
+        per_device_train_batch_size=train_batch_size // world_size,
         per_device_eval_batch_size=eval_batch_size,
         max_steps=1000,
-        dataloader_num_workers=args.num_workers, # NOTE: setting this causes a crash with LUST EasyBuild PyTorch on multinode. For that software, comment this (but then set num_procs for the data mappings below)
+        dataloader_num_workers=args.num_workers,  # NOTE: setting this causes a crash with LUST EasyBuild PyTorch on multinode. For that software, comment this (but then set num_procs for the data mappings below)
         dataloader_pin_memory=True,
-        report_to=["tensorboard"], # log statistics for tensorboard
-        ddp_find_unused_parameters=False, # there are no unused parameters, causing PyTorch to issue a warning should this be set to True
+        report_to=["tensorboard"],  # log statistics for tensorboard
+        ddp_find_unused_parameters=False,  # there are no unused parameters, causing PyTorch to issue a warning should this be set to True
     )
 
     # #### Setting up preprocessing of training data
@@ -157,49 +196,63 @@ if __name__ == '__main__':
     # text at the end of each review. We also truncate reviews to a maximum
     # length to avoid excessively long sequences during training.
     # As we have no use for the label, we discard it.
-    max_length=256
+    max_length = 256
+
     def tokenize(x):
-        texts = [example + tokenizer.eos_token for example in x['text']]
-        return tokenizer(texts, max_length=max_length, truncation=True, add_special_tokens=True, return_overflowing_tokens=True, return_length=False)
+        texts = [example + tokenizer.eos_token for example in x["text"]]
+        return tokenizer(
+            texts,
+            max_length=max_length,
+            truncation=True,
+            add_special_tokens=True,
+            return_overflowing_tokens=True,
+            return_length=False,
+        )
 
-    train_dataset_tok = train_dataset.map(tokenize,
-                                        remove_columns=['text', 'label'],
-                                        batched=True,
-                                        batch_size=training_args.train_batch_size,
-                                        num_proc=training_args.dataloader_num_workers)
+    train_dataset_tok = train_dataset.map(
+        tokenize,
+        remove_columns=["text", "label"],
+        batched=True,
+        batch_size=training_args.train_batch_size,
+        num_proc=training_args.dataloader_num_workers,
+    )
 
-    eval_dataset_tok = eval_dataset.map(tokenize,
-                                        remove_columns=['text', 'label'],
-                                        batched=True,
-                                        num_proc=training_args.dataloader_num_workers)
-
+    eval_dataset_tok = eval_dataset.map(
+        tokenize,
+        remove_columns=["text", "label"],
+        batched=True,
+        num_proc=training_args.dataloader_num_workers,
+    )
 
     # We split a small amount of training data as "validation" test set to keep track of evaluation
     # of the loss on non-training data during training.
     # This is purely because computing the loss on the full evaluation dataset takes much longer.
-    train_validate_splits = train_dataset_tok.train_test_split(test_size=1000, seed=42, keep_in_memory=True)
-    train_dataset_tok = train_validate_splits['train']
-    validate_dataset_tok = train_validate_splits['test']
+    train_validate_splits = train_dataset_tok.train_test_split(
+        test_size=1000, seed=42, keep_in_memory=True
+    )
+    train_dataset_tok = train_validate_splits["train"]
+    validate_dataset_tok = train_validate_splits["test"]
 
     # Sanity check: How does the training data look like after preprocessing?
     if rank == 0:
-        print('Sample of tokenized data')
+        print("Sample of tokenized data")
         for b in train_dataset_tok:
             pprint(b, compact=True)
-            print('Length of input_ids:', len(b['input_ids']))
+            print("Length of input_ids:", len(b["input_ids"]))
             break
-        print('Length of dataset (tokenized)', len(train_dataset_tok))
-
+        print("Length of dataset (tokenized)", len(train_dataset_tok))
 
     # #### Training
     # We use the Hugging Face trainer instead of a manual training loop.
-    # 
+    #
     # You can read about the many, many different parameters to the
     # Hugging Face trainer here:
     # https://huggingface.co/docs/transformers/v4.37.0/en/main_classes/trainer#transformers.TrainingArguments
     #
 
-    collator = DataCollatorForLanguageModeling(tokenizer, mlm=False, return_tensors='pt')
+    collator = DataCollatorForLanguageModeling(
+        tokenizer, mlm=False, return_tensors="pt"
+    )
 
     trainer = Trainer(
         model=model,
@@ -224,16 +277,22 @@ if __name__ == '__main__':
         test_results = trainer.evaluate(eval_dataset_tok)
 
         if rank == 0:
-            print(f'Perplexity on validation: {math.exp(eval_results["eval_loss"]):.2f}')
+            print(
+                f'Perplexity on validation: {math.exp(eval_results["eval_loss"]):.2f}'
+            )
             print(f'Perplexity on test: {math.exp(test_results["eval_loss"]):.2f}')
 
             # Let's print a few sample generated reviews; this is the same as in the previous exercise
             # but now we use the finetuned model
-            prompt = "The movie 'How to run ML on LUMI - A documentation' was great because"
-            inputs = tokenizer(prompt, return_tensors='pt').to(device)
-            outputs = model.generate(**inputs, do_sample=True, max_length=80, num_return_sequences=4)
+            prompt = (
+                "The movie 'How to run ML on LUMI - A documentation' was great because"
+            )
+            inputs = tokenizer(prompt, return_tensors="pt").to(device)
+            outputs = model.generate(
+                **inputs, do_sample=True, max_length=80, num_return_sequences=4
+            )
             decoded_outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
-            print('Sample generated review:')
+            print("Sample generated review:")
             for txt in decoded_outputs:
-                print('-', txt)
+                print("-", txt)
