@@ -36,7 +36,7 @@ export MODEL_NAME=gpt-imdb-model-${SLURM_JOBID}
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
 # For multi-node runs we need to specify torchrun rendezvous address
-export RDZV_ADDR=$(scontrol show hostname ${SLURM_NODELIST} | head -n 1)
+export RDZV_ADDR=$(hostname)
 export RDZV_PORT=25900
 
 # Since we start only one task with slurm which then starts subprocesses, we cannot use slurm to configure CPU binds.

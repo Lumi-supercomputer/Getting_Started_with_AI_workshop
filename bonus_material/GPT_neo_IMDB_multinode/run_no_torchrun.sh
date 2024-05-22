@@ -36,7 +36,7 @@ export MODEL_NAME=gpt-imdb-model-${SLURM_JOBID}
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
 # Set up variables to control distributed PyTorch training
-export MASTER_ADDR=$(scontrol show hostname ${SLURM_NODELIST} | head -n 1)
+export MASTER_ADDR=$(hostname)
 export MASTER_PORT=25900
 export WORLD_SIZE=$SLURM_NPROCS
 export LOCAL_WORLD_SIZE=$WORLD_SIZE

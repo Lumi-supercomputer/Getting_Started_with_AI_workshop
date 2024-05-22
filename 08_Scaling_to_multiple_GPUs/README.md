@@ -43,7 +43,7 @@
     - the correct slurm partition
     - number of GPUs requested (8)
     - number of CPUs requested
-    - RAM requested (you can use `0` to reserve all memory on the node)
+    - RAM requested (we recommend using 60GB per requested GPU to leave some room for the OS overhead)
     - requested runtime
     - the course reservation
 
@@ -77,7 +77,7 @@
    >
    > You can get the hostname of the node running the rank 0 process using the command
    > ```
-   > scontrol show hostname ${SLURM_NODELIST} | head -n 1
+   > hostname
    > ```
 
    In this setting you could then also do the CPU bindings from the slurm batch file instead of Python, to keep the training script free of system specific setup.
