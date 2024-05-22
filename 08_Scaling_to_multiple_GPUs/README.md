@@ -13,6 +13,8 @@
 ## Hands-on exercises
 
 1. Adjust the training script to run with torchrun for multiple GCDs on a single node.
+
+   In this exercise you have to make some changes to the Python training script to make it ready for running on multiple GPUs.
    
    Find the training script in [08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py](08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py). It is the same as the one used earlier for training with a single GCD/GPU.
 
@@ -28,56 +30,64 @@
 
    However, we are using the HuggingFace Trainer which will automatically take care of setting up data-parallel training for the model if it detects the environment variables set by torchrun, so we do not need to handle that manually.
 
-   **Task**: You will need to make the following changes to the script:
-   - select the correct PyTorch device
-   - adjust the per-device batch size handled per process
-   - limit printing of outputs to a single process
+   1. You will need to make the following changes to the script:
+   
+      - select the correct PyTorch device
+      - adjust the per-device batch size handled per process
+      - limit printing of outputs to a single process
   
-   Places where you need to edit the file have been marked with `<!!! ACTION REQUIRED ... !!!>`.
+      Places where you need to edit the file have been marked with `<!!! ACTION REQUIRED ... !!!>`.
   
 2. Adjust the slurm batch file.
 
-   **Task**: Edit the slurm batch file [08_Scaling_to_multiple_GPUs/run.sh](08_Scaling_to_multiple_GPUs/run.sh) for single-node multi-gpu training using torchrun.
+   Now you need to change the slurm batch file to request multiple GCDs (GPUs) on a single node and use `torchrun` to start a training job that
+   parallelises training across the GCDs.
 
-   You should specify at least the following:
-    - the correct slurm partition
-    - number of GPUs requested (8)
-    - number of CPUs requested
-    - RAM requested (we recommend using 60GB per requested GPU to leave some room for the OS overhead)
-    - requested runtime
-    - the course reservation
+   1. Edit the slurm batch file [08_Scaling_to_multiple_GPUs/run.sh](08_Scaling_to_multiple_GPUs/run.sh) for single-node multi-gpu training using torchrun.
 
-   It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
+      You should specify at least the following:
+      - the correct slurm partition
+      - number of GPUs requested (8)
+      - number of CPUs requested
+      - RAM requested (we recommend using 60GB per requested GPU to leave some room for the OS overhead)
+      - requested runtime
+      - the course reservation
 
-   You will also need to add the relevant parts for setting up the PyTorch software environment (these are the same as for Exercise `03_Your_first_AI_training_job_on_LUMI`).
+      It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 
-   To invoke torchrun from the batch file, follow the [Single-node multi-worker usage example on the torchrun website](https://pytorch.org/docs/stable/elastic/run.html#single-node-multi-worker).
+      You will also need to add the relevant parts for setting up the PyTorch software environment (these are the same as for Exercise `03_Your_first_AI_training_job_on_LUMI`).
 
-   **Task**: Run your job using `sbatch run.sh`.
+      To invoke torchrun from the batch file, follow the [Single-node multi-worker usage example on the torchrun website](https://pytorch.org/docs/stable/elastic/run.html#single-node-multi-worker).
 
-   **Task**: Compare how the run time differs between running on a full node and the previous run on a single GCD.
+   2. Run your job using `sbatch run.sh`.
+
+   3. Compare how the run time differs between running on a full node and the previous run on a single GCD.
+      
+      You don't necessarily need to wait for the run to finish but can compare the estimated total time given by the progress bar.
 
 3. Set up CPU bindings.
 
    In order to achieve optimal CPU-GPU data transfer performance we need to ensure that each script remains on the CPU cores closest to the respective GPU.
    As we are using torchrun to manage the worker processes, we cannot handle these CPU bindings via slurm but must set them up in our Python training script.
 
-   **Task**: Edit [08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py](08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py) to set up the correct CPU-GPU bindings based on the processes rank.
+   1. Edit [08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py](08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py) to set up the correct CPU-GPU bindings based on the processes rank.
+
+      You can find a [figure showing which cores are closest to which GCD](https://docs.lumi-supercomputer.eu/assets/images/lumig-cpu-gpu-links.svg) on https://docs.lumi-supercomputer.eu/hardware/lumig/.
 
 4. (Optional/Bonus): Running without PyTorch.
 
    We can also start worker processes directly without using torchrun to have direct control over all processes.
    
-   **Task**: Change the slurm batch script to
-   - instruct slurm to start the appropriate number of processes,
-   - set the environment variables mentioned above manually,
-   - replace the `torchrun` invocation with direct `python` commands to run the training script.
-   
-   > **Note**
-   >
-   > You can get the hostname of the node running the rank 0 process using the command
-   > ```
-   > hostname
-   > ```
+   1. Change the slurm batch script to
+      - instruct slurm to start the appropriate number of processes,
+      - set the environment variables mentioned above manually,
+      - replace the `torchrun` invocation with direct `python` commands to run the training script.
+      
+      > **Note**
+      >
+      > You can get the hostname of the node running the rank 0 process using the command
+      > ```
+      > hostname
+      > ```
 
    In this setting you could then also do the CPU bindings from the slurm batch file instead of Python, to keep the training script free of system specific setup.
