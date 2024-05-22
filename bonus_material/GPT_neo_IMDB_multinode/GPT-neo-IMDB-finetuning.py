@@ -10,23 +10,18 @@
 # https://github.com/omidiu/GPT-2-Fine-Tuning/
 
 
-# #### Prelude / Setup
-import torch
-import os
-import psutil
-import math
 import argparse
+import math
+import os
 import time
-
 from pprint import pprint
+
+import psutil
+import torch
 from datasets import load_dataset
-from transformers import (
-    AutoTokenizer,
-    AutoModelForCausalLM,
-    TrainingArguments,
-    Trainer,
-    DataCollatorForLanguageModeling,
-)
+from transformers import (AutoModelForCausalLM, AutoTokenizer,
+                          DataCollatorForLanguageModeling, Trainer,
+                          TrainingArguments)
 
 
 def set_cpu_affinity(local_rank):
