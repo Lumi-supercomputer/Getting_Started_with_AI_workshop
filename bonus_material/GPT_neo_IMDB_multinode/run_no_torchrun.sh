@@ -35,6 +35,9 @@ export MODEL_NAME=gpt-imdb-model-${SLURM_JOBID}
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
+# Ensure that RCCL uses the high-speed interconnect instead of something slow like TCP
+export NCCL_SOCKET_IFNAME=hsn
+
 # Set up variables to control distributed PyTorch training
 export MASTER_ADDR=$(hostname)
 export MASTER_PORT=25900

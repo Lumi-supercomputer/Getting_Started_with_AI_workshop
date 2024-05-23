@@ -35,6 +35,9 @@ export MODEL_NAME=gpt-imdb-model-${SLURM_JOBID}
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
+# Ensure that RCCL uses the high-speed interconnect instead of something slow like TCP
+export NCCL_SOCKET_IFNAME=hsn
+
 # For multi-node runs we need to specify torchrun rendezvous address
 export RDZV_ADDR=$(hostname)
 export RDZV_PORT=25900
