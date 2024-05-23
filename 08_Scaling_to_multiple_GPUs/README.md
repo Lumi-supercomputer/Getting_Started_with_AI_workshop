@@ -51,7 +51,7 @@
       - number of CPUs requested
       - RAM requested (we recommend using 60GB per requested GPU to leave some room for the OS overhead)
       - requested runtime
-      - the course reservation
+      - the course reservation: `AI_workshop_2`
 
       It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 

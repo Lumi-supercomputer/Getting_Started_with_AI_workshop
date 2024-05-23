@@ -21,7 +21,7 @@
 
     1. Start an interactive Jupyter session: Open the Jupyter app in the LUMI webinterface and set the following settings before pressing `Launch`
         - Project: `project_465001063`
-        - Reservation: Use the course reservation (there should only be one option)
+        - Reservation: Use the course reservation `AI_workshop` (there should only be one option)
         - Partition: `small-g`
         - Number of CPU cores: `7`
         - Memory (GB): `8`

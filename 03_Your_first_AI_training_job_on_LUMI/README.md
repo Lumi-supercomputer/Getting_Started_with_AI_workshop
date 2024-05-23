@@ -34,7 +34,7 @@
         - number of GPUs requested (1)
         - RAM requested
         - requested runtime (recommended: 15 minutes, for sub-exercise 4 below)
-        - the course reservation
+        - the course reservation: `AI_workshop`
   
         It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 

@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --account=project_465001063
+#SBATCH --reservation=AI_workshop_2
 #SBATCH --partition=standard-g
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=8
