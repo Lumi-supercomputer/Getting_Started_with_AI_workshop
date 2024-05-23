@@ -1,7 +1,7 @@
 #!/bin/sh
 
 module purge
-module use /project/project_465001063/modules
+module use /appl/local/training/modules/AI-20240529/
 module load LUMI/23
 module load cotainr
 
