@@ -115,8 +115,11 @@ Type "help", "copyright", "credits" or "license" for more information.
 ```
 
 > [!NOTE]
-> We don't need to activate the conda environment in the container as this is done automatically. Also note that even though we pin the versions of the added packages, their dependencies are not pinned and may change if building the container again at a later point in time. To be able to build a new container with the exact same set of all packages (including dependencies), you need to use the output of `conda env export` (in the container) as the conda environment file provided to cotainr (or specify all dependencies manually). The output of `conda env export` in the container looks something like:
-> 
+> We don't need to activate the conda environment in the container as this is done automatically.
+
+> [!NOTE]
+> Even though we pin the versions of the added packages, their dependencies are not pinned and may change if building the container again at a later point in time. To be able to build a new container with the exact same set of all packages (including dependencies), you need to use the output of `conda env export` (in the container) as the conda environment file provided to cotainr (or specify all dependencies manually). The output of `conda env export` in the container looks something like:
+>
 > ```bash
 > Singularity> conda env export
 > name: conda_container_env
