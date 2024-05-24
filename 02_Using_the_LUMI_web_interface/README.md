@@ -5,7 +5,7 @@
 1. Get started with the LUMI web interface and set up your own copy of the exercises.
 
     In this exercise you will gain first experience with using the LUMI web interface to navigate files and directories on the LUMI supercomputer. You will also set up your own copy of the exercise repository on the system, so that you can work on them without interfering with the other course participants.
-   
+
    1. Log in to the LUMI web interface: https://www.lumi.csc.fi
    2. Create your own scratch subdirectory in `/scratch/project_465001063/`. Use your username for the directory name. You can either
         - Use the built-in file explorer, or
@@ -30,7 +30,7 @@
         - Python: `pytorch (Via CSC stack, limited support available)`
         - Virtual environment path: leave empty
     2. Wait for the session to start, then press `Connect to Jupyter`
-        
+
         > **Note**
         >
         > Jupyter will open in a new tab. Note that your interactive job will not stop if you close the tab, so you can always reconnect to Jupyter via the `My Interactive Session` page of the LUMI web interface. You also have to explicitly `Cancel` the running job from there in order to stop Jupyter when you are done - otherwise your job will continue to consume the allocated resources until the time limit you gave is reached.
@@ -39,4 +39,3 @@
         - explore the effect of adjusting the parameters for the `tokenizer` and `model.generate` calls
         - try different input prompts
         - explore the contents of the training data set
-

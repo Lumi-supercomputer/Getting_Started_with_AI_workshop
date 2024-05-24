@@ -15,7 +15,7 @@
 1. Adjust the training script to run with torchrun for multiple GCDs on a single node.
 
    In this exercise you have to make some changes to the Python training script to make it ready for running on multiple GPUs.
-   
+
    Find the training script in [08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py](08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py). It is the same as the one used earlier for training with a single GCD/GPU.
 
    We will use [torchrun](https://pytorch.org/docs/stable/elastic/run.html) to run the training on all GCDs on a LUMI node. Torchrun creates and manages one process per GCD, each executing our training script, and provides the following environment variables to each process:
@@ -31,7 +31,7 @@
    However, we are using the HuggingFace Trainer which will automatically take care of setting up data-parallel training for the model if it detects the environment variables set by torchrun, so we do not need to handle that manually.
 
    1. You will need to make the following changes to the script:
-   
+
       - select the correct PyTorch device
       - adjust the per-device batch size handled per process
       - limit printing of outputs to a single process
@@ -43,7 +43,7 @@
    Now you need to change the slurm batch file to request multiple GCDs (GPUs) on a single node and use `torchrun` to start a training job that
    parallelises training across the GCDs.
 
-   1. Edit the slurm batch file [08_Scaling_to_multiple_GPUs/run.sh](08_Scaling_to_multiple_GPUs/run.sh) for single-node multi-gpu training using torchrun.
+   1. Edit the slurm batch file [08_Scaling_to_multiple_GPUs/run.sh](run.sh) for single-node multi-gpu training using torchrun.
 
       You should specify at least the following:
       - the correct slurm partition
@@ -62,7 +62,7 @@
    2. Run your job using `sbatch run.sh`.
 
    3. Compare how the run time differs between running on a full node and the previous run on a single GCD.
-      
+
       You don't necessarily need to wait for the run to finish but can compare the estimated total time given by the progress bar.
 
 3. Set up CPU bindings.
@@ -70,19 +70,19 @@
    In order to achieve optimal CPU-GPU data transfer performance we need to ensure that each script remains on the CPU cores closest to the respective GPU.
    As we are using torchrun to manage the worker processes, we cannot handle these CPU bindings via slurm but must set them up in our Python training script.
 
-   1. Edit [08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py](08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py) to set up the correct CPU-GPU bindings based on the processes rank.
+   1. Edit [08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py](GPT-neo-IMDB-finetuning.py) to set up the correct CPU-GPU bindings based on the processes rank.
 
-      You can find a [figure showing which cores are closest to which GCD](https://docs.lumi-supercomputer.eu/assets/images/lumig-cpu-gpu-links.svg) on https://docs.lumi-supercomputer.eu/hardware/lumig/.
+      You can find a [figure showing which cores are closest to which GCD](https://docs.lumi-supercomputer.eu/assets/images/lumig-cpu-gpu-links.svg) on the [LUMI Docs LUMI-G page](https://docs.lumi-supercomputer.eu/hardware/lumig/).
 
 4. (Optional/Bonus): Running without PyTorch.
 
    We can also start worker processes directly without using torchrun to have direct control over all processes.
-   
+
    1. Change the slurm batch script to
       - instruct slurm to start the appropriate number of processes,
       - set the environment variables mentioned above manually,
       - replace the `torchrun` invocation with direct `python` commands to run the training script.
-      
+
       > **Note**
       >
       > You can get the hostname of the node running the rank 0 process using the command
