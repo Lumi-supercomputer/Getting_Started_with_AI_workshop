@@ -1,0 +1,11 @@
+name: panopticapi
+channels:
+  - conda-forge
+dependencies:
+  - git=2.45.1
+  - numpy=1.26.4
+  - pillow=10.3.0
+  - pip=24.0
+  - python=3.9
+  - pip:
+    - git+https://github.com/cocodataset/panopticapi.git

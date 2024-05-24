@@ -54,6 +54,7 @@ if __name__ == "__main__":
     # Then we determine the device on which to train the model.
     print("Using PyTorch version:", torch.__version__)
     if torch.cuda.is_available():
+        # <!!! ACTION REQUIRED: ADJUST THIS SO THAT EACH PROCESS PICKS THE APPROPRIATE GPU !!!>
         device = torch.device("cuda")
         print("Using GPU, device name:", torch.cuda.get_device_name(device))
     else:
@@ -61,7 +62,7 @@ if __name__ == "__main__":
         device = torch.device("cpu")
 
     # We also ensure that output paths exist
-        
+
     # this is where trained model and checkpoints will go
     output_dir = os.path.join(args.output_path, args.model_name)
     os.makedirs(output_dir, exist_ok=True)
@@ -86,6 +87,7 @@ if __name__ == "__main__":
     )
 
     # Let's print one sample from the dataset.
+    # <!!! ACTION REQUIRED: ADJUST THIS SO THAT IT IS ONLY PRINTED BY ONE PROCESS !!!>
     print("Sample from dataset")
     for b in train_dataset:
         pprint(b)
@@ -111,6 +113,7 @@ if __name__ == "__main__":
     print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
 
     # #### Setting up the training configuration
+    # <!!! ACTION REQUIRED: ADJUST THIS SO THAT EACH PROCESS ONLY HANDLES A SHARE OF THE TOTAL BATCH SIZE !!!>
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
 
@@ -182,6 +185,7 @@ if __name__ == "__main__":
     validate_dataset_tok = train_validate_splits["test"]
 
     # Sanity check: How does the training data look like after preprocessing?
+    # <!!! ACTION REQUIRED: ADJUST THIS SO THAT IT IS ONLY PRINTED BY ONE PROCESS !!!>
     print("Sample of tokenized data")
     for b in train_dataset_tok:
         pprint(b, compact=True)
@@ -213,6 +217,7 @@ if __name__ == "__main__":
     # With 1000 steps, batch size 32 and a single GCD, this should take just under 30 minutes.
     trainer.train()
 
+    # <!!! ACTION REQUIRED: ADJUST ALL FOLLOWING SO THAT PRINTS AND PROMPT GENERATION IS ONLY PERFORMED BY A SINGLE PROCESS !!!>
     print()
     print("Training done, you can find all the model checkpoints in", output_dir)
 

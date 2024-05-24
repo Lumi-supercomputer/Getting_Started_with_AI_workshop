@@ -1,7 +1,12 @@
 #!/bin/bash
 #SBATCH --account=project_465001063
-#SBATCH --partition=...
-## <!!! ACTION REQUIRED: SPECIFY ADDITIONAL SLURM PARAMETERS HERE!!!>
+##SBATCH --reservation=AI_workshop   # uncomment this to use the reservation during day 1 of the course
+#SBATCH --partition=small-g
+#SBATCH --gpus-per-node=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=7
+#SBATCH --mem-per-gpu=60G
+#SBATCH --time=0:15:00
 
 # Set up the software environment
 # NOTE: these modules will be available from the LUMI system stack after July 2024 and the "module use" line will no longer be necessary
@@ -25,6 +30,13 @@ export TOKENIZERS_PARALLELISM=false
 # Path to where the trained model and logging data will go
 export OUTPUT_DIR=$SCRATCH/$USER/data/
 export LOGGING_DIR=$SCRATCH/$USER/runs/
-export MODEL_NAME=gpt-imdb-model-${SLURM_JOBID}
+export MODEL_NAME=gpt-imdb-model
 
-## <!!! ACTION REQUIRED: RUN THE TRAINING SCRIPT HERE !!!>
+set -xv # print the command so that we can verify setting arguments correctly from the logs
+srun singularity exec $CONTAINER \
+    python GPT-neo-IMDB-finetuning.py \
+        --model-name $MODEL_NAME \
+        --output-path $OUTPUT_DIR \
+        --logging-path $LOGGING_DIR \
+        --num-workers ${SLURM_CPUS_PER_TASK}\
+        --resume  # Comment this for the first run, uncomment to resume in later runs

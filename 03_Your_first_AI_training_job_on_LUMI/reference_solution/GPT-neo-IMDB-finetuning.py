@@ -49,6 +49,12 @@ if __name__ == "__main__":
         default=1,
         help="The number of CPU worker processes to use.",
     )
+    parser.add_argument(
+        "--resume",
+        default=False,
+        action="store_true",
+        help="If set, continue from a previously interrupted run. Otherwise, overwrite existing checkpoints.",
+    )
     args, _ = parser.parse_known_args()
 
     # Then we determine the device on which to train the model.
@@ -61,7 +67,7 @@ if __name__ == "__main__":
         device = torch.device("cpu")
 
     # We also ensure that output paths exist
-        
+
     # this is where trained model and checkpoints will go
     output_dir = os.path.join(args.output_path, args.model_name)
     os.makedirs(output_dir, exist_ok=True)
@@ -116,6 +122,7 @@ if __name__ == "__main__":
 
     training_args = TrainingArguments(
         output_dir=output_dir,
+        overwrite_output_dir=not args.resume,
         save_strategy="steps",
         save_steps=100,
         save_total_limit=4,
@@ -211,7 +218,7 @@ if __name__ == "__main__":
     )
 
     # With 1000 steps, batch size 32 and a single GCD, this should take just under 30 minutes.
-    trainer.train()
+    trainer.train(resume_from_checkpoint=args.resume)
 
     print()
     print("Training done, you can find all the model checkpoints in", output_dir)
