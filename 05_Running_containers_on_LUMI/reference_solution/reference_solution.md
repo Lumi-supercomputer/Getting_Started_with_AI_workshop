@@ -2,9 +2,12 @@
 
 ## Exercise 1
 
-> Run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch containers on:
-> * A LUMI login node
-> * A LUMI-G compute node
+> 1. Select one of the PyTorch containers found in /appl/local/containers/sif-images/ on LUMI.
+> 2. Run the `Hello_LUMI_GPU_World.py` Python script inside the container on:
+>    - A LUMI login node
+>    - A LUMI-G compute node
+
+For this exercise, we may use e.g. the lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif container found in /appl/local/containers/sif-images/.
 
 To run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch container, we must remember to:
 
@@ -40,13 +43,17 @@ Hello LUMI GPU World from nid005027
 ********************************************************************************
 ```
 
-Note that the number of GPUs/GCDs available to PyTorch is based on how many you request from SLURM. The default is 0!
+> [!IMPORTANT]
+> The number of GPUs/GCDs available to PyTorch is based on how many you request from SLURM. The default is 0!
 
-**Remember that it is a good idea to copy the `lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` container to your project folder and run it from there to enable you to reproduce your results. We may remove or replace `lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` at any point in time!**
+> [!NOTE]
+> It is a good idea to copy the `lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` container to your project folder and run it from there to enable you to reproduce your results. We may remove or replace `lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` at any point in time!
 
 ## Exercise 2
 
-> Pick a container from [Docker Hub](https://hub.docker.com/), e.g. [the official Alpine Docker image](https://hub.docker.com/_/alpine), and pull it to LUMI using Singularity. Make sure the Singularity cache is not filling up your home folder (hint: see https://docs.lumi-supercomputer.eu/software/containers/singularity/#pulling-container-images-from-a-registry)
+> 1. Pick a container from [Docker Hub](https://hub.docker.com/), e.g. [the official Alpine Docker image](https://hub.docker.com/_/alpine), and pull it to LUMI using Singularity.
+>     - Make sure the Singularity cache is not filling up your home folder (hint: see the [LUMI Docs  container page](https://docs.lumi-supercomputer.eu/software/containers/singularity/#pulling-container-images-from-a-registry))
+>     - Once Singularity has created the SIF file, you can use it like any other container on LUMI.
 
 To pull containers from Docker Hub without filling up our home folder with Singularity temp/cache files, we must remember to:
 
@@ -75,11 +82,13 @@ INFO:    Creating SIF file...
 
 which generates the `alpine_3.19.1.sif` container.
 
-**Remember that there is no automatic cleaning of `/tmp` on the LUMI login nodes. You have to delete the Singularity temp/cache files under `/tmp/$USER` yourself when you are done pull/building containers!**
+> [!IMPORTANT]
+> There is no automatic cleaning of `/tmp` on the LUMI login nodes. You have to delete the Singularity temp/cache files under `/tmp/$USER` yourself when you are done pull/building containers!
 
 ## Exercise 3
 
-> Open an interactive Python interpreter in the LUMI TensorFlow+Horovod container and (successfully) `import horovod.tensorflow`
+> 1. Open an interactive shell in the LUMI TensorFlow+Horovod container
+> 2. Open an interactive Python interpreter in the interactive container shell and (successfully) `import horovod.tensorflow`
 
 To successfully import Horovod+Tensorflow in the container, we must remember to:
 
@@ -103,7 +112,7 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 Remember that instead of manually specifying the bind mounts, you may load the `singulariy-CPE-bits` module:
 
 ```bash
-$ module use /project/project_465001063/modules
+$ module use /appl/local/training/modules/AI-20240529
 $ module load singularity-CPEbits
 $ singularity shell /appl/local/containers/sif-images/lumi-tensorflow-rocm-5.5.1-python-3.10-tensorflow-2.11.1-horovod-0.28.1.sif 
 Singularity> $WITH_CONDA
