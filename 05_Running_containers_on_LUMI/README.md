@@ -1,4 +1,4 @@
-# 05 Containers on LUMI
+# 05 Running containers on LUMI
 
 ## Examples
 

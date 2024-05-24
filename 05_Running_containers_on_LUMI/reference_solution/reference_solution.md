@@ -1,4 +1,4 @@
-# Suggested solutions to the hands-on exercises for 05 Running containers on LUMI
+# Reference solutions to the hands-on exercises for 05 Running containers on LUMI
 
 ## Exercise 1
 
