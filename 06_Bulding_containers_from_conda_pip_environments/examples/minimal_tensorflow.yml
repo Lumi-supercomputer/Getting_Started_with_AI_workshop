@@ -1,0 +1,26 @@
+name: minimal_tensorflow
+channels:
+  - conda-forge
+dependencies:
+  - astunparse=1.6.3
+  - cachetools=5.3.3
+  - gast=0.4.0
+  - google-pasta=0.2.0
+  - h5py=3.10.0
+  - jax=0.4.26
+  - keras=2.12.0
+  - numpy=1.23.5
+  - opt_einsum=3.3.0
+  - pip=24.0
+  - python=3.11.9
+  - scipy=1.13.0
+  - tensorboard=2.12.3
+  - termcolor=2.4.0
+  - typing_extensions=4.11.0
+  - wrapt=1.14.1
+  - pip:
+    - flatbuffers==24.3.25
+    - libclang==18.1.1
+    - tensorflow-estimator==2.12.0
+    - tensorflow-io-gcs-filesystem==0.37.0
+    - tensorflow-rocm==2.12.0.560
