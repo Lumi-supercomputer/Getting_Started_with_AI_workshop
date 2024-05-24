@@ -23,7 +23,7 @@
 
     Next you will prepare the slurm batch file that specifies the resources required for the training, sets up the software environment and, finally, executes the training script on a compute node in a singularity container environment.
 
-    In the same directory as the script you can find [03_Your_first_AI_training_job_on_LUMI/run.sh](03_Your_first_AI_training_job_on_LUMI/run.sh), an incomplete slurm batch job file.
+    In the same directory as the script you can find [03_Your_first_AI_training_job_on_LUMI/run.sh](run.sh), an incomplete slurm batch job file.
 
     1. Fill in the missing pieces (marked with `<!!! ACTION REQUIRED ... !!!>`).
 
