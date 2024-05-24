@@ -1,0 +1,11 @@
+name: python312_extra
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12.3
+  - pip=24.0
+  - python=3.12.3
+  - pandas=2.2.0
+  - scikit-learn=1.4.2
+  - pip:
+    - env-var==1.0.1
