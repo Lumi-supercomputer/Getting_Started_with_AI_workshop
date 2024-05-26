@@ -28,4 +28,8 @@ export MODEL_NAME=gpt-imdb-model
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
-## <!!! ACTION REQUIRED: RUN THE PYTHON SCRIPT HERE !!!>
+srun singularity exec $CONTAINER python GPT-neo-ray-tune.py \
+        --model-name $MODEL_NAME \
+        --output-path $OUTPUT_DIR \
+        --logging-path $LOGGING_DIR \
+        --num-workers ${SLURM_CPUS_PER_TASK}
