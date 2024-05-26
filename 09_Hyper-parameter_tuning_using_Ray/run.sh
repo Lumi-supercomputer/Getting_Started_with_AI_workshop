@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --account=project_465001063
 #SBATCH --partition=...
-## TODO: SPECIFY ADDITIONAL SLURM PARAMETERS HERE
+## <!!! ACTION REQUIRED: SPECIFY ADDITIONAL SLURM PARAMETERS HERE!!!>
 
 # Set up the software environment
 module purge
-module use /project/project_465001063/modules
+module use /appl/local/training/modules/AI-20240529
 module load singularity-userfilesystems singularity-CPEbits
 
 CONTAINER=/scratch/project_465001063/containers/pytorch_transformers.sif
@@ -28,4 +28,4 @@ export MODEL_NAME=gpt-imdb-model
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
-## TODO: RUN THE PYTHON SCRIPT HERE
+## <!!! ACTION REQUIRED: RUN THE PYTHON SCRIPT HERE !!!>
