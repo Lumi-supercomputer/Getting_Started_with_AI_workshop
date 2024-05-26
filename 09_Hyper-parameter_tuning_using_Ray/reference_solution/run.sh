@@ -11,7 +11,7 @@
 
 # Set up the software environment
 module purge
-module use /project/project_465001063/modules
+module use /appl/local/training/modules/AI-20240529
 module load singularity-userfilesystems singularity-CPEbits
 
 CONTAINER=/scratch/project_465001063/containers/pytorch_transformers.sif
