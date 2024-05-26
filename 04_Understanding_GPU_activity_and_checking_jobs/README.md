@@ -179,4 +179,4 @@ This will generate a few files named `results.*`. For example, `results.stats.cs
 ### 6. Visualizing a profile trace
 Other file that might be interesting to look at is `results.json`. This can be loaded into the web app `https://ui.perfetto.dev/` and will allow you to visualize the GPU execution. Here is a snapshot of the 10 steps executed:
 
-![image](https://hackmd.io/_uploads/HyYc6eC7R.png)
+![image](images/profile.png)

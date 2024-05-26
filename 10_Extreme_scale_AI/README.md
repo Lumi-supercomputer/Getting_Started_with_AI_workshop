@@ -235,10 +235,10 @@ srun -N2 -n16 --gpus 16 \
                --num-workers 7
 ```
 The resulting profile for the 32 steps would look like:
-![image](https://hackmd.io/_uploads/HJ9tMBAXC.png)
+![image](images/profile.png)
 
 Zooming in, we can see the RCCL activity. The moment these kernels dominate the profile we start to be network bound.
-![image](https://hackmd.io/_uploads/rJNX7HCQ0.png)
+![image](images/profile-detail.png)
 
 
 ## Computer vision hands-on exercises:
