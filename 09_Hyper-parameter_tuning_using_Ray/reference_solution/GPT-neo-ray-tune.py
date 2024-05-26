@@ -173,12 +173,40 @@ if __name__ == "__main__":
         "args": args,
     }
 
-    analysis = tune.run(
-        model_training,
-        resources_per_trial={"cpu": 7, "gpu": 1},  # set resources for every trial run
-        config=config,
-        num_samples=8,
-        metric="perplexity",
-        mode="min",
+    # analysis = tune.run(
+    #     model_training,
+    #     resources_per_trial={"cpu": 7, "gpu": 1},  # set resources for every trial run
+    #     config=config,
+    #     num_samples=8,
+    #     metric="perplexity",
+    #     mode="min",
+    # )
+    # Define the search algorithm (optional, for more advanced tuning)
+    search_alg = tune.search.BasicVariantGenerator()
+
+    # Define the scheduler (optional, for more advanced scheduling)
+    scheduler = tune.schedulers.FIFOScheduler()
+
+    # Create a Tuner object
+    tuner = Tuner(
+        tune.with_resources(
+            model_training, resources={"cpu": 7, "gpu": 1}  # Set resources for every trial run
+        ),
+        param_space=config,
+        tune_config=tune.TuneConfig(
+            num_samples=8,  # Number of samples
+            metric="perplexity",  # Metric to optimize
+            mode="min",  # Minimize the metric
+        ),
+        run_config=ray.tune.RunConfig(
+            name="tune_model_training",  # Name of the experiment
+            local_dir="./ray_results/",  # Directory to save training results
+            stop=None,  # Stopping criteria
+        ),
+        search_alg=search_alg,
+        scheduler=scheduler
     )
+
+    # Run the tuning process
+    results = tuner.fit()
     print("Best hyperparameters found were: ", analysis.best_config)
