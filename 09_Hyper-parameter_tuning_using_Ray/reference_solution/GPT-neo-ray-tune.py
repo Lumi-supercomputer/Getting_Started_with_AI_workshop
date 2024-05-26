@@ -67,7 +67,7 @@ def model_training(config):
         per_device_train_batch_size=train_batch_size,
         per_device_eval_batch_size=eval_batch_size,
         max_steps=100,  # reduced number of steps to keep runtime under 10 min
-        dataloader_num_workers=args.num_workers,  # NOTE: setting this causes a crash with LUST EasyBuild PyTorch on multinode. For that software, comment this (but then set num_procs for the data mappings below)
+        dataloader_num_workers=7,  # NOTE: setting this causes a crash with LUST EasyBuild PyTorch on multinode. For that software, comment this (but then set num_procs for the data mappings below)
         dataloader_pin_memory=True,
         report_to=["tensorboard"],
     )
@@ -173,24 +173,11 @@ if __name__ == "__main__":
         "args": args,
     }
 
-    # analysis = tune.run(
-    #     model_training,
-    #     resources_per_trial={"cpu": 7, "gpu": 1},  # set resources for every trial run
-    #     config=config,
-    #     num_samples=8,
-    #     metric="perplexity",
-    #     mode="min",
-    # )
-    # Define the search algorithm (optional, for more advanced tuning)
-    search_alg = tune.search.BasicVariantGenerator()
-
-    # Define the scheduler (optional, for more advanced scheduling)
-    scheduler = tune.schedulers.FIFOScheduler()
-
     # Create a Tuner object
-    tuner = Tuner(
+    tuner = tune.Tuner(
         tune.with_resources(
-            model_training, resources={"cpu": 7, "gpu": 1}  # Set resources for every trial run
+            model_training,
+            resources={"cpu": 7, "gpu": 1},  # Set resources for every trial run
         ),
         param_space=config,
         tune_config=tune.TuneConfig(
@@ -198,15 +185,11 @@ if __name__ == "__main__":
             metric="perplexity",  # Metric to optimize
             mode="min",  # Minimize the metric
         ),
-        run_config=ray.tune.RunConfig(
-            name="tune_model_training",  # Name of the experiment
-            local_dir="./ray_results/",  # Directory to save training results
-            stop=None,  # Stopping criteria
-        ),
-        search_alg=search_alg,
-        scheduler=scheduler
     )
 
     # Run the tuning process
     results = tuner.fit()
-    print("Best hyperparameters found were: ", analysis.best_config)
+
+    # Get the best hyperparameters
+    best_trial = results.get_best_result("perplexity", "min", "last")
+    print(f"Best trial config: {best_trial.config}")

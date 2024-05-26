@@ -67,7 +67,7 @@ def model_training(config):
         per_device_train_batch_size=train_batch_size,
         per_device_eval_batch_size=eval_batch_size,
         max_steps=100,  # reduced number of steps to keep runtime under 10 min
-        dataloader_num_workers=args.num_workers,  # NOTE: setting this causes a crash with LUST EasyBuild PyTorch on multinode. For that software, comment this (but then set num_procs for the data mappings below)
+        dataloader_num_workers=7,  # NOTE: setting this causes a crash with LUST EasyBuild PyTorch on multinode. For that software, comment this (but then set num_procs for the data mappings below)
         dataloader_pin_memory=True,
         report_to=["tensorboard"],
     )
@@ -163,22 +163,34 @@ if __name__ == "__main__":
     )
     args, _ = parser.parse_known_args()
 
-    # TODO: set up number of CPUs and GPUs correctly
-    ray.init(num_cpus=, num_gpus=, log_to_driver=False)
+    # We need to manually set the number of CPUs and GPUs. Othewise, ray tries to use the whole node and crashes.
+    ## <!!! ACTION REQUIRED: SET UP NUMBER OF CPUs AND GPUs CORRECTLY!!!>
+    ray.init(num_cpus= , num_gpus= , log_to_driver=False)
 
     config = {
-        #TODO define search space for learning_rate
+        ## <!!! ACTION REQUIRED: DEFINE SEARCH SPACE FOR learning_rate !!!>
         "learning_rate": ,
         "args": args,
     }
 
-    analysis = tune.run(
-        model_training,
-        # TODO: set up number of CPUs and GPUs correctly for trial runs
-        resources_per_trial={"cpu": , "gpu": },
-        config=config,
-        num_samples=8,
-        metric="perplexity",
-        mode="min",
+    # Create a Tuner object
+    tuner = tune.Tuner(
+        tune.with_resources(
+            model_training,
+            ## <!!! ACTION REQUIRED: SPECIFY CORRECT NUMBER OF CPUs AND GPUs FOR TRIAL RUNS!!!>
+            resources={"cpu": , "gpu": },  # Set resources for every trial run
+        ),
+        param_space=config,
+        tune_config=tune.TuneConfig(
+            num_samples=8,  # Number of samples
+            metric="perplexity",  # Metric to optimize
+            mode="min",  # Minimize the metric
+        ),
     )
-    print("Best hyperparameters found were: ", analysis.best_config)
+
+    # Run the tuning process
+    results = tuner.fit()
+
+    # Get the best hyperparameters
+    best_trial = results.get_best_result("perplexity", "min", "last")
+    print(f"Best trial config: {best_trial.config}")
