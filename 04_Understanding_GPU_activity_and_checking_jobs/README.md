@@ -93,9 +93,9 @@ GPU  Temp   AvgPwr  SCLK     MCLK     Fan  Perf    PwrCap  VRAM%  GPU%
 ================================================================================
 ============================= End of ROCm SMI Log ==============================
 ```
-As expected we only have activity on one GCD but the power metrics are per GPU. Note that these numbers needs to be interpreted. For example, if `GPU%` shows `100%` that doesn NOT necessarily mean the GPU is being well utilized. A better metric is drawn power `AvgPwr`: oscilating around `500.0W` is an indication there is significant compute activity on GPU.
+As expected we only have activity on one GCD but the power metrics are per GPU. Note that these numbers needs to be interpreted. For example, if `GPU%` shows `100%` that doesn NOT necessarily mean the GPU is being well utilized. A better metric is drawn power `AvgPwr`: oscilating around `500.0W` is an indication there is significant compute activity on the full GPU.
 
-Here we see drawn power to oscilate around `300.0W` which is an indication that we might not be compute bound.
+Here we see drawn power to oscilate around `300.0W` while a single GCD is being used, which is an indication that we might be compute bound.
 
 ### 4. Activate logging reporting GPU activity
 
