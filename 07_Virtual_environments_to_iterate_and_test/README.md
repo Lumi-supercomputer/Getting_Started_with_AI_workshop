@@ -22,7 +22,7 @@ singularity shell --bind /pfs,/scratch,/projappl,/project,/flash,/appl minimal_p
 ```
 Note that setting `--bind` is optional, you achieve the same by
 ```bash
-module use /project/project_465001063/modules
+module use /appl/local/training/modules/AI-20240529/
 module load singularity-userfilesystems
 singularity shell minimal_pytorch.sif
 ```
