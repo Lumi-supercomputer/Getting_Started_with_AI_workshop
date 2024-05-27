@@ -11,8 +11,21 @@ This container was extended with some components required by the examples, notor
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
-salloc -p small-g --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
+salloc -p small-g --account=project_465001063 --reservation=AI_workshop --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
 ```
+This is very similiar to what you have been doing with `sbatch` should you be using a run script with:
+```
+#SBATCH --account=project_465001063
+#SBATCH --reservation=AI_workshop
+#SBATCH --partition=small-g
+#SBATCH --gpus-per-node=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=7
+#SBATCH --mem-per-gpu=60G
+#SBATCH --time=0:30:00
+```
+The difference is that it gives you a mechanism to just allocate the nodes without running anything. You can then issue `srun` commands interactively which can be useful to experiment more easily. You are always welcome to transition to use `sbatch` if that is preferred.
+
 We'll also leverage the configuration for singularity provided by:
 ```
 module purge

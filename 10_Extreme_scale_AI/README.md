@@ -11,7 +11,7 @@ This container was extended with some components required by the examples, notor
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
- N=2 ; salloc -p standard-g  --threads-per-core 1 --exclusive -N $N --gpus $((N*8)) -t 1:00:00 --mem 0
+ N=2 ; salloc -p standard-g --account=project_465001063 --reservation=AI_workshop --threads-per-core 1 --exclusive -N $N --gpus $((N*8)) -t 1:00:00 --mem 0
 ```
 We'll also leverage the configuration for singularity provided by:
 ```
@@ -86,77 +86,9 @@ export MIOPEN_CUSTOM_CACHE_DIR=$MIOPEN_USER_DB_PATH
 
 We'll continue with our LLM example to explore our scaling oportunities. You might be interested in collating the different steps in a batch script or run interactively as presented. But first...
 
-### 1. Setting some wrapper scripts is a great idea!
+### 1. Setting some run scripts is a great idea!
 
-There are a lot of components to set and monitor the right environment for our training jobs as discussed above. Setup a wrapper script with all the relevant bits so that then you allow yourself to forget about it. Here's how to set one:
-
-```
-cat > wrapper.sh << EOF
-#!/bin/bash -e
-
-# Report affinity
-echo "Rank \$SLURM_PROCID --> \$(taskset -p \$\$)"
-
-# Report GPUs
-if [ \$SLURM_LOCALID -eq 0 ] ; then
-    rocm-smi
-else
-  sleep 2
-fi
-
-# Start conda environment inside the container
-\$WITH_CONDA
-
-# Setting the caches relevant to our application.
-export TORCH_HOME=/workdir/torch-cache
-export HF_HOME=/workdir/hf-cache
-export TOKENIZERS_PARALLELISM=false
-
-# Tell RCCL to use only Slingshot interfaces and GPU RDMA
-export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
-export NCCL_NET_GDR_LEVEL=PHB
-
-# Tell MIOpen where to store its cache
-export MIOPEN_USER_DB_PATH="/tmp/$(whoami)-miopen-cache-\$SLURM_NODEID"
-export MIOPEN_CUSTOM_CACHE_DIR=\$MIOPEN_USER_DB_PATH
-
-if [ \$SLURM_LOCALID -eq 0 ] ; then
-  rm -rf \$MIOPEN_USER_DB_PATH
-  mkdir -p \$MIOPEN_USER_DB_PATH    
-else
-  sleep 2
-fi
-
-# export NCCL_DEBUG=INFO 
-# export NCCL_DEBUG_SUBSYS=INIT,COLL
-# export NCCL_DEBUG_FILE=/tmp/$(whoami)-rccl-rank\$SLURM_PROCID.txt
-
-# Translate SLURM environment 
-
-export MASTER_PORT=25900
-export WORLD_SIZE=\$SLURM_NPROCS
-export LOCAL_WORLD_SIZE=8
-export RANK=\$SLURM_PROCID
-export LOCAL_RANK=\$SLURM_LOCALID
-
-set -x
-
-# Run application
-eval "\$@"
-
-EOF
-chmod +x wrapper.sh
-```
-
-Let's take a look on what is going on here from top to bottom:
-* We leverage the `taskset` tool to report the affinity of the current process. This allows us to verify we are getting the affinity we expect.
-* Then, we report the GPUs available using rocm-smi. This is a smoke test that the GPUs are up and running. We do this only for the first rank in a node - that rank will have `SLURM_LOCALID` set to `0`.
-* Then, we settup our conda environment as well as a fewother environment variables to control the Pytorch and HuggingFace caches for our application.
-* Then we configure RCCL to use the high-speed interfaces as well as GPU RDMA.
-* Next step is the MIOpen cache. We also have the first rank in each node creating the cache folder. Note that, this is not used by our LLM application as it doesn't use MIOpen kernels. However, it doesn't do any harm and we'll keep you covered for other models you might want to train.
-* Then, there are a few RCCL environment variables that you may chose to uncomment so as to get logging of the RCCL activity.
-* Next, we translate the SLURM environment to something that Pytorch distributed module understands.
-* Finally, the arguments of the wrapper scripts are expanded and executed.
+There are a lot of components to set and monitor the right environment for our training jobs as discussed above. Setup a run script with all the relevant bits so that then you allow yourself to forget about it. Can you do that? Let's call it `run.sh` and we have an example in `reference_solution` folder.
 
 ### 2. Scalling our LLM example.
 
@@ -182,7 +114,7 @@ srun -N1 -n8 --gpus 8 \
     singularity exec \
     -B .:/workdir \
     /scratch/project_465001063/containers/pytorch_transformers.sif \
-    /workdir/wrapper.sh \
+    /workdir/run.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
                --output-path /workdir/train-output \
@@ -197,7 +129,7 @@ srun -N2 -n16 --gpus 16 \
     singularity exec \
     -B .:/workdir \
     /scratch/project_465001063/containers/pytorch_transformers.sif \
-    /workdir/wrapper.sh \
+    /workdir/run.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
                --output-path /workdir/train-output \
@@ -209,7 +141,7 @@ srun -N2 -n16 --gpus 16 \
 
 We can monitor activity as before. However, if you want to use the profiler when multiple ranks are being run, it makes more sense to profile a few selected ones, otherwise will be too much overhead. Most AI training is balanced, so what we see in a rank can be extrapolated to others.
 
-To profile just a single rank you can create a copy of your wrapper script, let's call it `wrapper-profile.sh` and replace the last `eval` command with:
+To profile just a single rank you can create a copy of your run script, let's call it `run-profile.sh` and replace the last `eval` command with:
 ```
 pcmd=''
 if [ $RANK -eq 14 ] then
@@ -227,7 +159,7 @@ srun -N2 -n16 --gpus 16 \
     singularity exec \
     -B .:/workdir \
     /scratch/project_465001063/containers/pytorch_transformers.sif \
-    /workdir/wrapper-profile.sh \
+    /workdir/run-profile.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
                --output-path /workdir/train-output \
@@ -293,7 +225,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     singularity exec \
     -B .:/workdir \
     /scratch/project_465001063/containers/pytorch_transformers.sif \
-    /workdir/wrapper.sh \
+    /workdir/run.sh \
         python -u /workdir/cv_example.py \
           -a resnet50 \
           --batch-size $((8*512)) \
@@ -358,7 +290,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     singularity exec \
     -B .:/workdir \
     /appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif  \
-    /workdir/wrapper.sh \
+    /workdir/run.sh \
         python -u /workdir/cv_example_ds.py \
           --deepspeed \
           --deepspeed_config /workdir/ds_fp16_z1_config.json \
@@ -396,7 +328,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     singularity exec \
     -B .:/workdir \
     /scratch/project_465001063/containers/pytorch_transformers.sif \
-    /workdir/wrapper.sh \
+    /workdir/run.sh \
         python -u /workdir/cv_example.py \
           -a resnet50 \
           --batch-size $((8*512)) \
@@ -430,7 +362,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     singularity exec \
     -B .:/workdir \
     /pfs/lustrep4/scratch/project_465001063/containers/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2-rocal-0046624.sif \
-    /workdir/wrapper.sh \
+    /workdir/run.sh \
         python -u /workdir/cv_example_rocal.py \
           -a resnet50 \
           --batch-size $((8*512)) \
