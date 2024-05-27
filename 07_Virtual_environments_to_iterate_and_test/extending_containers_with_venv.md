@@ -42,7 +42,7 @@ pip install torchmetrics
 ```
 
 ## Run container with `venv` packages
-If we want to run the container with the packages in a batch script, we need to first source the `venv` before executing the python script:
+If we want to run the container with the freshly installed packages in a batch script, we need to first source the `venv` before executing the python script:
 ```bash
 singularity exec $CONTAINER bash -c "source myenv/bin/activate && python my_script.py"
 ```
