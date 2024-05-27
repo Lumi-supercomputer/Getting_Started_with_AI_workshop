@@ -41,6 +41,12 @@ After activating the virtual environment we can now install custom packages via 
 pip install torchmetrics
 ```
 
+## Run container with `venv` packages
+If we want to run the container with the packages in a batch script, we need to first source the `venv` before executing the python script:
+```bash
+singularity exec $CONTAINER bash -c "source myenv/bin/activate && python my_script.py"
+```
+
 ## Cleaning up
 After having found all packages needed for our project, we should create a new container with an updated `conda` environment file. The virtual environment should then be deleted
 ```bash
