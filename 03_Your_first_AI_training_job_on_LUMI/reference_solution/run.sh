@@ -30,12 +30,11 @@ export TOKENIZERS_PARALLELISM=false
 # Path to where the trained model and logging data will go
 export OUTPUT_DIR=$SCRATCH/$USER/data/
 export LOGGING_DIR=$SCRATCH/$USER/runs/
-export MODEL_NAME=gpt-imdb-model
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 srun singularity exec $CONTAINER \
     python GPT-neo-IMDB-finetuning.py \
-        --model-name $MODEL_NAME \
+        --model-name gpt-imdb-model \
         --output-path $OUTPUT_DIR \
         --logging-path $LOGGING_DIR \
         --num-workers ${SLURM_CPUS_PER_TASK}\

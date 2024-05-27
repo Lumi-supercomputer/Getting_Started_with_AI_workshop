@@ -32,7 +32,7 @@ export TOKENIZERS_PARALLELISM=false
 # Path to where the trained model and logging data will go
 export OUTPUT_DIR=$SCRATCH/$USER/data/
 export LOGGING_DIR=$SCRATCH/$USER/runs/
-export MODEL_NAME=gpt-imdb-model-${SLURM_JOBID}
+export MODEL_NAME=gpt-imdb-model-multinode-no-torchrun
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
