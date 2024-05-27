@@ -24,8 +24,4 @@ In this exercise, we perform Hyper-parameter tuning for the model used in lectur
 
 4. After the job finished, check in the output file whether all trials run successfully. The output should look similar to
 
-Image added in next commit
-
-
-
-   
+![desired output](./images/desired_output.png)
