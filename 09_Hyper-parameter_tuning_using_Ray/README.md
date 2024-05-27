@@ -14,6 +14,6 @@ In this exercise we perform Hyper-parameter tuning for the model used in lecture
     
     * Pass the correct number of CPUs and GPUs to ray.init()
 
-    * Choose a reasonable parameter space for `learning_rate`. Note, we want to run 8 trials with different parameters in parallel which should take around 5-6 minutes
+    * Choose a reasonable parameter space for `learning_rate`. Note, we want to run 8 trials with different parameters in parallel which should take around 6-7 minutes
 
     * Specify the correct number of CPUs and GPUs for the trial runs
