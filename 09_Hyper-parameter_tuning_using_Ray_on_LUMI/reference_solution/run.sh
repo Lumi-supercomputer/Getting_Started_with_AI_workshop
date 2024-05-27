@@ -1,12 +1,16 @@
 #!/bin/bash
 #SBATCH --account=project_465001063
-#SBATCH --partition=...
-## <!!! ACTION REQUIRED: SPECIFY ADDITIONAL SLURM PARAMETERS HERE!!!>
+#SBATCH --partition=standard-g
+#SBATCH --nodes=1
+#SBATCH --gpus-per-node=8
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=56
+#SBATCH --mem=0
+#SBATCH --time=0:15:00
 
 # Set up the software environment
-# NOTE: these modules will be available from the LUMI system stack after July 2024 and the "module use" line will no longer be necessary
 module purge
-module use /appl/local/training/modules/AI-20240529/
+module use /appl/local/training/modules/AI-20240529
 module load singularity-userfilesystems singularity-CPEbits
 
 CONTAINER=/scratch/project_465001063/containers/pytorch_transformers.sif
@@ -25,6 +29,12 @@ export TOKENIZERS_PARALLELISM=false
 # Path to where the trained model and logging data will go
 export OUTPUT_DIR=$SCRATCH/$USER/data/
 export LOGGING_DIR=$SCRATCH/$USER/runs/
-export MODEL_NAME=gpt-imdb-model-multigpu
+export MODEL_NAME=gpt-imdb-model
 
-## <!!! ACTION REQUIRED: RUN THE TRAINING SCRIPT HERE !!!>
+set -xv # print the command so that we can verify setting arguments correctly from the logs
+
+srun singularity exec $CONTAINER python GPT-neo-ray-tune.py \
+        --model-name $MODEL_NAME \
+        --output-path $OUTPUT_DIR \
+        --logging-path $LOGGING_DIR \
+        --num-workers ${SLURM_CPUS_PER_TASK}

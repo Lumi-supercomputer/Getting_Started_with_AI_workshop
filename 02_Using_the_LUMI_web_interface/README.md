@@ -19,12 +19,12 @@
 
     In this exercise you will learn how to reserve resources for and start an interactive job to run a Jupyter notebook via the LUMI web interface. The notebook itself introduces you to our running example of finetuning a language model using PyTorch and the training libraries provided by Huggingface. In this exercise you will not do any training, but familiarise yourself a bit with the software and the base model.
 
-    1. Start an interactive Jupyter session: Open the Jupyter app in the LUMI webinterface and set the following settings before pressing `Launch`
+    1. Start an interactive Jupyter session: Open the Jupyter app (! not "Jupyter for Courses" !) in the LUMI webinterface and set the following settings before pressing `Launch`
         - Project: `project_465001063`
         - Reservation: Use the course reservation `AI_workshop` (there should only be one option)
         - Partition: `small-g`
         - Number of CPU cores: `7`
-        - Memory (GB): `8`
+        - Memory (GB): `16`
         - Time: `0:30:00`
         - Working directory: `/scratch/project_465001063/`
         - Python: `pytorch (Via CSC stack, limited support available)`

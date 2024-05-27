@@ -2,13 +2,13 @@
 
 ## Examples
 
-- For a native PyTorch DDP example (without using HuggingFace modules), see [bonus_material/pytorch_cotainr_container_basics](bonus_material/pytorch_cotainr_container_basics), specifically
+- For a native PyTorch DDP example (without using HuggingFace modules), see [/bonus_material/pytorch_cotainr_container_basics](/bonus_material/pytorch_cotainr_container_basics), specifically
   - for torchrun usage, check
-    - [train_multi_gpu_ddp_torchrun.py](bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.py)
-    - [train_multi_gpu_ddp_torchrun.sh](bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.sh)
+    - [train_multi_gpu_ddp_torchrun.py](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.py)
+    - [train_multi_gpu_ddp_torchrun.sh](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.sh)
   - for manual process setup, check
-    - [train_multi_gpu_ddp_env_setup.py](bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.py)
-    - [train_multi_gpu_ddp_env_setup.sh](bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.sh)
+    - [train_multi_gpu_ddp_env_setup.py](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.py)
+    - [train_multi_gpu_ddp_env_setup.sh](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.sh)
 
 ## Hands-on exercises
 
@@ -54,6 +54,11 @@
       - the course reservation: `AI_workshop_2`
 
       It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
+
+      > ** Tip ** 
+      >
+      > You can use a different `--model-name` than in Exercise 3, to start a fresh training run without overwriting your
+      > earlier results. The environment variable `MODEL_NAME` is a suggestion for a name that you can use.
 
       You will also need to add the relevant parts for setting up the PyTorch software environment (these are the same as for Exercise `03_Your_first_AI_training_job_on_LUMI`).
 

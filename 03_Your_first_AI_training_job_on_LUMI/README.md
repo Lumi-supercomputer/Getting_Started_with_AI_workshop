@@ -2,9 +2,9 @@
 
 ## Examples
 
-- For a native PyTorch DDP example (without using HuggingFace modules), see [bonus_material/pytorch_cotainr_container_basics](bonus_material/pytorch_cotainr_container_basics), specifically check
-  - [train_single_gpu.py](bonus_material/pytorch_cotainr_container_basics/train_single_gpu.py)
-  - [pytorch_cotainr_container_basics/train_single_gpu.sh](bonus_material/pytorch_cotainr_container_basics/train_single_gpu.sh)
+- For a native PyTorch DDP example (without using HuggingFace modules), see [/bonus_material/pytorch_cotainr_container_basics](/bonus_material/pytorch_cotainr_container_basics), specifically check
+  - [train_single_gpu.py](/bonus_material/pytorch_cotainr_container_basics/train_single_gpu.py)
+  - [pytorch_cotainr_container_basics/train_single_gpu.sh](/bonus_material/pytorch_cotainr_container_basics/train_single_gpu.sh)
 
 ## Hands-on exercises
 
@@ -41,9 +41,10 @@
         with the container you should use.
 
         For the Python script itself you will need to provide the following command line arguments:
-        - `--output_path` (for the trained model and checkpoints)
-        - `--logging_path` (for tensorboard logging data)
-        - `--num_workers`
+        - `--output-path` (for the trained model and checkpoints)
+        - `--logging-path` (for tensorboard logging data)
+        - `--model-name` (a name under which the model produced by the run will be stored; optional)
+        - `--num-workers` (optional)
   
         Please set the paths to some destination of your choice within your `/scratch/project_465001063/<username>` directory.
   
