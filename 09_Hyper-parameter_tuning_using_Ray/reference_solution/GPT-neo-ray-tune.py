@@ -177,7 +177,12 @@ if __name__ == "__main__":
     tuner = tune.Tuner(
         tune.with_resources(
             model_training,
-            resources={"cpu": 7, "gpu": 1},  # Set resources for every trial run
+            # Note, to code reviewer: the accelerator_type specification
+            # has no influence on the performance but shows 
+            # 1.0/1.0 accelerator_type:AMD-Instinct-MI250X in the output file.
+            # Without the specification we get 0.0/1.0 accelerator_type:AMD-Instinct-MI250X
+            # I am conflicted whether we should keep or remove this.
+            resources={"cpu": 7, "gpu": 1, "accelerator_type:AMD-Instinct-MI250X": 0.125},  # Set resources for every trial run
         ),
         param_space=config,
         tune_config=tune.TuneConfig(
