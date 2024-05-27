@@ -22,7 +22,7 @@ In this exercise, we perform Hyper-parameter tuning for the model used in lectur
 
 4. Check in the output file whether all trials run successfully. 
     
-    * During the run the output should look similar to the figure below. 
+    * During the run, the output should look similar to the figure below. The statement 0.0/1.0 accelerator_type:AMD-Instinct-MI250X can be safely ignored as it is a known bug. This message appears even when all GPUs are fully utilized correctly.
 
     ![running output](./images/running_output.png)
 
