@@ -8,8 +8,6 @@ In this exercise, we perform Hyper-parameter tuning for the model used in lectur
 
     * Specify slurm parameters in `run.sh` file to use whole node with all available GPUs.
    
-    * At the end of the file, set up running the file `GPT-neo-ray-tune.py` in the specified container with the correct arguments.
-
 2. Fill in the missing pieces (marked with <!!! ACTION REQUIRED ... !!!>) in `GPT-neo-ray-tune.py`
     
     * Pass the correct number of CPUs and GPUs to ray.init()
