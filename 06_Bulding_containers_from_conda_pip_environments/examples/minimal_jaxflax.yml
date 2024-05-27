@@ -1,0 +1,27 @@
+name: minimal_jaxflax
+channels:
+  - conda-forge
+dependencies:
+  - absl-py=2.1.0
+  - etils=1.8.0
+  - fsspec=2024.3.1
+  - importlib_resources=6.4.0
+  - msgpack-python=1.0.7
+  - nest-asyncio=1.6.0
+  - opt_einsum=3.3.0
+  - pip=24.0
+  - protobuf=4.25.3
+  - pyyaml=6.0.1
+  - python=3.11.9
+  - scipy=1.13.0
+  - rich=13.7.1
+  - tensorstore=0.1.57
+  - toolz=0.12.1
+  - zipp=3.17.0
+  - pip:
+    - https://github.com/ROCmSoftwarePlatform/jax/releases/download/jaxlib-v0.4.21/jaxlib-0.4.21+rocm560-cp311-cp311-manylinux2014_x86_64.whl
+    - chex==0.1.86
+    - flax==0.8.3
+    - jax==0.4.21
+    - optax==0.2.2
+    - orbax-checkpoint==0.5.10
