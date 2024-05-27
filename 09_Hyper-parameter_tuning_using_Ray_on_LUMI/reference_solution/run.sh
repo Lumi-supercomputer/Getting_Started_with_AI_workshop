@@ -7,7 +7,6 @@
 #SBATCH --cpus-per-task=56
 #SBATCH --mem=0
 #SBATCH --time=0:15:00
-#SBATCH --output=output_ray.txt
 
 # Set up the software environment
 module purge

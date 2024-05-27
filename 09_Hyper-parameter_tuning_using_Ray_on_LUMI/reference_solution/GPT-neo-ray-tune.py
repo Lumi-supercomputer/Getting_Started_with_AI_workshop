@@ -164,7 +164,11 @@ if __name__ == "__main__":
     args, _ = parser.parse_known_args()
 
     # We need to manually set the number of CPUs and GPUs. Othewise, ray tries to use the whole node and crashes.
-    ray.init(num_cpus=56, num_gpus=8, log_to_driver=False)
+    ray.init(
+        num_cpus=int(os.environ["SLURM_CPUS_PER_TASK"]),
+        num_gpus=int(os.environ["SLURM_GPUS_PER_NODE"]),
+        log_to_driver=False,
+    )
 
     config = {
         "learning_rate": tune.uniform(
