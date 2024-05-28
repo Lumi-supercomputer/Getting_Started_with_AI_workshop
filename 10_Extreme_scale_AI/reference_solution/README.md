@@ -65,7 +65,7 @@ chmod +x run.sh
 Let's take a look on what is going on here from top to bottom:
 * We leverage the `taskset` tool to report the affinity of the current process. This allows us to verify we are getting the affinity we expect.
 * Then, we report the GPUs available using rocm-smi. This is a smoke test that the GPUs are up and running. We do this only for the first rank in a node - that rank will have `SLURM_LOCALID` set to `0`.
-* Then, we settup our conda environment as well as a fewother environment variables to control the Pytorch and HuggingFace caches for our application.
+* Then, we setup our conda environment as well as a few other environment variables to control the Pytorch and HuggingFace caches for our application.
 * Then we configure RCCL to use the high-speed interfaces as well as GPU RDMA.
 * Next step is the MIOpen cache. We also have the first rank in each node creating the cache folder. Note that, this is not used by our LLM application as it doesn't use MIOpen kernels. However, it doesn't do any harm and we'll keep you covered for other models you might want to train.
 * Then, there are a few RCCL environment variables that you may chose to uncomment so as to get logging of the RCCL activity.

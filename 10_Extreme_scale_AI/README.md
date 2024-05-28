@@ -1,10 +1,10 @@
 # 10 Extreme scale AI
 
-These examples are based on the Pytorch container provided to you to do training at:
+These examples are based on the ROCm container provided to you at:
 ```
-/appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif 
+/appl/local/containers/sif-images/lumi-rocm-rocm-5.6.1.sif 
 ```
-This container was extended with some components required by the examples, notoriously the HuggingFace transformers module, resulting in the container in:
+This container was extended with some components required by the examples, notoriously Pytorch and HuggingFace transformers module, resulting in the container in:
 ```
 /scratch/project_465001063/containers/pytorch_transformers.sif
 ```
@@ -213,7 +213,7 @@ Here's how the data is organized:
     * /flash/project_465001063/data-sets/data-resnet-small.tar
     * /flash/project_465001063/data-sets/data-resnet.hdf5
 
-The containers are useful to move the data around as it is much faster to move a single large file rather than many small files. E.g. is better untar a container than copy an expanded dataset from elsewhere.
+The containers are useful to move the data around as it is much faster to move a single large file rather than many small files, e.g. it is better to untar a container than copy an expanded dataset from elsewhere.
 
 ### 3. Training at scale
 We are ready to run with one or more nodes (adjust `N` for the number of nodes) just by issuing:
@@ -242,7 +242,7 @@ Here we are doing training using ResNet-50 over 2 epochs with 512 batch-size per
 
 ### 4. Monitor GPU activity
 
-This example leverage MIOpen, so you check if `/tmp/$(whoami)-miopen-cache-$SLURM_NODEID` being populated with the MIOpen databases in each node. Start a parallel SLURM session to that effect.
+This example leverages MIOpen, so you can check if `/tmp/$(whoami)-miopen-cache-$SLURM_NODEID` is being populated with the MIOpen databases in each node. Start a parallel SLURM session to that effect.
 
 Then, try monitor the GPU activity as before. You should be able to see snapshots such as this:
 
@@ -261,7 +261,7 @@ GPU  Temp   AvgPwr  SCLK     MCLK     Fan  Perf    PwrCap  VRAM%  GPU%
 ================================================================================
 ============================= End of ROCm SMI Log ==============================
 ```
-It is like some GPUs are intermitently idle holding everyone else back. This is related with some I/O bottlenecks, as images have the potential of putting more strain on the filesystem. We'll learn about that in the next session.
+It is like some GPUs are intermitently idle, holding everyone else back. This is related with some I/O bottlenecks, as images have the potential of putting more strain on the filesystem. We'll learn more about that in the next session.
 
 ## Distributed training frameworks hands-on exercise
 

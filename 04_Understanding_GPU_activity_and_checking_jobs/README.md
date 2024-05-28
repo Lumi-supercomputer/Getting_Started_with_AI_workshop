@@ -1,10 +1,10 @@
 # 04 Understanding GPU activity & checking jobs
 
-These examples are based on the Pytorch container provided to you to do training at:
+These examples are based on the ROCm container provided to you at:
 ```
-/appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif 
+/appl/local/containers/sif-images/lumi-rocm-rocm-5.6.1.sif 
 ```
-This container was extended with some components required by the examples, notoriously the HuggingFace transformers module, resulting in the container in:
+This container was extended with some components required by the examples, notoriously Pytorch and HuggingFace transformers module, resulting in the container in:
 ```
 /scratch/project_465001063/containers/pytorch_transformers.sif
 ```
@@ -41,7 +41,7 @@ srun singularity exec \
              python -c "import torch; print(torch.cuda.device_count())"'
 ```
 
-It should yield `1` given that only one GPU was requested. Note that each time a node is used for the first time, there is a latency to have the cointainer loaded. Running the command above again on the same allocation should complete faster.
+It should yield `1` given that only one GPU was requested. Note that each time a node is used for the first time, there is a latency to have the container loaded. Running the command above again on the same allocation should complete faster.
 
 ## Hands-on exercise
 
@@ -106,9 +106,9 @@ GPU  Temp   AvgPwr  SCLK     MCLK     Fan  Perf    PwrCap  VRAM%  GPU%
 ================================================================================
 ============================= End of ROCm SMI Log ==============================
 ```
-As expected we only have activity on one GCD but the power metrics are per GPU. Note that these numbers needs to be interpreted. For example, if `GPU%` shows `100%` that doesn NOT necessarily mean the GPU is being well utilized. A better metric is drawn power `AvgPwr`: oscilating around `500.0W` is an indication there is significant compute activity on the full GPU.
+As expected we only have activity on one GCD but the power metrics are per GPU. Note that these numbers needs to be interpreted. For example, if `GPU%` shows `100%` that does NOT necessarily mean the GPU is being well utilized. A better metric is drawn power `AvgPwr`: oscillating around `500.0W` is an indication there is significant compute activity on the full GPU.
 
-Here we see drawn power to oscilate around `300.0W` while a single GCD is being used, which is an indication that we might be compute bound.
+Here we see drawn power to oscillate around `300.0W` while a single GCD is being used, which is an indication that we might be compute bound.
 
 ### 4. Activate logging reporting GPU activity
 
