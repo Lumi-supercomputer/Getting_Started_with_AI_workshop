@@ -1,6 +1,5 @@
 # Extending containers with virtual environments for faster testing
 
-
 This is a short example of how to extend the containers built via `cotainr` via virtual environments. This approach can be useful for developing and testing as it doesn't require rebuilding a container from scratch every time a new package is added.
 
 > [!WARNING]

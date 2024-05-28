@@ -32,5 +32,6 @@
 
    In this exercise you will learn how to install Python packages in a container using cotainr when no conda package or pip wheel exists for the package.
 
-   1. Create a conda environment file for installing [panopticapi](https://github.com/cocodataset/panopticapi)
-   2. Use the conda environment file to build a container for LUMI-C using cotainr
+   1. Check the [panopticapi](https://github.com/cocodataset/panopticapi) GitHub repo for ways to install it from source. Also check the [setup.py](https://github.com/cocodataset/panopticapi/blob/master/setup.py) for hints about the dependencies needed by panopticapi
+   2. Create a conda environment file for installing panopticapi
+   3. Use the conda environment file to build a container for LUMI-C using cotainr
