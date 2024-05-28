@@ -25,10 +25,6 @@ export NCCL_SOCKET_IFNAME=hsn
 # Tune when GPU Direct RDMA between NIC and GPU is used
 export NCCL_NET_GDR_LEVEL=PHB
 
-# Workaround MIOpen DB issue when using multiple processes
-export MIOPEN_USER_DB_PATH=/tmp/${USER}-miopen-cache-${SLURM_JOB_ID}
-export MIOPEN_CUSTOM_CACHE_DIR=${MIOPEN_USER_DB_PATH}
-
 # Setup Hugging Face cache and data directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
 export DATADIR=$SCRATCH/data/users/$USER
@@ -51,4 +47,4 @@ export LAUNCH_CMD="
             --model-name gpt-imdb-model-${SLURM_JOBID} \
             --num_workers $(expr ${SLURM_CPUS_PER_TASK} / ${SLURM_GPUS_PER_NODE})\
     "
-srun singularity exec hf_env_container.sif bash -c "${LAUNCH_CMD}"
+srun singularity exec pytorch_transformers.sif bash -c "${LAUNCH_CMD}"

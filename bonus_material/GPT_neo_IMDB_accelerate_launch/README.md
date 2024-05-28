@@ -2,23 +2,24 @@
 
 This is an example of using HuggingFace `accelerate` to launch a LLM training on LUMI making use of the HuggingFace `transforms.Trainer` for setting up the training.
 
-### WARNING: Custom LUMI modules are used in this example
+For an example of setting up a PyTorch distributed training without making use of HuggingFace libraries, see the [cotainr container basics MNIST PyTorch examples](../pytorch_cotainr_container_basics/).
 
-To run these examples, it is assumed that you `module use /appl/local/training/modules/AI-20240529` with installed modules:
-
-- An updated installation of the `cotainr` module that sets `--system=lumi-g` to use the LUMI ROCm base image (/appl/local/`containers/sif-images/lumi-rocm-rocm-5.6.1.sif`)
-- The new `singularity-userfilesystems` module that bind mounts user file system paths, i.e. `/project`, `/scratch`, and `/flash`.
-- The new `singularity-CPEbits` module that bind mounts the parts of the Cray Programming Environment from the host that are missing in the official LUMI container images due to license restrictions imposed by HPE.
-
-After the AI workshop and the LUMI maintenance break in August/September, these module will hopefully be available in the central LUMI stack.
+> [!WARNING]
+> To run these examples, it is assumed that you `module use /appl/local/training/modules/AI-20240529` with installed modules:
+>
+> - An updated installation of the `cotainr` module that sets `--system=lumi-g` to use the LUMI ROCm base image (/appl/local/`containers/sif-images/lumi-rocm-rocm-5.6.1.sif`)
+> - The new `singularity-userfilesystems` module that bind mounts user file system paths, i.e. `/project`, `/scratch`, and `/flash`.
+> - The new `singularity-CPEbits` module that bind mounts the parts of the Cray Programming Environment from the host that are missing in the official LUMI container images due to license restrictions imposed by HPE.
+>
+> After the AI workshop and the LUMI maintenance break in August/September, these modules will hopefully be available in the central LUMI stack.
 
 ## 1. Build a container for the example using cotainr
 
-To get started, build a container that includes the conda environment `hf_env.yml` based on the official LUMI ROCm container base image using cotainr.
+To get started, build a container that includes the conda environment [pytorch_transformers.yml](../exercise_container_recipes/pytorch_transformers.yml) based on the official LUMI ROCm container base image using cotainr.
 
 ```bash
 module load LUMI cotainr
-cotainr build hf_env_container.sif --system=lumi-g --conda-env=hf_env.yml  # or use --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-5.6.1.sif instead of --system=lumi-g when using cotainr from LUMI
+cotainr build pytorch_transformers.sif --system=lumi-g --conda-env=pytorch_transformers.yml  # or use --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-5.6.1.sif instead of --system=lumi-g when using cotainr from LUMI
 ```
 
 More details about building conda/pip environment containers using cotainr may be found in the [cotainr documentation](https://cotainr.readthedocs.io/en/latest/user_guide/conda_env.html) and the [LUMI Docs cotainr documentation](https://docs.lumi-supercomputer.eu/software/containers/singularity/#building-containers-using-the-cotainr-tool).
@@ -28,7 +29,6 @@ More details about building conda/pip environment containers using cotainr may b
 To launch the training via `accelerate` on a single node, using all available GCDs, we need to:
 
 - Set the HuggingFace and Torch cache locations, i.e. set the `HF_HOME` and `TORCH_HOME` environment variables.
-- Set all "the usual" workarounds needed, e.g. setting the MIOpen DB and cache paths.
 - Include all other relevant settings, e.g. bind mounting user files systems, or setting training specific environment variables such as `TOKENIZERS_PARALLELISM`.
 - Have an accelerate config file providing the basic configuration, i.e. the parts of the configuration that are fixed and does not relate to the level of scaling of the training or the particular node its running on. Such a config file is provided as `accelerate_hf_trainer_config.yaml`.
 - Provide the non-fixed accelerate configuration variables, i.e. number of machines, number of processes, and machine rank, as options to `accelerate launch` when launching the training.
@@ -68,13 +68,14 @@ Launching the training using the above approach, the following automagically hap
   - Sets the [torchrun environment variables](https://pytorch.org/docs/stable/elastic/run.html#environment-variables) somewhere in the torch code base...
   - [Launches the training processes using torch elastic](https://github.com/pytorch/pytorch/blob/6c503f1dbbf9ef1bf99f19f0048c287f419df600/torch/distributed/run.py#L891)
 
-and possibly also a lot of other things as well depending on the launch and `transformer.Trainer` configuration, you use...
+and possibly also a lot of other things as well depending on the `transformer.Trainer` configuration and launch options, you use...
 
 ## Launching using torchrun instead of accelerate
 
-Launching a `transformers.Trainer` training using `torchrun` instead of `accelerate` only requires calling `torchrun` instead of `accelerate launch` with all `accelerate` configurations converted to the corresponding `torchrun` arguments.
+Launching a `transformers.Trainer` training using `torchrun` instead of `accelerate` only requires calling `torchrun` instead of `accelerate launch` with all `accelerate` configurations converted to the corresponding `torchrun` arguments. See the [GPT-neo-IMDB-multinode torchrun example](../GPT_neo_IMDB_multinode/run_torchrun.sh) for a more details.
 
-**This is probably the easiest way to launch your `transformers.Trainer` training on LUMI.**
+> [!TIP]
+> Using torchrun is probably the easiest way to launch your `transformers.Trainer` training on LUMI.
 
 ## Launching using Python directly instead of torchrun/accelerate
 
@@ -82,3 +83,5 @@ Launching a `transformers.Trainer` training using `python` directly requires a b
 
 - Launch all processes (one for each GPU) using SLURM.
 - Set the `RANK` `LOCAL_RANK`, and `WORLD_SIZE`, environment variables for each process such that the `Accelerator` sets up the PyTorch process group correctly.
+
+See the [GPT-neo-IMDB-multinode no-torchrun example](../GPT_neo_IMDB_multinode/run_no_torchrun.sh) for more details.
