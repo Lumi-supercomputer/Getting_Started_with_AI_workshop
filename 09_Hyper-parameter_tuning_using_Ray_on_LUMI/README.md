@@ -18,7 +18,7 @@ In this exercise, we perform Hyper-parameter tuning for the model used in lectur
   
 3. Submit the batch job and check whether all GPUs are used:
 
-   * After submitting your batch job, run `srun --overlap --pty --jobid=... bash` wollowed by `rocm-smi` to check whether all 8 GPUs are used close to 100%
+   * After submitting your batch job, run `srun --overlap --pty --jobid=... bash` followed by `rocm-smi` to check whether all 8 GPUs are used close to 100%
 
 4. Check in the output file whether all trials run successfully. 
     
