@@ -1,6 +1,7 @@
 #!/bin/bash
 #SBATCH --account=project_465001063
 #SBATCH --partition=standard-g
+##SBATCH --reservation=AI_workshop_2   # uncomment this to use the reservation during day 2 of the course
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=8
 #SBATCH --ntasks-per-node=1
