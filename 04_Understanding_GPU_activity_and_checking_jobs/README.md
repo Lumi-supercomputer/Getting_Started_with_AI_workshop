@@ -41,7 +41,7 @@ srun singularity exec \
              python -c "import torch; print(torch.cuda.device_count())"'
 ```
 
-It should yield `1` given that only one GPU was requested. Note that each time a node is used for the first time, there is a latency to have the container loaded. Running the command above again on the same allocation should complete faster.
+It should yield `2` given that only one GPU was requested. Note that each time a node is used for the first time, there is a latency to have the container loaded. Running the command above again on the same allocation should complete faster.
 
 ## Hands-on exercise
 
@@ -168,6 +168,10 @@ with:
 and place a `sys.exit(0)` statement after:
 ```
     trainer.train(resume_from_checkpoint=args.resume)
+```
+You'll need to include the module in your Python script:
+```
+import sys
 ```
 
 Now we can just run the profiler by preceding our original command with `rocprof`.
