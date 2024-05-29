@@ -12,7 +12,7 @@
         - Use a login node shell.
    3. Clone the [exercise repository](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop) to your scratch folder `/scratch/project_465001063/<username>`. You can either
         - use a login node shell, or
-        - start a Jupyter lab job and use the Jupyter lab UI for cloning Git repositories (check [this blog post](https://blog.reviewnb.com/jupyterlab-git-extension/) for a visual guide for how it works). See point 2.1 below for instructions on how to start the job from the LUMI web interface.
+        - start a Jupyter lab job and use the Jupyter lab UI for cloning Git repositories, see [Clone_with_JupyterLab.md](./Clone_with_JupyterLab.md) for an illustrated step-by-step guide for this.
    4. Get familiar with the exercise repository layout.
 
 2. Start an interactive Jupyter lab job and run inference with GPT-neo.
