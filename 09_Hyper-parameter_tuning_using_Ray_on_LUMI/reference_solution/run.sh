@@ -6,7 +6,7 @@
 #SBATCH --gpus-per-node=8
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=56
-#SBATCH --mem=0
+#SBATCH --mem=480G
 #SBATCH --time=0:15:00
 
 # Set up the software environment
