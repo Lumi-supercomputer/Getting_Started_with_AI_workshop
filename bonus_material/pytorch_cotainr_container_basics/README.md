@@ -5,7 +5,7 @@ This is a short introduction to building a PyTorch container with cotainr and ru
 > [!WARNING]
 > To run these examples, it is assumed that you `module use /appl/local/training/modules/AI-20240529` with installed modules:
 >
-> - An updated installation of the `cotainr` module that sets `--system=lumi-g` to use the LUMI ROCm base image (/appl/local/`containers/sif-images/lumi-rocm-rocm-5.6.1.sif`)
+> - An updated installation of the `cotainr` module that sets `--system=lumi-g` to use the LUMI ROCm base image (/appl/local/`containers/sif-images/lumi-rocm-rocm-6.0.3.sif`)
 > - The new `singularity-userfilesystems` module that bind mounts user file system paths, i.e. `/project`, `/scratch`, and `/flash`.
 > - The new `singularity-CPEbits` module that bind mounts the parts of the Cray Programming Environment from the host that are missing in the official LUMI container images due to license restrictions imposed by HPE.
 >
@@ -23,8 +23,8 @@ To get started, specify all needed Python packages + dependencies in a [conda en
 Next, build a container that includes the conda environment based on the official LUMI ROCm container base image using cotainr.
 
 ```bash
-module load LUMI cotainr
-cotainr build minimal_pytorch.sif --system=lumi-g --conda-env=minimal_pytorch.yml  # or use --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-5.6.1.sif instead of --system=lumi-g when using cotainr from the LUMI stack
+module load CrayEnv cotainr
+cotainr build minimal_pytorch.sif --system=lumi-g --conda-env=minimal_pytorch.yml  # or use --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif instead of --system=lumi-g when using cotainr from the LUMI stack
 ```
 
 If you need to change something in the conda environment, update the content of `minimal_pytorch.yml` and rebuild the container. To avoid putting stress on the login-nodes, you may want to consider running cotainr non-interactively on a compute node instead of the login nodes, e.g.

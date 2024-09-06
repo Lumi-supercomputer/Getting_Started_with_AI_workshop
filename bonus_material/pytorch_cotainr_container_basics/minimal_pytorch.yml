@@ -2,21 +2,21 @@ name: minimal_pytorch
 channels:
   - conda-forge
 dependencies:
-  - filelock=3.13.4
-  - fsspec=2024.3.1
-  - jinja2=3.1.3
+  - filelock=3.15.4
+  - fsspec=2024.9.0
+  - jinja2=3.1.4
   - markupsafe=2.1.5
   - mpmath=1.3.0
   - networkx=3.3
-  - numpy=1.26.4
-  - pillow=10.3.0
+  - numpy=2.1.1
+  - pillow=10.4.0
   - pip=24.0
-  - python=3.11.9
-  - sympy=1.12
-  - typing-extensions=4.11.0
+  - python=3.12.3
+  - sympy=1.13.2
+  - typing-extensions=4.12.2
   - pip:
-    - --extra-index-url https://download.pytorch.org/whl/rocm5.6/
-    - pytorch-triton-rocm==2.2.0
-    - torch==2.2.2+rocm5.6
-    - torchaudio==2.2.2+rocm5.6
-    - torchvision==0.17.2+rocm5.6
+    - --extra-index-url https://download.pytorch.org/whl/rocm6.0/
+    - pytorch-triton-rocm==3.0.0
+    - torch==2.4.1+rocm6.0
+    - torchaudio==2.4.1+rocm6.0
+    - torchvision==0.19.1+rocm6.0
