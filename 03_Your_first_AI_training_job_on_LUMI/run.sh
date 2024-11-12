@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=project_465001063
+#SBATCH --account=project_465001363
 #SBATCH --partition=...
 ## <!!! ACTION REQUIRED: SPECIFY ADDITIONAL SLURM PARAMETERS HERE!!!>
 
@@ -9,7 +9,7 @@ module purge
 module use /appl/local/training/modules/AI-20240529/
 module load singularity-userfilesystems singularity-CPEbits
 
-CONTAINER=/scratch/project_465001063/containers/pytorch_transformers.sif
+CONTAINER=/scratch/project_465001363/containers/pytorch_transformers.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"

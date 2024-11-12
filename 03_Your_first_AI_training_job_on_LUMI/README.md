@@ -34,7 +34,7 @@
         - RAM requested
         - requested runtime (recommended: 15 minutes, for sub-exercise 4 below)
         - the course reservation: `AI_workshop`
-  
+
         It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 
         The Python command needs to be run in a singularity container with the required software packages installed. The slurm batch file sets up a variable `CONTAINER`
@@ -45,9 +45,9 @@
         - `--logging-path` (for tensorboard logging data)
         - `--model-name` (a name under which the model produced by the run will be stored; optional)
         - `--num-workers` (optional)
-  
-        Please set the paths to some destination of your choice within your `/scratch/project_465001063/<username>` directory.
-  
+
+        Please set the paths to some destination of your choice within your `/scratch/project_465001363/<username>` directory.
+
         > **Tip**
         >
         > Slurm sets the environment variable `SLURM_CPUS_PER_TASK` to the value of allocated CPU cores per task.
