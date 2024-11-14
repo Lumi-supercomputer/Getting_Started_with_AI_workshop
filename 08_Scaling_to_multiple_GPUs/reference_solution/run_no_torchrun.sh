@@ -7,7 +7,7 @@
 #SBATCH --ntasks-per-node=8  # we want one process per GPU
 #SBATCH --cpus-per-task=7
 #SBATCH --mem-per-gpu=60G
-#SBATCH --time=0:15:00
+#SBATCH --time=0:20:00
 
 
 # Set up the software environment

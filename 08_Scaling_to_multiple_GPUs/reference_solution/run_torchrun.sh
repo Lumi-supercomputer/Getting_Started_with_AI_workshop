@@ -7,7 +7,7 @@
 #SBATCH --ntasks-per-node=1    # we start a single torchrun process, which will take care of spawning more
 #SBATCH --cpus-per-task=56     # 7 cores per GPU
 #SBATCH --mem-per-gpu=60G
-#SBATCH --time=0:15:00
+#SBATCH --time=0:20:00
 
 
 # Set up the software environment

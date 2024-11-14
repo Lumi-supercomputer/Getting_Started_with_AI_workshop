@@ -52,7 +52,7 @@
       - number of GPUs requested (8)
       - number of CPUs requested
       - RAM requested (we recommend using 60GB per requested GPU to leave some room for the OS overhead)
-      - requested runtime
+      - requested runtime (20 minutes should be plenty to finish training and running evaluation)
 
       It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 
