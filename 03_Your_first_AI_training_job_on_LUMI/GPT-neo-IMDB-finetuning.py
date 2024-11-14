@@ -129,7 +129,7 @@ if __name__ == "__main__":
     # We tokenize the data into torch tensors, split training into training and validation and set up a collator that
     # is able to arrange single data samples into batches.
 
-    train_dataset_tok, validate_dataset_tok, eval_dataset_tok = preprocess_data(train_dataset, eval_dataset, tokenizer, training_args)
+    train_dataset_tokenized, validate_dataset_tokenized, eval_dataset_tokenized = preprocess_data(train_dataset, eval_dataset, tokenizer, training_args)
 
     collator = DataCollatorForLanguageModeling(
         tokenizer, mlm=False, return_tensors="pt"
@@ -137,11 +137,11 @@ if __name__ == "__main__":
 
     # Sanity check: How does the training data look like after preprocessing?
     print("Sample of tokenized data")
-    for b in train_dataset_tok:
+    for b in train_dataset_tokenized:
         pprint(b, compact=True)
         print("Length of input_ids:", len(b["input_ids"]))
         break
-    print("Length of dataset (tokenized)", len(train_dataset_tok))
+    print("Length of dataset (tokenized)", len(train_dataset_tokenized))
 
     # #### Training
     # We use the Hugging Face trainer instead of a manual training loop.
@@ -156,8 +156,8 @@ if __name__ == "__main__":
         args=training_args,
         tokenizer=tokenizer,
         data_collator=collator,
-        train_dataset=train_dataset_tok,
-        eval_dataset=validate_dataset_tok,
+        train_dataset=train_dataset_tokenized,
+        eval_dataset=validate_dataset_tokenized,
     )
 
     # With 1000 steps, batch size 32 and a single GCD, this should take just under 30 minutes.
@@ -168,10 +168,10 @@ if __name__ == "__main__":
 
     # #### Evaluating the finetuned model
     with torch.no_grad():
-        model.test()
+        model.eval()
         # Calculate perplexity
         eval_results = trainer.evaluate()
-        test_results = trainer.evaluate(eval_dataset_tok)
+        test_results = trainer.evaluate(eval_dataset_tokenized)
 
         print(f'Perplexity on validation: {math.exp(eval_results["eval_loss"]):.2f}')
         print(f'Perplexity on test: {math.exp(test_results["eval_loss"]):.2f}')
