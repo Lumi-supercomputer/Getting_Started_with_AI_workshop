@@ -2,9 +2,6 @@
 
 This is a short example of how to extend the containers built via `cotainr` via virtual environments. This approach can be useful for developing and testing as it doesn't require rebuilding a container from scratch every time a new package is added.
 
-> [!WARNING]
-> This should not be the default way of installing python packages as it puts a lot of strain on the Lustre file system. Once you have a complete set of python packages and their versions, always create a new container.
-
 ## Requirements
 
 We assume you have built a container from a `conda` environment file via something like:
@@ -35,7 +32,7 @@ The `--system-site-packages` flag gives the virtual environment access to the pa
 
 ## Install custom packages
 
-After activating the virtual environment we can now install custom packages via pip, for example:
+After activating the virtual environment, we can now install custom packages via pip, for example:
 ```bash
 pip install torchmetrics
 ```
@@ -46,8 +43,21 @@ If we want to run the container with the freshly installed packages in a batch s
 singularity exec $CONTAINER bash -c "source myenv/bin/activate && python my_script.py"
 ```
 
-## Cleaning up
+> [!WARNING]
+> You should not stop here as this way of installing python packages puts a lot of strain on the Lustre file system. Choose one of the following options next:
+
+
+## Option 1: Create a new container with `cotainr`
 After having found all packages needed for our project, we should create a new container with an updated `conda` environment file. The virtual environment should then be deleted
 ```bash
+cotainr build updated_pytorch.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-5.6.1.sif --conda-env=updated_pytorch.yml
 rm -rf myenv
+```
+
+
+## Option 2: Turn `myenv` into a SquashFS file
+Alternatively, we can also reduce the stress on the Lustre file system by turning the `myenv` directory to a SquashFS file and bind mount it to the container:
+```bash
+mksquashfs myenv myenv.sqsh
+singularity exec -B myenv.sqsh:/user-software:image-src=/ $CONTAINER bash -c 'source /user-software/bin/activate && python my_script.py'
 ```
