@@ -18,6 +18,7 @@ from pprint import pprint
 
 import torch
 from datasets import load_dataset
+from util import preprocess_data, get_output_paths
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           DataCollatorForLanguageModeling, Trainer,
                           TrainingArguments)
@@ -67,14 +68,25 @@ if __name__ == "__main__":
         device = torch.device("cpu")
 
     # We also ensure that output paths exist
+    output_dir, logging_dir = get_output_paths(args)
 
-    # this is where trained model and checkpoints will go
-    output_dir = os.path.join(args.output_path, args.model_name)
-    os.makedirs(output_dir, exist_ok=True)
+    # #### Loading the GPT-neo model
+    #
+    # We'll use the gpt-neo-1.3B model from the Hugging Face library:
+    # https://huggingface.co/EleutherAI/gpt-neo-1.3B
+    # Let's start with getting the appropriate tokenizer.
+    pretrained_model = "EleutherAI/gpt-neo-1.3B"
 
-    # this is where tensorboard logging outputs will go
-    logging_dir = os.path.join(args.logging_path, args.model_name)
-    os.makedirs(logging_dir, exist_ok=True)
+    print("Loading model and tokenizer")
+    start = time.time()
+    tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
+    tokenizer.pad_token = tokenizer.eos_token
+
+    # Load the actual base model from Hugging Face
+    model = AutoModelForCausalLM.from_pretrained(pretrained_model)
+    model.to(device)
+    stop = time.time()
+    print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
 
     # #### Loading the IMDb data set
     #
@@ -96,25 +108,6 @@ if __name__ == "__main__":
     for b in train_dataset:
         pprint(b)
         break
-
-    # #### Loading the GPT-neo model
-    #
-    # We'll use the gpt-neo-1.3B model from the Hugging Face library:
-    # https://huggingface.co/EleutherAI/gpt-neo-1.3B
-    # Let's start with getting the appropriate tokenizer.
-    pretrained_model = "EleutherAI/gpt-neo-1.3B"
-
-    start = time.time()
-    tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
-    tokenizer.pad_token = tokenizer.eos_token
-    special_tokens = tokenizer.special_tokens_map
-
-    # Load the actual base model from Hugging Face
-    print("Loading model and tokenizer")
-    model = AutoModelForCausalLM.from_pretrained(pretrained_model)
-    model.to(device)
-    stop = time.time()
-    print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
 
     # #### Setting up the training configuration
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
@@ -140,53 +133,15 @@ if __name__ == "__main__":
         report_to=["tensorboard"],  # log statistics for tensorboard
     )
 
-    # #### Setting up preprocessing of training data
+    # #### Preprocessing of training data
+    # We tokenize the data into torch tensors, split training into training and validation and set up a collator that
+    # is able to arrange single data samples into batches.
 
-    # IMDb examples are presented as a dictionary:
-    # {
-    #    'text': the review text as a string,
-    #    'label': a sentiment label as an integer,
-    # }.
-    # We tokenize the text and add the special token for indicating the end of the
-    # text at the end of each review. We also truncate reviews to a maximum
-    # length to avoid excessively long sequences during training.
-    # As we have no use for the label, we discard it.
-    max_length = 256
+    train_dataset_tok, validate_dataset_tok, eval_dataset_tok = preprocess_data(train_dataset, eval_dataset, tokenizer, training_args)
 
-    def tokenize(x):
-        texts = [example + tokenizer.eos_token for example in x["text"]]
-        return tokenizer(
-            texts,
-            max_length=max_length,
-            truncation=True,
-            add_special_tokens=True,
-            return_overflowing_tokens=True,
-            return_length=False,
-        )
-
-    train_dataset_tok = train_dataset.map(
-        tokenize,
-        remove_columns=["text", "label"],
-        batched=True,
-        batch_size=training_args.train_batch_size,
-        num_proc=training_args.dataloader_num_workers,
+    collator = DataCollatorForLanguageModeling(
+        tokenizer, mlm=False, return_tensors="pt"
     )
-
-    eval_dataset_tok = eval_dataset.map(
-        tokenize,
-        remove_columns=["text", "label"],
-        batched=True,
-        num_proc=training_args.dataloader_num_workers,
-    )
-
-    # We split a small amount of training data as "validation" test set to keep track of evaluation
-    # of the loss on non-training data during training.
-    # This is purely because computing the loss on the full evaluation dataset takes much longer.
-    train_validate_splits = train_dataset_tok.train_test_split(
-        test_size=1000, seed=42, keep_in_memory=True
-    )
-    train_dataset_tok = train_validate_splits["train"]
-    validate_dataset_tok = train_validate_splits["test"]
 
     # Sanity check: How does the training data look like after preprocessing?
     print("Sample of tokenized data")
