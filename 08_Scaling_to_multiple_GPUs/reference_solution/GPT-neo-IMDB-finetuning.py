@@ -75,7 +75,7 @@ if __name__ == "__main__":
         "--set-cpu-binds",
         default=False,
         action="store_true",
-        help="A list of bitmasks (represented as an integer) of the CPUs to which to bind each local process rank. Optional, but if set must provide a mask for each local rank.",
+        help="Bind the process to the CPU cores closest to the GPU used by the process (identified by the LOCAL_RANK environment variable).",
     )
     args, _ = parser.parse_known_args()
 

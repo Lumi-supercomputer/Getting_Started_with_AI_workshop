@@ -1,8 +1,7 @@
 #!/bin/sh
 
 module purge
-module use /appl/local/training/modules/AI-20240529/
-module load LUMI/23.09
-module load cotainr
+#module load cotainr # as of 2024-11-14 the default version of cotainr has a breaking bug
+module load cotainr/2023.11.0-20240909
 
-cotainr build pytorch_transformers.sif --system=lumi-g --conda-env=./pytorch_transformers.yml
+cotainr build pytorch_transformers.sif --system lumi-g --conda-env=./pytorch_transformers.yml

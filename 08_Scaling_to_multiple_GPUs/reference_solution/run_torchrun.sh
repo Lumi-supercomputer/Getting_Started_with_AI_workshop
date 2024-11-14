@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=project_465001363
-##SBATCH --reservation=AI_workshop_2   # uncomment this to use the reservation during day 2 of the course
+#SBATCH --reservation=AI_workshop_2   # comment this out if the reservation is no longer available
 #SBATCH --partition=standard-g
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=8
@@ -11,7 +11,11 @@
 
 
 # Set up the software environment
-# NOTE: these modules will be available from the LUMI system stack after July 2024 and the "module use" line will no longer be necessary
+# NOTE: the loaded modules make relevant filesystem locations available inside the singularity container
+#   singularity-userfilesystems mounts project filesystem locations so that they can be accessed from the container (/scratch, /project, etc)
+#   singularity-CPEbits mounts some important system libraries that are optimized for LUMI
+# If you are interested, you can check the exact paths being mounted from
+#   /appl/local/training/modules/AI-20240529/<module-name>/default.lua
 module purge
 module use /appl/local/training/modules/AI-20240529/
 module load singularity-userfilesystems singularity-CPEbits

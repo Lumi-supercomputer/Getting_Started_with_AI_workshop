@@ -8,10 +8,10 @@
 
    1. Log in to the LUMI web interface: https://www.lumi.csc.fi
    2. Create your own scratch subdirectory in `/scratch/project_465001363/`. Use your username for the directory name. You can either
-        - Use the built-in file explorer, or
-        - Use a login node shell.
+        - Use the built-in file explorer ("Home Directory"), or
+        - Use the login node shell app in the webinterface
    3. Clone the [exercise repository](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop) to your scratch folder `/scratch/project_465001363/<username>`. You can either
-        - use a login node shell, or
+        - use the login node shell app in the webinterface, or
         - start a Jupyter lab job and use the Jupyter lab UI for cloning Git repositories, see [Clone_with_JupyterLab.md](./Clone_with_JupyterLab.md) for an illustrated step-by-step guide for this.
    4. Get familiar with the exercise repository layout.
 
@@ -39,3 +39,13 @@
         - explore the effect of adjusting the parameters for the `tokenizer` and `model.generate` calls
         - try different input prompts
         - explore the contents of the training data set
+
+3. (OPTIONAL) Explore other apps available in the LUMI webinterface
+
+   If you want, you can explore the remaining apps in the LUMI webinterface a bit. Interesting could be
+
+   - Disk quotas: Shows how much storage is available to your projects and how much is currently in use.
+   - Project view: Shows how much compute and storage billing units are left for each of your projects.
+   - Active jobs: Shows a list of all your current compute jobs.
+   - Desktop: Starts an interactive session with a Desktop-like user interface / window manager.
+   - Cloud storage configuration: Allows you to configure access tokens to transfer files between LUMI object storage and the LUMI compute cluster.
