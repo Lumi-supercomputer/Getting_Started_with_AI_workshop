@@ -6,16 +6,16 @@ These examples are based on the ROCm container provided to you at:
 ```
 This container was extended with some components required by the examples, notoriously Pytorch and HuggingFace transformers module, resulting in the container in:
 ```
-/scratch/project_465001063/containers/pytorch_transformers.sif
+/scratch/project_465001363/containers/pytorch_transformers.sif
 ```
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
-salloc -p small-g --account=project_465001063 --reservation=AI_workshop --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
+salloc -p small-g --account=project_465001363 --reservation=AI_workshop --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
 ```
 This is very similiar to what you have been doing with `sbatch` should you be using a run script with:
 ```
-#SBATCH --account=project_465001063
+#SBATCH --account=project_465001363
 #SBATCH --reservation=AI_workshop
 #SBATCH --partition=small-g
 #SBATCH --gpus-per-node=1
@@ -36,7 +36,7 @@ module load singularity-userfilesystems singularity-CPEbits
 With the allocation and container set we can do a quick smoke test to make sure Pytorch can detect the GPUs available in a node:
 ```
 srun singularity exec \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     bash -c '$WITH_CONDA ; \
              python -c "import torch; print(torch.cuda.device_count())"'
 ```
@@ -62,7 +62,7 @@ mkdir -p torch-cache hf-cache
 
 srun -n1 singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     bash -c '$WITH_CONDA ; \
              ROCR_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
@@ -122,7 +122,7 @@ So, running the following:
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     bash -c '$WITH_CONDA ; \
              ROCR_VISIBLE_DEVICES=0 \
              AMD_LOG_LEVEL=4 \
@@ -152,7 +152,7 @@ Another way to check for GPU activity is to use a profiler. There is a GPU profi
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     rocprof --help
 ```
 Given that Pytorch uses the HIP runtime in its implementation, one of the most relevant options is `--hip-trace` to instruct the profiler to collect the HIP runtime activity. Another option that is convinient is `--stats` that generates some statistics on the usage of the GPU. 
@@ -175,7 +175,7 @@ Now we can just run the profiler by preceding our original command with `rocprof
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     bash -c '$WITH_CONDA ; \
              ROCR_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \

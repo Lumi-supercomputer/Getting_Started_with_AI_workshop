@@ -8,7 +8,7 @@
 #SBATCH --output="output_%x_%j.txt"
 #SBATCH --partition=standard-g
 #SBATCH --time=00:05:00
-#SBATCH --account=project_465001063
+#SBATCH --account=project_465001363
 
 # Load custom modules that are not (yet) part of the central LUMI stack (singularity-userfilesystems)
 module use /appl/local/training/modules/AI-20240529

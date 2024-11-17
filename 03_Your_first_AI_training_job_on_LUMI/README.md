@@ -46,7 +46,7 @@
         - `--model-name` (a name under which the model produced by the run will be stored; optional)
         - `--num-workers` (optional)
   
-        Please set the paths to some destination of your choice within your `/scratch/project_465001063/<username>` directory.
+        Please set the paths to some destination of your choice within your `/scratch/project_465001363/<username>` directory.
   
         > **Tip**
         >

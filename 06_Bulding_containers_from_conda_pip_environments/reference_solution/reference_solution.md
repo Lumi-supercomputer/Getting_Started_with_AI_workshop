@@ -33,7 +33,7 @@ On a LUMI-C compute node, we may build the container non-interactively by:
 ```bash
 $ module use /appl/local/training/modules/AI-20240529
 $ module load LUMI cotainr
-$ srun --output=cotainr.out --error=cotainr.err --account=project_465001063 --time=00:05:00 --mem=60G --cpus-per-task=8 --partition=dev-g cotainr build python312.sif --system=lumi-c --conda-env=python312.yml --accept-licenses
+$ srun --output=cotainr.out --error=cotainr.err --account=project_465001363 --time=00:05:00 --mem=60G --cpus-per-task=8 --partition=dev-g cotainr build python312.sif --system=lumi-c --conda-env=python312.yml --accept-licenses
 ```
 
 > [!WARNING]

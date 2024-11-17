@@ -30,7 +30,7 @@ cotainr build minimal_pytorch.sif --system=lumi-g --conda-env=minimal_pytorch.ym
 If you need to change something in the conda environment, update the content of `minimal_pytorch.yml` and rebuild the container. To avoid putting stress on the login-nodes, you may want to consider running cotainr non-interactively on a compute node instead of the login nodes, e.g.
 
 ```bash
-srun --output=cotainr.out --error=cotainr.err --account=project_465001063 --time=00:30:00 --mem=64G --cpus-per-task=32 --partition=debug cotainr build minimal_pytorch.sif --system=lumi-g --conda-env=minimal_pytorch.yml --accept-licenses
+srun --output=cotainr.out --error=cotainr.err --account=project_465001363 --time=00:30:00 --mem=64G --cpus-per-task=32 --partition=debug cotainr build minimal_pytorch.sif --system=lumi-g --conda-env=minimal_pytorch.yml --accept-licenses
 ```
 
 More details about building conda/pip environment containers using cotainr may be found in the [cotainr documentation](https://cotainr.readthedocs.io/en/latest/user_guide/conda_env.html) and the [LUMI Docs cotainr documentation](https://docs.lumi-supercomputer.eu/software/containers/singularity/#building-containers-using-the-cotainr-tool).

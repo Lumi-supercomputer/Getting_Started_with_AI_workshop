@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=project_465001063
+#SBATCH --account=project_465001363
 ##SBATCH --reservation=AI_workshop_2   # uncomment this to use the reservation during day 2 of the course
 #SBATCH --partition=standard-g
 #SBATCH --nodes=2
@@ -16,7 +16,7 @@ module purge
 module use /appl/local/training/modules/AI-20240529/
 module load singularity-userfilesystems singularity-CPEbits
 
-CONTAINER=/scratch/project_465001063/containers/pytorch_transformers.sif
+CONTAINER=/scratch/project_465001363/containers/pytorch_transformers.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"

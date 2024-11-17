@@ -6,12 +6,12 @@ These examples are based on the ROCm container provided to you at:
 ```
 This container was extended with some components required by the examples, notoriously Pytorch and HuggingFace transformers module, resulting in the container in:
 ```
-/scratch/project_465001063/containers/pytorch_transformers.sif
+/scratch/project_465001363/containers/pytorch_transformers.sif
 ```
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
- N=2 ; salloc -p standard-g --account=project_465001063 --reservation=AI_workshop --threads-per-core 1 --exclusive -N $N --gpus $((N*8)) -t 1:00:00 --mem 0
+ N=2 ; salloc -p standard-g --account=project_465001363 --reservation=AI_workshop --threads-per-core 1 --exclusive -N $N --gpus $((N*8)) -t 1:00:00 --mem 0
 ```
 We'll also leverage the configuration for singularity provided by:
 ```
@@ -23,7 +23,7 @@ module load singularity-userfilesystems singularity-CPEbits
 With the allocation and container set we can do a quick smoke test to make sure Pytorch can detect the GPUs available in a node:
 ```
 srun singularity exec \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     bash -c '$WITH_CONDA ; \
              python -c "import torch; print(torch.cuda.device_count())"'
 ```
@@ -113,7 +113,7 @@ srun -N1 -n8 --gpus 8 \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     /workdir/run.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
@@ -128,7 +128,7 @@ srun -N2 -n16 --gpus 16 \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     /workdir/run.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
@@ -158,7 +158,7 @@ srun -N2 -n16 --gpus 16 \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     /workdir/run-profile.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
@@ -199,19 +199,19 @@ We have downloaded in advance the data set as that is a time consuming process. 
 
 Here's how the data is organized:
 * Full set in scratch storage:
-    * /scratch/project_465001063/data-sets/data-resnet
+    * /scratch/project_465001363/data-sets/data-resnet
 * Reduced set in scratch storage:
-    * /scratch/project_465001063/data-sets/data-resnet-small
+    * /scratch/project_465001363/data-sets/data-resnet-small
 
 * Full set in flash storage:
-    * /flash/project_465001063/data-sets/data-resnet
+    * /flash/project_465001363/data-sets/data-resnet
 * Reduced set in flash storage:
-    * /flash/project_465001063/data-sets/data-resnet-small
+    * /flash/project_465001363/data-sets/data-resnet-small
 
 * Tarball and HDF5 containers for the data set:
-    * /flash/project_465001063/data-sets/data-resnet.tar
-    * /flash/project_465001063/data-sets/data-resnet-small.tar
-    * /flash/project_465001063/data-sets/data-resnet.hdf5
+    * /flash/project_465001363/data-sets/data-resnet.tar
+    * /flash/project_465001363/data-sets/data-resnet-small.tar
+    * /flash/project_465001363/data-sets/data-resnet.hdf5
 
 The containers are useful to move the data around as it is much faster to move a single large file rather than many small files, e.g. it is better to untar a container than copy an expanded dataset from elsewhere.
 
@@ -224,7 +224,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     /workdir/run.sh \
         python -u /workdir/cv_example.py \
           -a resnet50 \
@@ -236,7 +236,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
           --dist-url "tcp://$(scontrol show hostname "$SLURM_NODELIST" | head -n1):45678" \
           --dist-backend 'nccl' \
           --epochs 2 \
-          /flash/project_465001063/data-sets/data-resnet-small
+          /flash/project_465001363/data-sets/data-resnet-small
 ```
 Here we are doing training using ResNet-50 over 2 epochs with 512 batch-size per GPU. We use the same 7 workers as before. The dataset is given by the last argument - we use the small data set but you are free to try the complete one. The other arguments are similar to what we used before to translate information from the SLURM environment.
 
@@ -301,7 +301,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
           --local_rank \$SLURM_LOCALID \
           --world-size \$SLURM_NPROCS \
           --epochs 2 \
-          /flash/project_465001063/data-sets/data-resnet-small
+          /flash/project_465001363/data-sets/data-resnet-small
 ```
 Note that, in spite of this being a similar example to what we tested before the options and their meaning changed a bit. E.g. the number of worker is per GPU in this case.
 
@@ -318,7 +318,7 @@ You are welcome to try larger data-sets and from different storage types to see 
 
 If limited by I/O, we could try in-memory storage. LUMI nodes don't have local SSD but have significant ammount of memory, so that could be sufficient for your needs. To store data in memory it is sufficient to do it as files under `/tmp` as that lives in memory. So we can do:
 ```
-srun tar -C /tmp -xf /flash/project_465001063/data-sets/data-resnet-small.tar 
+srun tar -C /tmp -xf /flash/project_465001363/data-sets/data-resnet-small.tar 
 ```
 to expand the trimmed down data set into memory and then we can just our model training there:
 ```
@@ -327,7 +327,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     /workdir/run.sh \
         python -u /workdir/cv_example.py \
           -a resnet50 \
@@ -361,7 +361,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
     -B .:/workdir \
-    /pfs/lustrep4/scratch/project_465001063/containers/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2-rocal-0046624.sif \
+    /pfs/lustrep4/scratch/project_465001363/containers/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2-rocal-0046624.sif \
     /workdir/run.sh \
         python -u /workdir/cv_example_rocal.py \
           -a resnet50 \
