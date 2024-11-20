@@ -2,7 +2,7 @@
 #SBATCH --account=project_465001063
 ##SBATCH --reservation=AI_workshop_2   # uncomment this to use the reservation during day 2 of the course
 #SBATCH --partition=standard-g
-#SBATCH --nodes=1
+#SBATCH --nodes=2
 #SBATCH --gpus-per-node=8
 #SBATCH --ntasks-per-node=8  # we want one process per GPU
 #SBATCH --cpus-per-task=7
@@ -11,7 +11,7 @@
 
 
 # Set up the software environment
-# NOTE: these modules will be available from the LUMI system stack after July 2024 and the "module use" line will no longer be necessary
+# NOTE: these modules will be available from the LUMI system stack after July 2024 and the "module use" line will no longer work
 module purge
 module use /appl/local/training/modules/AI-20240529/
 module load singularity-userfilesystems singularity-CPEbits
@@ -32,9 +32,12 @@ export TOKENIZERS_PARALLELISM=false
 # Path to where the trained model and logging data will go
 export OUTPUT_DIR=$SCRATCH/$USER/data/
 export LOGGING_DIR=$SCRATCH/$USER/runs/
-export MODEL_NAME=gpt-imdb-model-multigpu-no-torchrun
+export MODEL_NAME=gpt-imdb-model-multinode-no-torchrun
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
+
+# Ensure that RCCL uses the high-speed interconnect instead of something slow like TCP
+export NCCL_SOCKET_IFNAME=hsn
 
 # Set up variables to control distributed PyTorch training
 export MASTER_ADDR=$(hostname)

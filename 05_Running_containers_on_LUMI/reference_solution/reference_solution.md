@@ -11,13 +11,16 @@ For this exercise, we may use e.g. the lumi-pytorch-rocm-5.6.1-python-3.10-pytor
 
 To run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch container, we must remember to:
 
-1. Run the container using `singularity exec`
-2. Activate the conda environment in the container by running `$WITH_CONDA` in the container
-3. Submit the job using `srun` when using a LUMI-G compute node
+1. Bind mount the folder in which the `Hello_LUMI_GPU_World.py` script is placed (if not it's not your home folder)
+2. Run the container using `singularity exec`
+3. Activate the conda environment in the container by running `$WITH_CONDA` in the container
+4. Submit the job using `srun` when using a LUMI-G compute node
 
 On a LUMI login node, it may be done by:
 
 ```bash
+$ module use /appl/local/training/modules/AI-20240529
+$ module load singularity-userfilesystems
 $ singularity exec /appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
 Hello LUMI GPU World from uan01
 ********************************************************************************
@@ -31,6 +34,8 @@ Hello LUMI GPU World from uan01
 On a LUMI-G node, it may be done by:
 
 ```bash
+$ module use /appl/local/training/modules/AI-20240529
+$ module load singularity-userfilesystems
 $ srun --account=project_465001063 --partition=small-g --nodes=1 --gpus=4 singularity exec /appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
 srun: job 7002601 queued and waiting for resources
 srun: job 7002601 has been allocated resources
