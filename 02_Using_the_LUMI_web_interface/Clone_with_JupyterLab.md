@@ -5,7 +5,7 @@
     Follow the instructions in the second part of the exercise for this session. You can then keep using the session
     for the rest of the exercise.
 
-2. Once you have opened JupyterLab and opened your own folder in the navigation panel to the left, your browser should present a view like this (in this case for user `mathisen`):
+2. Once you have opened JupyterLab and opened your own folder in the navigation panel to the left, your browser should present a view like this (in this case for user `lukaspre`):
 
     ![After starting JupyterLab and opening your own folder, the navigation panel shows an empty list and the main screen a selection of apps to use in JupyterLab.](images/step0.png)
 
