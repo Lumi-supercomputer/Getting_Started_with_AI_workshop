@@ -2,20 +2,16 @@
 
 These examples are based on the ROCm container provided to you at:
 ```
-/appl/local/containers/sif-images/lumi-rocm-rocm-5.6.1.sif 
-```
-This container was extended with some components required by the examples, notoriously Pytorch and HuggingFace transformers module, resulting in the container in:
-```
-/scratch/project_465001063/containers/pytorch_transformers.sif
+/appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif 
 ```
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
-salloc -p small-g --account=project_465001063 --reservation=AI_workshop --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
+salloc -p small-g --account=project_465001363 --reservation=AI_workshop --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
 ```
 This is very similiar to what you have been doing with `sbatch` should you be using a run script with:
 ```
-#SBATCH --account=project_465001063
+#SBATCH --account=project_465001363
 #SBATCH --reservation=AI_workshop
 #SBATCH --partition=small-g
 #SBATCH --gpus-per-node=1
@@ -26,22 +22,24 @@ This is very similiar to what you have been doing with `sbatch` should you be us
 ```
 The difference is that it gives you a mechanism to just allocate the nodes without running anything. You can then issue `srun` commands interactively which can be useful to experiment more easily. You are always welcome to transition to use `sbatch` if that is preferred.
 
+<!--
 We'll also leverage the configuration for singularity provided by:
 ```
 module purge
 module use /appl/local/training/modules/AI-20240529/
 module load singularity-userfilesystems singularity-CPEbits
 ``` 
+-->
 
 With the allocation and container set we can do a quick smoke test to make sure Pytorch can detect the GPUs available in a node:
 ```
 srun singularity exec \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+  /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif  \
     bash -c '$WITH_CONDA ; \
              python -c "import torch; print(torch.cuda.device_count())"'
 ```
 
-It should yield `2` given that only one GPU was requested. Note that each time a node is used for the first time, there is a latency to have the container loaded. Running the command above again on the same allocation should complete faster.
+It should yield `2` given that only two GPUs were requested. Note that each time a node is used for the first time, there is a latency to have the container loaded. Running the command above again on the same allocation should complete faster.
 
 ## Hands-on exercise
 
@@ -51,7 +49,7 @@ We will leverage here the same LLM example as before with small adaptations. No 
 Here we'll recover our fine-tunning example for IMDB movie review generation:
 
 ```
-curl -o GPT-neo-IMDB-finetuning.py -L https://raw.githubusercontent.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/main/03_Your_first_AI_training_job_on_LUMI/reference_solution/GPT-neo-IMDB-finetuning.py
+curl -o GPT-neo-IMDB-finetuning.py -L https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/03_Your_first_AI_training_job_on_LUMI/reference_solution/GPT-neo-IMDB-finetuning.py
 ```
 
 ### 2. Spin training work
@@ -62,9 +60,9 @@ mkdir -p torch-cache hf-cache
 
 srun -n1 singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
     bash -c '$WITH_CONDA ; \
-             ROCR_VISIBLE_DEVICES=0 \
+             HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
              HF_HOME=/workdir/hf-cache \
              TOKENIZERS_PARALLELISM=false \
@@ -75,7 +73,7 @@ srun -n1 singularity exec \
                --num-workers 7'
 ```
 
-While the training runs, let's discover what is the CPU/GPU activity. Note that we are leveraging an allocation with 2 logical GPUs, so we are limiting visibility with the variable `ROCR_VISIBLE_DEVICES`. Given that the actually GPU chip has two GCDs (logical GPUs) is better to try monitor on the actually GPU, and not just half of it.
+While the training runs, let's discover what is the CPU/GPU activity. Note that we are leveraging an allocation with 2 logical GPUs, so we are limiting visibility with the variable `HIP_VISIBLE_DEVICES`. Given that the actually GPU chip has two GCDs (logical GPUs) is better to try monitor on the actually GPU, and not just half of it.
 
 ### 3. Monitoring GPU activity
 
@@ -122,9 +120,9 @@ So, running the following:
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
     bash -c '$WITH_CONDA ; \
-             ROCR_VISIBLE_DEVICES=0 \
+             HIP_VISIBLE_DEVICES=0 \
              AMD_LOG_LEVEL=4 \
              TORCH_HOME=/workdir/torch-cache \
              HF_HOME=/workdir/hf-cache \
@@ -152,7 +150,7 @@ Another way to check for GPU activity is to use a profiler. There is a GPU profi
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+   /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
     rocprof --help
 ```
 Given that Pytorch uses the HIP runtime in its implementation, one of the most relevant options is `--hip-trace` to instruct the profiler to collect the HIP runtime activity. Another option that is convinient is `--stats` that generates some statistics on the usage of the GPU. 
@@ -165,13 +163,9 @@ with:
 ```
         max_steps=10,
 ```
-and place a `sys.exit(0)` statement after:
+and place a `import sys ; sys.exit(0)` statement after:
 ```
     trainer.train(resume_from_checkpoint=args.resume)
-```
-You'll need to include the module in your Python script:
-```
-import sys
 ```
 
 Now we can just run the profiler by preceding our original command with `rocprof`.
@@ -179,9 +173,9 @@ Now we can just run the profiler by preceding our original command with `rocprof
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
     bash -c '$WITH_CONDA ; \
-             ROCR_VISIBLE_DEVICES=0 \
+             HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
              HF_HOME=/workdir/hf-cache \
              TOKENIZERS_PARALLELISM=false \
@@ -194,6 +188,6 @@ srun -n1 singularity exec \
 This will generate a few files named `results.*`. For example, `results.stats.csv` will provide the stats of the kernels that were executed in the GPU in descending order of combined execution time. These, can sometimes be easier to read if imported into a spreadsheet. 
 
 ### 6. Visualizing a profile trace
-Other file that might be interesting to look at is `results.json`. This can be loaded into the web app `https://ui.perfetto.dev/` and will allow you to visualize the GPU execution. Here is a snapshot of the 10 steps executed:
+Other file that might be interesting to look at is `results.json`. This can be loaded into the web app `https://ui.perfetto.dev/v46.0-35b3d9845/#/` and will allow you to visualize the GPU execution. Here is a snapshot of the 10 steps executed:
 
-![image](images/profile.png)
+![image](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/04_Understanding_GPU_activity_and_checking_jobs/images/profile.png)
