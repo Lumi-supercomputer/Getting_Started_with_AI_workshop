@@ -22,9 +22,9 @@ dependencies:
   - huggingface_hub=0.22.2
   - typing-extensions=4.11.0
   - pip:
-    - --extra-index-url https://download.pytorch.org/whl/rocm5.6/
+    - --extra-index-url https://download.pytorch.org/whl/rocm6.0/
     - accelerate==0.29
-    - pytorch-triton-rocm==2.2.0
-    - torch==2.2.2+rocm5.6
-    - torchaudio==2.2.2+rocm5.6
-    - torchvision==0.17.2+rocm5.6
+    - pytorch-triton-rocm==2.3.1
+    - torch==2.3.1+rocm6.0
+    - torchaudio==2.3.1+rocm6.0
+    - torchvision==0.18.1+rocm6.0

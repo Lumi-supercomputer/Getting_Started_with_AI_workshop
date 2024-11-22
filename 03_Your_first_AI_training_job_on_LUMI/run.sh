@@ -1,15 +1,20 @@
 #!/bin/bash
-#SBATCH --account=project_465001063
+#SBATCH --account=project_465001363
+#SBATCH --reservation=AI_workshop   # comment this out if the reservation is no longer available
 #SBATCH --partition=...
 ## <!!! ACTION REQUIRED: SPECIFY ADDITIONAL SLURM PARAMETERS HERE!!!>
 
 # Set up the software environment
-# NOTE: these modules will be available from the LUMI system stack after July 2024 and the "module use" line will no longer be necessary
+# NOTE: the loaded modules make relevant filesystem locations available inside the singularity container
+#   singularity-userfilesystems mounts project filesystem locations so that they can be accessed from the container (/scratch, /project, etc)
+#   singularity-CPEbits mounts some important system libraries that are optimized for LUMI
+# If you are interested, you can check the exact paths being mounted from
+#   /appl/local/training/modules/AI-20240529/<module-name>/default.lua
 module purge
 module use /appl/local/training/modules/AI-20240529/
 module load singularity-userfilesystems singularity-CPEbits
 
-CONTAINER=/scratch/project_465001063/containers/pytorch_transformers.sif
+CONTAINER=/scratch/project_465001363/containers/pytorch_transformers.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"

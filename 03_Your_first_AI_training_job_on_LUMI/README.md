@@ -10,7 +10,7 @@
 
 1. Familiarise yourself with the training script.
 
-   As a first exercise, familiarise yourself with the training script and understand how it is working. You will not need to make any changes at this point.
+   As a first exercise, familiarise yourself with the training script and understand how it is working. You do not need to make any changes to the file at this point.
 
    1. Check the training script [03_Your_first_AI_training_job_on_LUMI/GPT-neo-IMDB-finetuning.py](GPT-neo-IMDB-finetuning.py).
 
@@ -33,24 +33,29 @@
         - number of GPUs requested (1)
         - RAM requested
         - requested runtime (recommended: 15 minutes, for sub-exercise 4 below)
-        - the course reservation: `AI_workshop`
-  
+
         It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 
         The Python command needs to be run in a singularity container with the required software packages installed. The slurm batch file sets up a variable `CONTAINER`
-        with the container you should use.
+        with the path to the container you should use.
 
         For the Python script itself you will need to provide the following command line arguments:
         - `--output-path` (for the trained model and checkpoints)
         - `--logging-path` (for tensorboard logging data)
         - `--model-name` (a name under which the model produced by the run will be stored; optional)
-        - `--num-workers` (optional)
-  
-        Please set the paths to some destination of your choice within your `/scratch/project_465001063/<username>` directory.
-  
+        - `--num-workers` (optional, is used to set the number of PyTorch dataloader processes)
+
+        Please set the paths to some destination of your choice within your `/scratch/project_465001363/<username>` directory.
+
         > **Tip**
         >
-        > Slurm sets the environment variable `SLURM_CPUS_PER_TASK` to the value of allocated CPU cores per task.
+        > Slurm sets the environment variable `SLURM_CPUS_PER_TASK` to the value of allocated CPU cores per task, which
+        > can be useful for setting `--num-workers`.
+
+        > **Tip**
+        >
+        > The script sets environment variables `OUTPUT_DIR` and `LOGGING_DIR` with suggested paths you can use
+        > for storing the trained model as well as tensorboard logging data.
 
     2. Start the training using `sbatch run.sh` from a login node shell (LUMI web interface or SSH).
 
@@ -58,7 +63,7 @@
 
 3. Check your job.
 
-    1. From a login node shell, use the slurm command `squeue --me` to check that your job is running. You can use the `tail -f` command to check the outputs of the job from the slurm log once the job is running.
+    1. From a login node shell, use the slurm command `squeue --me` to check that your job is running. You can use the `tail -f` command to check the outputs of the job from the slurm log file `/03_Your_first_AI_training_job_on_LUMI/slurm-<jobid>.out` that is created once the job is running.
 
         You can also check your active jobs from the LUMI web interface: Navigate to Jobs > Active Jobs.
 
