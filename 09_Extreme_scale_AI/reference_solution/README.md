@@ -1,4 +1,4 @@
-# 10 Extreme scale AI
+# 09 Extreme scale AI - Solution
 ## LLM hands-on exercises
 ### 1. Setting some run scripts is a great idea!
 
