@@ -1,29 +1,19 @@
-# 10 Extreme scale AI
+# 09 Extreme scale AI
 
 These examples are based on the ROCm container provided to you at:
 ```
-/appl/local/containers/sif-images/lumi-rocm-rocm-5.6.1.sif 
-```
-This container was extended with some components required by the examples, notoriously Pytorch and HuggingFace transformers module, resulting in the container in:
-```
-/scratch/project_465001063/containers/pytorch_transformers.sif
+/appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif 
 ```
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
- N=2 ; salloc -p standard-g --account=project_465001063 --reservation=AI_workshop --threads-per-core 1 --exclusive -N $N --gpus $((N*8)) -t 1:00:00 --mem 0
+ N=2 ; salloc -p standard-g --account=project_465001363 --reservation=AI_workshop_2 --threads-per-core 1 --exclusive -N $N --gpus $((N*8)) -t 1:00:00 --mem 0
 ```
-We'll also leverage the configuration for singularity provided by:
-```
-module purge
-module use /appl/local/training/modules/AI-20240529/
-module load singularity-userfilesystems singularity-CPEbits
-``` 
 
 With the allocation and container set we can do a quick smoke test to make sure Pytorch can detect the GPUs available in a node:
 ```
 srun singularity exec \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif  \
     bash -c '$WITH_CONDA ; \
              python -c "import torch; print(torch.cuda.device_count())"'
 ```
@@ -94,7 +84,7 @@ There are a lot of components to set and monitor the right environment for our t
 
 Let's recover our multiple GPU LLM training application:
 ```
-curl -o GPT-neo-IMDB-finetuning-mp.py -L https://raw.githubusercontent.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/main/08_Scaling_to_multiple_GPUs/reference_solution/GPT-neo-IMDB-finetuning.py
+curl -o GPT-neo-IMDB-finetuning-mp.py -L https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/03_Your_first_AI_training_job_on_LUMI/reference_solution/GPT-neo-IMDB-finetuning.py
 ```
 The only change we will do is selecting a different thread multiprocessing strategy. We will add:
 ```
@@ -104,7 +94,12 @@ right after:
 ```
 if __name__ == "__main__":  
 ```
-This is meant to workaround an issue in Pytorch around the registration of threads (https://github.com/pytorch/pytorch/issues/119845). The need for this will be revisited after next scheduled update.
+This is meant to workaround an issue in Pytorch around the registration of threads (https://github.com/pytorch/pytorch/issues/119845).
+
+One might need to reduce the training batch size from 32 if we use too much memory. That can be done by setting:
+```
+train_batch_size = 24
+```
 
 Now we can run in a single node:
 ```
@@ -113,7 +108,7 @@ srun -N1 -n8 --gpus 8 \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif  \
     /workdir/run.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
@@ -127,8 +122,11 @@ MASTER_ADDR=$(scontrol show hostname "$SLURM_NODELIST" | head -n1) \
 srun -N2 -n16 --gpus 16 \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
+    -B /var/spool/slurmd \
+    -B /opt/cray \
+    -B /usr/lib64/libcxi.so.1 \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /scratch/project_465001363/containers/pytorch_transformers.sif \
     /workdir/run.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
@@ -136,6 +134,7 @@ srun -N2 -n16 --gpus 16 \
                --logging-path /workdir/train-logging \
                --num-workers 7
 ```
+Notice that, the moment one wants to run accross nodes, binding `/var/spool/slurmd`, `/opt/cray` and `/usr/lib64/libcxi.so.1` is a requirement.
 
 ### 3. Monitoring GPU activity
 
@@ -157,8 +156,11 @@ MASTER_ADDR=$(scontrol show hostname "$SLURM_NODELIST" | head -n1) \
 srun -N2 -n16 --gpus 16 \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
+    -B /var/spool/slurmd \
+    -B /opt/cray \
+    -B /usr/lib64/libcxi.so.1 \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif  \
     /workdir/run-profile.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
@@ -167,10 +169,10 @@ srun -N2 -n16 --gpus 16 \
                --num-workers 7
 ```
 The resulting profile for the 32 steps would look like:
-![image](images/profile.png)
+![image](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/09_Extreme_scale_AI/images/profile.png)
 
 Zooming in, we can see the RCCL activity. The moment these kernels dominate the profile we start to be network bound.
-![image](images/profile-detail.png)
+![image](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/09_Extreme_scale_AI/images/profile-detail.png)
 
 
 ## Computer vision hands-on exercises:
@@ -182,7 +184,7 @@ Let's grab one of the official pytorch examples for image classification:
 ```
 curl -L \
   -o cv_example.py \
-  https://raw.githubusercontent.com/pytorch/examples/main/imagenet/main.py
+  https://github.com/pytorch/examples/raw/main/imagenet/main.py
 ```
 Let's just add the same fix as before by adding:
 ```
@@ -195,25 +197,18 @@ def main():
 
 ### 2. Know where the data lives
 
-We have downloaded in advance the data set as that is a time consuming process. The image classification labels are controlled by the folder namming of the data set that contains many files in a compressed image format. To be able to make quicker progress, we also created a trimmed down version of the data-set with just a fraction of the classes.
+We have downloaded in advance the data set (ImageNet) as that is a time consuming process. The image classification labels are controlled by the folder naming of the data set that contains many files in a compressed image format. To be able to make quicker progress, we also created a trimmed down version of the data-set with just a fraction of the classes.
 
 Here's how the data is organized:
-* Full set in scratch storage:
-    * /scratch/project_465001063/data-sets/data-resnet
 * Reduced set in scratch storage:
-    * /scratch/project_465001063/data-sets/data-resnet-small
-
-* Full set in flash storage:
-    * /flash/project_465001063/data-sets/data-resnet
+    * /scratch/project_465001363/data-sets/data-resnet-small
 * Reduced set in flash storage:
-    * /flash/project_465001063/data-sets/data-resnet-small
+    * /flash/project_465001363/data-sets/data-resnet-small
 
-* Tarball and HDF5 containers for the data set:
-    * /flash/project_465001063/data-sets/data-resnet.tar
-    * /flash/project_465001063/data-sets/data-resnet-small.tar
-    * /flash/project_465001063/data-sets/data-resnet.hdf5
+* Tarball container for the data set:
+    * /flash/project_465001363/data-sets/data-resnet-small.tar
 
-The containers are useful to move the data around as it is much faster to move a single large file rather than many small files, e.g. it is better to untar a container than copy an expanded dataset from elsewhere.
+The container is useful to move the data around as it is much faster to move a single large file rather than many small files, e.g. it is better to untar a container than copy an expanded dataset from elsewhere.
 
 ### 3. Training at scale
 We are ready to run with one or more nodes (adjust `N` for the number of nodes) just by issuing:
@@ -223,8 +218,12 @@ N=1 ; \
 srun -N $N -n $((N*8)) --gpus $((N*8)) \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
+    -B /var/spool/slurmd \
+    -B /opt/cray \
+    -B /usr/lib64/libcxi.so.1 \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    -B /flash \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif  \
     /workdir/run.sh \
         python -u /workdir/cv_example.py \
           -a resnet50 \
@@ -236,7 +235,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
           --dist-url "tcp://$(scontrol show hostname "$SLURM_NODELIST" | head -n1):45678" \
           --dist-backend 'nccl' \
           --epochs 2 \
-          /flash/project_465001063/data-sets/data-resnet-small
+          /flash/project_465001363/data-sets/data-resnet-small
 ```
 Here we are doing training using ResNet-50 over 2 epochs with 512 batch-size per GPU. We use the same 7 workers as before. The dataset is given by the last argument - we use the small data set but you are free to try the complete one. The other arguments are similar to what we used before to translate information from the SLURM environment.
 
@@ -271,15 +270,15 @@ Several frameworks for distributed training have been developed for different pu
 We can try one of the DeepSpeed examples on our setup similar to our computer vision example:
 ```
 curl -L -o cv_example_ds.py \
-https://raw.githubusercontent.com/microsoft/DeepSpeedExamples/master/training/imagenet/main.py
+https://github.com/microsoft/DeepSpeedExamples/raw/master/training/imagenet/main.py
 
 curl -LO \
-https://raw.githubusercontent.com/microsoft/DeepSpeedExamples/master/training/imagenet/config/ds_fp16_z1_config.json
+https://github.com/microsoft/DeepSpeedExamples/raw/master/training/imagenet/config/ds_fp16_z1_config.json
 ```
 Parse the files to create some understanding of the differences.
 
 ### 2. Running DeepSpeed with required dependencies 
-This container has DeepSpeed already installed so we will leverage it: `/appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif`.
+This container has DeepSpeed already installed so we will leverage it: `/appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif`.
 
 You can run the example like the following, however some dependencies might be missing. Can you install those? Can you setup the `spawn` multiprocessing mode?
 ```
@@ -288,8 +287,12 @@ MASTER_ADDR=$(scontrol show hostname "$SLURM_NODELIST" | head -n1) \
 srun -N $N -n $((N*8)) --gpus $((N*8)) \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
+    -B /var/spool/slurmd \
+    -B /opt/cray \
+    -B /usr/lib64/libcxi.so.1 \
     -B .:/workdir \
-    /appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif  \
+    -B /flash \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif   \
     /workdir/run.sh \
         python -u /workdir/cv_example_ds.py \
           --deepspeed \
@@ -301,24 +304,24 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
           --local_rank \$SLURM_LOCALID \
           --world-size \$SLURM_NPROCS \
           --epochs 2 \
-          /flash/project_465001063/data-sets/data-resnet-small
+          /flash/project_465001363/data-sets/data-resnet-small
 ```
 Note that, in spite of this being a similar example to what we tested before the options and their meaning changed a bit. E.g. the number of worker is per GPU in this case.
 
 
 ## I/O considerations hands-on exercise
 
-In our computer vision example. We experienced the I/O limits - we aimed at using flash storage. If one would have used scratch storage it would have been worse. However, the limits of flash storage wouldn't have let us have the complete set of files. So there are always tradeoffs we have to observe.
+In our computer vision example, we experienced the I/O limits - we aimed at using flash storage. If one would have used scratch storage it would have been worse. However, the limits of flash storage wouldn't have let us have the complete set of files. So there are always tradeoffs we have to observe.
 
 ### 1. Play with datasets and training models
 
 You are welcome to try larger data-sets and from different storage types to see how that affects the training. The largest the model more time the initialization will take as the labels are being processed. You can also select smaller models, like Resnet-18, so that you make things less GPU-bound and observe more easily the challenges around the data input pipeline.
 
-### 2. Prestage in memory
+### 2. Pre-stage in memory
 
 If limited by I/O, we could try in-memory storage. LUMI nodes don't have local SSD but have significant ammount of memory, so that could be sufficient for your needs. To store data in memory it is sufficient to do it as files under `/tmp` as that lives in memory. So we can do:
 ```
-srun tar -C /tmp -xf /flash/project_465001063/data-sets/data-resnet-small.tar 
+srun tar -C /tmp -xf /flash/project_465001363/data-sets/data-resnet-small.tar 
 ```
 to expand the trimmed down data set into memory and then we can just our model training there:
 ```
@@ -326,8 +329,12 @@ N=1 ; \
 srun -N $N -n $((N*8)) --gpus $((N*8)) \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
+    -B /var/spool/slurmd \
+    -B /opt/cray \
+    -B /usr/lib64/libcxi.so.1 \
     -B .:/workdir \
-    /scratch/project_465001063/containers/pytorch_transformers.sif \
+    -B /flash \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif  \
     /workdir/run.sh \
         python -u /workdir/cv_example.py \
           -a resnet50 \
@@ -345,34 +352,3 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
 Try monitor the activity and scale to more nodes. You see the training completes much faster as the I/O pipeline can keep up with the GPU demands.
 
 Note however, that in general, when scalling goes up, one tends to start using smaller batch sizes, which means less work per GPU, which can bring us back to an I/O bottleneck situation.
-
-## Preprocessing pipeline exercises - stay-tuned
-
-Also, while scaling up and the GPUs start being less busy with the batch compute, you might expose other bottlenecks in the data input pipeline. Not only file-system I/O happens, it can be followed by a more or less complex data preprocessing pipeline before the data, say an image, is turned into a tensor to be consumed by the optimizer. In this situation you might be interested in investigating solutions that also speedup this pipeline in GPU. For image processing, AMD developed the ROCm Augmentation Library (rocAL). This is an opensource project that you can check in https://github.com/ROCm/rocAL. This links also shows a table with the transformations supported.
-
-The following is possible in recent ROCm installs. However, on LUMI it doesn't because of the graph support by the driver.
-```
-curl -L -o cv_example_rocal.py https://raw.githubusercontent.com/ROCm/rocAL/develop/docs/examples/pytorch/imagenet_training/imagenet_training.py
-```
-
-```
-N=1 ; \    
-srun -N $N -n $((N*8)) --gpus $((N*8)) \
-    --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
-    singularity exec \
-    -B .:/workdir \
-    /pfs/lustrep4/scratch/project_465001063/containers/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2-rocal-0046624.sif \
-    /workdir/run.sh \
-        python -u /workdir/cv_example_rocal.py \
-          -a resnet50 \
-          --batch-size $((8*512)) \
-          --workers $((8*7))  \
-          --gpu \$SLURM_LOCALID \
-          --world-size \$SLURM_NPROCS \
-          --rank \$SLURM_PROCID \
-          --dist-url "tcp://$(scontrol show hostname "$SLURM_NODELIST" | head -n1):45678" \
-          --dist-backend 'nccl' \
-          --epochs 2 \
-          --rocal-gpu \
-          /tmp/data-resnet
-```
