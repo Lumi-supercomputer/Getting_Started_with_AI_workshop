@@ -19,40 +19,45 @@ To run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch
 On a LUMI login node, it may be done by:
 
 ```bash
-$ module use /appl/local/training/modules/AI-20240529
+$ module use /project/project_465001363/modules/AI-20241126
 $ module load singularity-userfilesystems
-$ singularity exec /appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
-Hello LUMI GPU World from uan01
+$ singularity exec /project/project_465001363/containers/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
+Hello LUMI GPU World from uan03
 ********************************************************************************
- - We are running in the Singularity container /appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif
- - We are running Python version 3.10.13 (main, Sep 11 2023, 13:44:35) [GCC 11.2.0] from /opt/miniconda3/envs/pytorch/bin/python3
+ - We are running in the Singularity container /project/project_465001363/containers/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif
+ - We are running Python version 3.12.6 | packaged by Anaconda, Inc. | (main, Oct  3 2024, 07:30:27) [GCC 11.2.0] from /opt/miniconda3/envs/pytorch/bin/python3
+/opt/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/cuda/__init__.py:703: UserWarning: Can't initialize amdsmi - Error code: 34
+  warnings.warn(f"Can't initialize amdsmi - Error code: {e.err_code}")
  - The number of GPUs (really GCDs) available to PyTorch is 0
  - Our SLURM job ID is N/A
-********************************************************************************    
+********************************************************************************
+$
 ```
 
 On a LUMI-G node, it may be done by:
 
 ```bash
-$ module use /appl/local/training/modules/AI-20240529
+$ module use /project/project_465001363/modules/AI-20241126
 $ module load singularity-userfilesystems
-$ srun --account=project_465001063 --partition=small-g --nodes=1 --gpus=4 singularity exec /appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
-srun: job 7002601 queued and waiting for resources
-srun: job 7002601 has been allocated resources
-Hello LUMI GPU World from nid005027
+$ srun --account=project_465001363 --partition=small-g --time=00:00:30 --nodes=1 --gpus=4 singularity exec /project/project_465001363/containers/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
+
+srun: job 8473926 queued and waiting for resources
+srun: job 8473926 has been allocated resources
+Hello LUMI GPU World from nid005034
 ********************************************************************************
- - We are running in the Singularity container /appl/local/containers/sif-images/lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif
- - We are running Python version 3.10.13 (main, Sep 11 2023, 13:44:35) [GCC 11.2.0] from /opt/miniconda3/envs/pytorch/bin/python3
+ - We are running in the Singularity container /project/project_465001363/containers/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif
+ - We are running Python version 3.12.6 | packaged by Anaconda, Inc. | (main, Oct  3 2024, 07:30:27) [GCC 11.2.0] from /opt/miniconda3/envs/pytorch/bin/python3
  - The number of GPUs (really GCDs) available to PyTorch is 4
- - Our SLURM job ID is 7002601
+ - Our SLURM job ID is 8473926
 ********************************************************************************
+$
 ```
 
 > [!IMPORTANT]
 > The number of GPUs/GCDs available to PyTorch is based on how many you request from SLURM. The default is 0!
 
 > [!NOTE]
-> It is a good idea to copy the `lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` container to your project folder and run it from there to enable you to reproduce your results. We may remove or replace `lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif` at any point in time!
+> It is a good idea to copy the `lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif` container to your project folder and run it from there to enable you to reproduce your results. We may remove or replace `lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif` at any point in time!
 
 ## Exercise 2
 
@@ -72,17 +77,16 @@ $ export SINGULARITY_TMPDIR=/tmp/$USER
 $ export SINGULARITY_CACHEDIR=/tmp/$USER
 $ singularity pull docker://alpine:3.19.1
 INFO:    Converting OCI blobs to SIF format
-WARNING: 'nodev' mount option set on /tmp, it could be a source of failure during build process
 INFO:    Starting build...
-Getting image source signatures
-Copying blob 4abcf2066143 done  
-Copying config bc4e4f7999 done  
-Writing manifest to image destination
-Storing signatures
-2024/05/03 10:17:08  info unpack layer: sha256:4abcf20661432fb2d719aaf90656f55c287f8ca915dc1c92ec14ff61e67fbaf8
-2024/05/03 10:17:08  warn xattr{etc/shadow} ignoring ENOTSUP on setxattr "user.rootlesscontainers"
-2024/05/03 10:17:08  warn xattr{/tmp/schouoxv/build-temp-1595731751/rootfs/etc/shadow} destination filesystem does not support xattrs, further warnings will be suppressed
+INFO:    Fetching OCI image...
+3.3MiB / 3.3MiB [===========================================================] 100 % 24.5 KiB/s 0s
+INFO:    Extracting OCI image...
+INFO:    Inserting Singularity configuration...
 INFO:    Creating SIF file...
+$
+$ ls -al alpine_3.19.1.sif
+-rwxrwx---  1 javicher pepr_javicher 3379200 Nov 18 00:22 alpine_3.19.1.sif
+$
 ```
 
 which generates the `alpine_3.19.1.sif` container.
