@@ -50,6 +50,7 @@ Here we'll recover our fine-tunning example for IMDB movie review generation:
 
 ```
 curl -o GPT-neo-IMDB-finetuning.py -L https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/03_Your_first_AI_training_job_on_LUMI/reference_solution/GPT-neo-IMDB-finetuning.py
+curl -o util.py -L https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/03_Your_first_AI_training_job_on_LUMI/util.py
 ```
 
 ### 2. Spin training work
@@ -191,3 +192,48 @@ This will generate a few files named `results.*`. For example, `results.stats.cs
 Other file that might be interesting to look at is `results.json`. This can be loaded into the web app `https://ui.perfetto.dev/v46.0-35b3d9845/#/` and will allow you to visualize the GPU execution. Here is a snapshot of the 10 steps executed:
 
 ![image](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/04_Understanding_GPU_activity_and_checking_jobs/images/profile.png)
+
+### 7. Using Pytorch profiling infrastructure.
+
+Pytorch already provides profiling infrastruture that captures GPU activity as well as ranges for the CPU activities. It can be loaded with:
+```
+from torch.profiler import profile, ProfilerActivity
+```
+Then, you can identify the part of the code to profile, e.g. a given epoch. At the start of that part you can create and start the `profile` object:
+```
+prof = profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA])
+prof.start()
+```
+and at the end you can stop and create the profile file to be loaded into Perfetto UI tool mentioned above:
+```
+prof.stop()
+prof.export_chrome_trace("trace.json")
+```
+
+Let's get our example:
+```
+curl -o GPT-neo-IMDB-finetuning-profile.py -L https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/03_Your_first_AI_training_job_on_LUMI/reference_solution/GPT-neo-IMDB-finetuning.py
+```
+Use `max_steps=10` and place the profiler start and end around:
+```
+trainer.train(resume_from_checkpoint=args.resume)
+```
+Run as before:
+```
+srun -n1 singularity exec \
+    -B .:/workdir \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
+    bash -c '$WITH_CONDA ; \
+             HIP_VISIBLE_DEVICES=0 \
+             TORCH_HOME=/workdir/torch-cache \
+             HF_HOME=/workdir/hf-cache \
+             TOKENIZERS_PARALLELISM=false \
+             python -u /workdir/GPT-neo-IMDB-finetuning-profile.py \
+               --model-name gpt-imdb-model \
+               --output-path /workdir/train-output \
+               --logging-path /workdir/train-logging \
+               --num-workers 7'
+```
+Then you can visualize the file `trace.json`.
+
+A solution `GPT-neo-IMDB-finetuning-profile.py` is available [here](reference_solution/GPT-neo-IMDB-finetuning-profile.py).
