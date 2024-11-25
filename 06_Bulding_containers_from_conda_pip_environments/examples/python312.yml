@@ -1,5 +1,5 @@
-name: python313
+name: python312
 channels:
   - conda-forge
 dependencies:
-  - python=3.13
+  - python=3.12

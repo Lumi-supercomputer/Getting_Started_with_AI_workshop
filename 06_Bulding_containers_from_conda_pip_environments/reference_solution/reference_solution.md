@@ -20,20 +20,20 @@ Since the `python312.yml` environment only contains Python 3.12, we don't need R
 On a login node, we may build the container interactively by:
 
 ```bash
-$ module use /appl/local/training/modules/AI-20240529
-$ module load LUMI cotainr
+$ module use /appl/local/training/modules/AI-20241126
+$ module load cotainr
 $ cotainr build python312.sif --system=lumi-c --conda-env=python312.yml
 ```
 
 > [!NOTE]
-> The `module use /appl/local/training/modules/AI-20240529` provides the most recent version of cotainr installed in the AI workshop training project. If you don't include this, you get an older version of cotainr installed in the default LUMI software stack.
+> The `module use /appl/local/training/modules/AI-20241126` provides the most recent version of cotainr installed in the AI workshop training project. If you don't include this, you get an older version of cotainr installed in the default LUMI software stack.
 
 On a LUMI-C compute node, we may build the container non-interactively by:
 
 ```bash
-$ module use /appl/local/training/modules/AI-20240529
-$ module load LUMI cotainr
-$ srun --output=cotainr.out --error=cotainr.err --account=project_465001063 --time=00:05:00 --mem=60G --cpus-per-task=8 --partition=dev-g cotainr build python312.sif --system=lumi-c --conda-env=python312.yml --accept-licenses
+$ module use /appl/local/training/modules/AI-20241126
+$ module load cotainr
+$ srun --output=cotainr.out --error=cotainr.err --account=project_465001363 --time=00:05:00 --mem=60G --cpus-per-task=8 --partition=dev-g cotainr build python312.sif --system=lumi-c --conda-env=python312.yml --accept-licenses
 ```
 
 > [!WARNING]
@@ -47,7 +47,7 @@ Now, if we run the `python3 -c "import sys; print(sys.executable); print(sys.ver
 ```bash
 $ singularity exec python312.sif python3 -c "import sys; print(sys.executable); print(sys.version)"
 /opt/conda/envs/conda_container_env/bin/python3
-3.12.3 | packaged by conda-forge | (main, Apr 15 2024, 18:38:13) [GCC 12.3.0]
+3.12.7 | packaged by conda-forge | (main, Oct  4 2024, 16:05:46) [GCC 13.3.0]
 ```
 
 whereas directly on LUMI we get:
@@ -58,7 +58,7 @@ $ python3 -c "import sys; print(sys.executable); print(sys.version)"
 3.6.15 (default, Sep 23 2021, 15:41:43) [GCC]
 ```
 
-which shows that within the container we directly have access to the Python 3.12 we installed as part of our conda environment instead of the Python 3.6 provided by the OS. Note that if you run `python3 -c "import sys; print(sys.executable); print(sys.version)"` after having run `module load LUMI cotainr`, you will get
+which shows that within the container we directly have access to the Python 3.12 we installed as part of our conda environment instead of the Python 3.6 provided by the OS. Note that if you run `python3 -c "import sys; print(sys.executable); print(sys.version)"` after having run `module load cotainr`, you will get
 
 ```bash
 $ python3 -c "import sys; print(sys.executable); print(sys.version)"
