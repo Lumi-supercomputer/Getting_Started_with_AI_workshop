@@ -7,7 +7,7 @@
 >    - A LUMI login node
 >    - A LUMI-G compute node
 
-For this exercise, we may use e.g. the lumi-pytorch-rocm-5.6.1-python-3.10-pytorch-v2.2.2.sif container found in /appl/local/containers/sif-images/.
+For this exercise, we may use e.g. the lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif container found in /appl/local/containers/sif-images/.
 
 To run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch container, we must remember to:
 
