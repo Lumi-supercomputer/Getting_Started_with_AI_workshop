@@ -20,6 +20,7 @@ Since the `python312.yml` environment only contains Python 3.12, we don't need R
 On a login node, we may build the container interactively by:
 
 ```bash
+$ module purge
 $ module use /appl/local/training/modules/AI-20241126
 $ module load cotainr
 $ cotainr build python312.sif --system=lumi-c --conda-env=python312.yml
@@ -31,6 +32,7 @@ $ cotainr build python312.sif --system=lumi-c --conda-env=python312.yml
 On a LUMI-C compute node, we may build the container non-interactively by:
 
 ```bash
+$ module purge
 $ module use /appl/local/training/modules/AI-20241126
 $ module load cotainr
 $ srun --output=cotainr.out --error=cotainr.err --account=project_465001363 --time=00:05:00 --mem=60G --cpus-per-task=8 --partition=dev-g cotainr build python312.sif --system=lumi-c --conda-env=python312.yml --accept-licenses
