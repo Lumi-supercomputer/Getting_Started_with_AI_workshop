@@ -208,7 +208,7 @@ Here's how the data is organized:
 * Tarball container for the data set:
     * /flash/project_465001363/data-sets/data-resnet-small.tar
 
-The container is useful to move the data around as it is much faster to move a single large file rather than many small files, e.g. it is better to untar a container than copy an expanded dataset from elsewhere.
+The container is useful to move the data around as it is much faster to move a single large file rather than many small files, e.g. it is better to untar a container than copy an expanded dataset from elsewhere. The folders `/scratch` and `/flash` contain symbolic links so it is important to mount in your containers `/pfs` as these links are pointing there.
 
 ### 3. Training at scale
 We are ready to run with one or more nodes (adjust `N` for the number of nodes) just by issuing:
@@ -222,7 +222,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     -B /opt/cray \
     -B /usr/lib64/libcxi.so.1 \
     -B .:/workdir \
-    -B /flash \
+    -B /flash -B /pfs \
     /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif  \
     /workdir/run.sh \
         python -u /workdir/cv_example.py \
@@ -291,7 +291,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     -B /opt/cray \
     -B /usr/lib64/libcxi.so.1 \
     -B .:/workdir \
-    -B /flash \
+    -B /flash -B /pfs \
     /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif   \
     /workdir/run.sh \
         python -u /workdir/cv_example_ds.py \
@@ -333,7 +333,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     -B /opt/cray \
     -B /usr/lib64/libcxi.so.1 \
     -B .:/workdir \
-    -B /flash \
+    -B /flash -B /pfs \
     /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif  \
     /workdir/run.sh \
         python -u /workdir/cv_example.py \
