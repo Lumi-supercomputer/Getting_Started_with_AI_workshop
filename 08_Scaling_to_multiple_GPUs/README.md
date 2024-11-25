@@ -1,15 +1,5 @@
 # 08 Scaling to multiple GPUs
 
-## Examples
-
-- For a native PyTorch DDP example (without using HuggingFace modules), see [/bonus_material/pytorch_cotainr_container_basics](/bonus_material/pytorch_cotainr_container_basics), specifically
-  - for torchrun usage, check
-    - [train_multi_gpu_ddp_torchrun.py](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.py)
-    - [train_multi_gpu_ddp_torchrun.sh](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.sh)
-  - for manual process setup, check
-    - [train_multi_gpu_ddp_env_setup.py](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.py)
-    - [train_multi_gpu_ddp_env_setup.sh](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.sh)
-
 ## Hands-on exercises
 
 1. Adjust the training script to run with torchrun for multiple GCDs on a single node.
@@ -101,3 +91,13 @@
       > ```
 
    In this setting you could then also do the CPU bindings from the slurm batch file instead of Python, to keep the training script free of system specific setup.
+
+## Further Examples
+
+- For a native PyTorch DDP example (without using HuggingFace modules), see [/bonus_material/pytorch_cotainr_container_basics](/bonus_material/pytorch_cotainr_container_basics), specifically
+  - for torchrun usage, check
+    - [train_multi_gpu_ddp_torchrun.py](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.py)
+    - [train_multi_gpu_ddp_torchrun.sh](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.sh)
+  - for manual process setup, check
+    - [train_multi_gpu_ddp_env_setup.py](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.py)
+    - [train_multi_gpu_ddp_env_setup.sh](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.sh)

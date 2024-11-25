@@ -1,11 +1,5 @@
 # 03 Your first AI training job on LUMI
 
-## Examples
-
-- For a native PyTorch DDP example (without using HuggingFace modules), see [/bonus_material/pytorch_cotainr_container_basics](/bonus_material/pytorch_cotainr_container_basics), specifically check
-  - [train_single_gpu.py](/bonus_material/pytorch_cotainr_container_basics/train_single_gpu.py)
-  - [pytorch_cotainr_container_basics/train_single_gpu.sh](/bonus_material/pytorch_cotainr_container_basics/train_single_gpu.sh)
-
 ## Hands-on exercises
 
 1. Familiarise yourself with the training script.
@@ -90,3 +84,9 @@
         > **Note**
         >
         > If your earlier training job is still running, you can stop it using the `scancel` command.
+
+## Further Examples
+
+- For a native PyTorch DDP example (without using HuggingFace modules), see [/bonus_material/pytorch_cotainr_container_basics](/bonus_material/pytorch_cotainr_container_basics), specifically check
+  - [train_single_gpu.py](/bonus_material/pytorch_cotainr_container_basics/train_single_gpu.py)
+  - [pytorch_cotainr_container_basics/train_single_gpu.sh](/bonus_material/pytorch_cotainr_container_basics/train_single_gpu.sh)
