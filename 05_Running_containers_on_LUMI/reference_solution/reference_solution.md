@@ -21,7 +21,7 @@ On a LUMI login node, it may be done by:
 ```bash
 $ module use /project/project_465001363/modules/AI-20241126
 $ module load singularity-userfilesystems
-$ singularity exec /project/project_465001363/containers/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
+$ singularity exec /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
 Hello LUMI GPU World from uan03
 ********************************************************************************
  - We are running in the Singularity container /project/project_465001363/containers/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif
@@ -108,14 +108,19 @@ To successfully import Horovod+Tensorflow in the container, we must remember to:
 On a LUMI login node, it may be done by:
 
 ```bash
-$ singularity shell --bind /var/spool/slurmd,/opt/cray,/usr/lib64/libcxi.so.1,/usr/lib64/libjansson.so.4 /appl/local/containers/sif-images/lumi-tensorflow-rocm-5.5.1-python-3.10-tensorflow-2.11.1-horovod-0.28.1.sif 
+$ singularity shell --bind /var/spool/slurmd,/opt/cray,/usr/lib64/libcxi.so.1,/usr/lib64/libjansson.so.4   /appl/local/containers/sif-images/lumi-tensorflow-rocm-6.2.0-python-3.10-tensorflow-2.16.1-horovod-0.28.1.sif
 Singularity> $WITH_CONDA
 (tensorflow) Singularity> python3
-Python 3.10.13 (main, Sep 11 2023, 13:44:35) [GCC 11.2.0] on linux
+Python 3.10.14 (main, May  6 2024, 19:42:50) [GCC 11.2.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import horovod.tensorflow
-2024-05-03 10:32:19.010478: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
-To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-11-25 23:13:07.472850: E external/local_xla/xla/stream_executor/plugin_registry.cc:91] Invalid plugin kind specified: FFT
+2024-11-25 23:13:09.704705: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-11-25 23:13:11.553455: E external/local_xla/xla/stream_executor/plugin_registry.cc:91] Invalid plugin kind specified: DNN
+>>>
+(tensorflow) Singularity> exit
+exit
 ```
 
 Remember that instead of manually specifying the bind mounts, you may load the `singulariy-CPE-bits` module:
@@ -123,27 +128,34 @@ Remember that instead of manually specifying the bind mounts, you may load the `
 ```bash
 $ module use /appl/local/training/modules/AI-20240529
 $ module load singularity-CPEbits
-$ singularity shell /appl/local/containers/sif-images/lumi-tensorflow-rocm-5.5.1-python-3.10-tensorflow-2.11.1-horovod-0.28.1.sif 
+$ singularity shell /appl/local/containers/sif-images/lumi-tensorflow-rocm-6.2.0-python-3.10-tensorflow-2.16.1-horovod-0.28.1.sif
 Singularity> $WITH_CONDA
 (tensorflow) Singularity> python3
 Python 3.10.13 (main, Sep 11 2023, 13:44:35) [GCC 11.2.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import horovod.tensorflow
-2024-05-03 10:38:05.846689: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
-To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-11-25 23:27:34.216421: E external/local_xla/xla/stream_executor/plugin_registry.cc:91] Invalid plugin kind specified: FFT
+2024-11-25 23:27:46.333772: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-11-25 23:27:52.266194: E external/local_xla/xla/stream_executor/plugin_registry.cc:91] Invalid plugin kind specified: DNN
+>>>
+(tensorflow) Singularity> exit
+exit
 ```
 
 If you don't bind mount the CPE bits, you will get an error about `libmpi_cray.so.12` not being available:
 
 ```bash
-£ singularity shell /appl/local/containers/sif-images/lumi-tensorflow-rocm-5.5.1-python-3.10-tensorflow-2.11.1-horovod-0.28.1.sif 
+$ SINGULARITY_BIND=   singularity shell /appl/local/containers/sif-images/lumi-tensorflow-rocm-6.2.0-python-3.10-tensorflow-2.16.1-horovod-0.28.1.sif
 Singularity> $WITH_CONDA
 (tensorflow) Singularity> python3
-Python 3.10.13 (main, Sep 11 2023, 13:44:35) [GCC 11.2.0] on linux
+Python 3.10.14 (main, May  6 2024, 19:42:50) [GCC 11.2.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import horovod.tensorflow
-2024-05-03 10:34:42.720330: I tensorflow/core/platform/cpu_feature_guard.cc:193] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  AVX2 FMA
-To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-11-18 00:30:03.593024: E external/local_xla/xla/stream_executor/plugin_registry.cc:91] Invalid plugin kind specified: FFT
+2024-11-18 00:30:05.430617: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2024-11-18 00:30:07.082782: E external/local_xla/xla/stream_executor/plugin_registry.cc:91] Invalid plugin kind specified: DNN
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
   File "/opt/miniconda3/envs/tensorflow/lib/python3.10/site-packages/horovod/tensorflow/__init__.py", line 27, in <module>
@@ -161,6 +173,8 @@ Traceback (most recent call last):
   File "/opt/miniconda3/envs/tensorflow/lib/python3.10/site-packages/tensorflow/python/framework/load_library.py", line 54, in load_op_library
     lib_handle = py_tf.TF_LoadLibrary(library_filename)
 tensorflow.python.framework.errors_impl.NotFoundError: libmpi_cray.so.12: cannot open shared object file: No such file or directory
+>>>
+Singularity> exit
 ```
 
 If you don't activate the conda environment, it will use the container default Python, which does not have TensorFlow and Horovod installed:
@@ -174,4 +188,6 @@ Type "help", "copyright", "credits" or "license" for more information.
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 ModuleNotFoundError: No module named 'horovod'
+>>>
+Singularity> exit
 ```
