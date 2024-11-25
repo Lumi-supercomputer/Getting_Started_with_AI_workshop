@@ -121,7 +121,7 @@ To enable them in other operations, rebuild TensorFlow with the appropriate comp
 Remember that instead of manually specifying the bind mounts, you may load the `singulariy-CPE-bits` module:
 
 ```bash
-$ module use /appl/local/training/modules/AI-20240529
+$ module use /appl/local/training/modules/AI-20241126
 $ module load singularity-CPEbits
 $ singularity shell /appl/local/containers/sif-images/lumi-tensorflow-rocm-5.5.1-python-3.10-tensorflow-2.11.1-horovod-0.28.1.sif 
 Singularity> $WITH_CONDA

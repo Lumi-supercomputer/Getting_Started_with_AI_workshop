@@ -3,7 +3,7 @@
 This is a short introduction to building a PyTorch container with cotainr and running it on LUMI as a container with a minimal interface to the LUMI host software stacks. A general understanding of the architecture of LUMI is assumed.
 
 > [!WARNING]
-> To run these examples, it is assumed that you `module use /appl/local/training/modules/AI-20240529` with installed modules:
+> To run these examples, it is assumed that you `module use /appl/local/training/modules/AI-20241126` with installed modules:
 >
 > - An updated installation of the `cotainr` module that sets `--system=lumi-g` to use the LUMI ROCm base image (/appl/local/`containers/sif-images/lumi-rocm-rocm-5.6.1.sif`)
 > - The new `singularity-userfilesystems` module that bind mounts user file system paths, i.e. `/project`, `/scratch`, and `/flash`.

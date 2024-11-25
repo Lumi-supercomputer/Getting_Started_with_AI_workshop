@@ -99,8 +99,8 @@ where we have added `pandas`and `scikit-learn` as Conda packages and `env-var` a
 Now we can build the updated container:
 
 ```bash
-$ module use /appl/local/training/modules/AI-20240529
-$ module load LUMI cotainr
+$ module use /appl/local/training/modules/AI-20241126
+$ module load cotainr
 $ cotainr build python312_extra.sif --system=lumi-c --conda-env=python312_extra.yml
 ```
 
@@ -213,8 +213,8 @@ dependencies:
 Now we can build a container the usual way:
 
 ```bash
-$ module use /appl/local/training/modules/AI-20240529
-$ module load LUMI cotainr
+$ module use /appl/local/training/modules/AI-20241126
+$ module load cotainr
 $ cotainr build panopticapi.sif --system=lumi-c --conda-env=panopticapi.yml
 ```
 
