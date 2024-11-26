@@ -62,7 +62,7 @@ mkdir -p torch-cache hf-cache
 srun -n1 singularity exec \
     -B .:/workdir \
     /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
-    bash -c '$WITH_CONDA ; \
+    bash -c '$WITH_CONDA ; cd /workdir ; \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
              HF_HOME=/workdir/hf-cache \
@@ -122,7 +122,7 @@ So, running the following:
 srun -n1 singularity exec \
     -B .:/workdir \
     /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
-    bash -c '$WITH_CONDA ; \
+    bash -c '$WITH_CONDA ;  cd /workdir ; \
              HIP_VISIBLE_DEVICES=0 \
              AMD_LOG_LEVEL=4 \
              TORCH_HOME=/workdir/torch-cache \
@@ -175,7 +175,7 @@ Now we can just run the profiler by preceding our original command with `rocprof
 srun -n1 singularity exec \
     -B .:/workdir \
     /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
-    bash -c '$WITH_CONDA ; \
+    bash -c '$WITH_CONDA ; cd /workdir ;  \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
              HF_HOME=/workdir/hf-cache \
@@ -223,7 +223,7 @@ Run as before:
 srun -n1 singularity exec \
     -B .:/workdir \
     /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
-    bash -c '$WITH_CONDA ; \
+    bash -c '$WITH_CONDA ; cd /workdir ;  \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
              HF_HOME=/workdir/hf-cache \
