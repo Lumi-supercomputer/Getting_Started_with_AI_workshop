@@ -5,7 +5,7 @@ This is an example of using HuggingFace `accelerate` to launch a LLM training on
 For an example of setting up a PyTorch distributed training without making use of HuggingFace libraries, see the [cotainr container basics MNIST PyTorch examples](../pytorch_cotainr_container_basics/).
 
 > [!WARNING]
-> To run these examples, it is assumed that you `module use /appl/local/training/modules/AI-20240529` with installed modules:
+> To run these examples, it is assumed that you `module use /appl/local/training/modules/AI-20241126` with installed modules:
 >
 > - An updated installation of the `cotainr` module that sets `--system=lumi-g` to use the LUMI ROCm base image (/appl/local/`containers/sif-images/lumi-rocm-rocm-5.6.1.sif`)
 > - The new `singularity-userfilesystems` module that bind mounts user file system paths, i.e. `/project`, `/scratch`, and `/flash`.

@@ -26,7 +26,7 @@ The difference is that it gives you a mechanism to just allocate the nodes witho
 We'll also leverage the configuration for singularity provided by:
 ```
 module purge
-module use /appl/local/training/modules/AI-20240529/
+module use /appl/local/training/modules/AI-20241126/
 module load singularity-userfilesystems singularity-CPEbits
 ``` 
 -->
