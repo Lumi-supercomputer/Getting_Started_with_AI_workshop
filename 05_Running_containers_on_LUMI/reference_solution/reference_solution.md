@@ -126,7 +126,7 @@ exit
 Remember that instead of manually specifying the bind mounts, you may load the `singulariy-CPE-bits` module:
 
 ```bash
-$ module use /appl/local/training/modules/AI-20240529
+$ module use /appl/local/training/modules/AI-20241126
 $ module load singularity-CPEbits
 $ singularity shell /appl/local/containers/sif-images/lumi-tensorflow-rocm-6.2.0-python-3.10-tensorflow-2.16.1-horovod-0.28.1.sif
 Singularity> $WITH_CONDA

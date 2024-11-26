@@ -9,9 +9,9 @@
 #   singularity-userfilesystems mounts project filesystem locations so that they can be accessed from the container (/scratch, /project, etc)
 #   singularity-CPEbits mounts some important system libraries that are optimized for LUMI
 # If you are interested, you can check the exact paths being mounted from
-#   /appl/local/training/modules/AI-20240529/<module-name>/default.lua
+#   /appl/local/training/modules/AI-20241126/<module-name>/default.lua
 module purge
-module use /appl/local/training/modules/AI-20240529/
+module use /appl/local/training/modules/AI-20241126/
 module load singularity-userfilesystems singularity-CPEbits
 
 CONTAINER=/scratch/project_465001363/containers/pytorch_transformers.sif

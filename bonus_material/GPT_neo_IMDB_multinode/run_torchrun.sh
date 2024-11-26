@@ -13,7 +13,7 @@
 # Set up the software environment
 # NOTE: these modules will be available from the LUMI system stack after July 2024 and the "module use" line will no longer work
 module purge
-module use /appl/local/training/modules/AI-20240529/
+module use /appl/local/training/modules/AI-20241126/
 module load singularity-userfilesystems singularity-CPEbits
 
 CONTAINER=/scratch/project_465001063/containers/pytorch_transformers.sif
