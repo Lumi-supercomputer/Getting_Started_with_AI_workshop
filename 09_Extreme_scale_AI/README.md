@@ -126,7 +126,7 @@ srun -N2 -n16 --gpus 16 \
     -B /opt/cray \
     -B /usr/lib64/libcxi.so.1 \
     -B .:/workdir \
-    /scratch/project_465001363/containers/pytorch_transformers.sif \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
     /workdir/run.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
