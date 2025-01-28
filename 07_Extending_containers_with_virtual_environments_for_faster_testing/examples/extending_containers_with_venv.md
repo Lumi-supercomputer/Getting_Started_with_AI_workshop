@@ -60,8 +60,6 @@ Alternatively, we can turn the `myenv` directory into a SquashFS file and bind m
 ```bash
 mksquashfs myenv myenv.sqsh
 rm -rf myenv
-singularity exec -B myenv.sqsh:/user-software:image-src=/ minimal_pytorch.sif bash -c '
-    export PATH=/user-software/bin:$PATH &&
-    python my_script.py
-'
+export SINGULARITYENV_PREPEND_PATH=/user-software/bin
+singularity exec -B myenv.sqsh:/user-software:image-src=/ minimal_pytorch.sif python my_script.py
 ```
