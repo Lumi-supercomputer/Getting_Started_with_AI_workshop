@@ -26,7 +26,7 @@
         - number of CPUs requested
         - number of GPUs requested (1)
         - RAM requested
-        - requested runtime (recommended: 15 minutes, for sub-exercise 4 below)
+        - requested runtime (recommended: 15 minutes, so you can continue with sub-exercise 4 below)
 
         It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 
@@ -43,13 +43,13 @@
 
         > **Tip**
         >
-        > Slurm sets the environment variable `SLURM_CPUS_PER_TASK` to the value of allocated CPU cores per task, which
-        > can be useful for setting `--num-workers`.
+        > The script sets environment variables `OUTPUT_DIR` and `LOGGING_DIR` with suggested paths you can use
+        > for storing the trained model as well as tensorboard logging data.
 
         > **Tip**
         >
-        > The script sets environment variables `OUTPUT_DIR` and `LOGGING_DIR` with suggested paths you can use
-        > for storing the trained model as well as tensorboard logging data.
+        > Slurm sets the environment variable `SLURM_CPUS_PER_TASK` to the value of allocated CPU cores per task, which
+        > can be useful for setting `--num-workers`.
 
     2. Start the training using `sbatch run.sh` from a login node shell (LUMI web interface or SSH).
 

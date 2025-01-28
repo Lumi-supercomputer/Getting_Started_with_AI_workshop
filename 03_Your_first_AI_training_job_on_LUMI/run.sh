@@ -13,7 +13,7 @@ module purge
 module use /appl/local/containers/ai-modules
 module load singularity-AI-bindings
 
-CONTAINER=/scratch/project_465001707/containers/pytorch_transformers.sif
+CONTAINER=/project/project_465001707/containers/pytorch_transformers.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
