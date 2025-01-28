@@ -98,9 +98,7 @@ if __name__ == "__main__":
 
     # Let's print one sample from the dataset.
     print("Sample from dataset")
-    for b in train_dataset:
-        pprint(b)
-        break
+    pprint(train_dataset[200])
 
     # #### Setting up the training configuration
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
@@ -112,7 +110,7 @@ if __name__ == "__main__":
         save_steps=100,
         save_total_limit=4,
         logging_dir=logging_dir,
-        evaluation_strategy="steps",
+        eval_strategy="steps",
         eval_steps=200,  # compute validation loss every 200 steps
         learning_rate=2e-5,
         weight_decay=0.01,
