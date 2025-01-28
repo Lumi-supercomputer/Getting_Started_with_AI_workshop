@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --account=project_465001363
-#SBATCH --reservation=AI_workshop   # comment this out if the reservation is no longer available
+#SBATCH --account=project_465001707
+#SBATCH --reservation=AI_workshop_1   # comment this out if the reservation is no longer available
 #SBATCH --partition=small-g
 #SBATCH --gpus-per-node=1
 #SBATCH --ntasks-per-node=1
@@ -9,16 +9,15 @@
 #SBATCH --time=0:15:00
 
 # Set up the software environment
-# NOTE: the loaded modules make relevant filesystem locations available inside the singularity container
-#   singularity-userfilesystems mounts project filesystem locations so that they can be accessed from the container (/scratch, /project, etc)
-#   singularity-CPEbits mounts some important system libraries that are optimized for LUMI
+# NOTE: the loaded module makes relevant filesystem locations available inside the singularity container
+#   (/scratch, /project, etc) as well as mounts some important system libraries that are optimized for LUMI
 # If you are interested, you can check the exact paths being mounted from
-#   /appl/local/training/modules/AI-20241126/<module-name>/default.lua
+#   /appl/local/containers/ai-modules/singularity-AI-bindings/24.03.lua
 module purge
-module use /appl/local/training/modules/AI-20241126/
-module load singularity-userfilesystems singularity-CPEbits
+module use  /appl/local/containers/ai-modules
+module load singularity-AI-bindings
 
-CONTAINER=/scratch/project_465001363/containers/pytorch_transformers.sif
+CONTAINER=/scratch/project_465001707/containers/pytorch_transformers.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
