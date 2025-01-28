@@ -19,8 +19,8 @@ To run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch
 On a LUMI login node, it may be done by:
 
 ```bash
-$ module use /project/project_465001363/modules/AI-20241126
-$ module load singularity-userfilesystems
+$ module use /appl/local/containers/ai-modules
+$ module load singularity-AI-bindings
 $ singularity exec /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
 Hello LUMI GPU World from uan03
 ********************************************************************************
@@ -37,9 +37,9 @@ $
 On a LUMI-G node, it may be done by:
 
 ```bash
-$ module use /project/project_465001363/modules/AI-20241126
-$ module load singularity-userfilesystems
-$ srun --account=project_465001363 --partition=small-g --time=00:00:30 --nodes=1 --gpus=4 singularity exec /project/project_465001363/containers/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
+$ module use /appl/local/containers/ai-modules
+$ module load singularity-AI-bindings
+$ srun --account=project_465001707 --partition=small-g --time=00:00:30 --nodes=1 --gpus=4 singularity exec /project/project_465001707/containers/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
 
 srun: job 8473926 queued and waiting for resources
 srun: job 8473926 has been allocated resources
@@ -126,8 +126,8 @@ exit
 Remember that instead of manually specifying the bind mounts, you may load the `singulariy-CPE-bits` module:
 
 ```bash
-$ module use /appl/local/training/modules/AI-20241126
-$ module load singularity-CPEbits
+$ module use /appl/local/containers/ai-modules
+$ module load singularity-AI-bindings
 $ singularity shell /appl/local/containers/sif-images/lumi-tensorflow-rocm-6.2.0-python-3.10-tensorflow-2.16.1-horovod-0.28.1.sif
 Singularity> $WITH_CONDA
 (tensorflow) Singularity> python3
@@ -180,7 +180,7 @@ Singularity> exit
 If you don't activate the conda environment, it will use the container default Python, which does not have TensorFlow and Horovod installed:
 
 ```bash
-$ singularity shell /appl/local/containers/sif-images/lumi-tensorflow-rocm-5.5.1-python-3.10-tensorflow-2.11.1-horovod-0.28.1.sif 
+$ singularity shell --bind /var/spool/slurmd,/opt/cray,/usr/lib64/libcxi.so.1,/usr/lib64/libjansson.so.4   /appl/local/containers/sif-images/lumi-tensorflow-rocm-6.2.0-python-3.10-tensorflow-2.16.1-horovod-0.28.1.sif
 Singularity> python3
 Python 3.6.15 (default, Sep 23 2021, 15:41:43) [GCC] on linux
 Type "help", "copyright", "credits" or "license" for more information.
