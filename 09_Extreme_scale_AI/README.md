@@ -7,7 +7,7 @@ These examples are based on the ROCm container provided to you at:
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
- N=2 ; salloc -p standard-g --account=project_465001363 --reservation=AI_workshop_2 --threads-per-core 1 --exclusive -N $N --gpus $((N*8)) -t 1:00:00 --mem 0
+ N=2 ; salloc -p standard-g --account=project_465001707 --reservation=AI_workshop_2 --threads-per-core 1 --exclusive -N $N --gpus $((N*8)) -t 1:00:00 --mem 0
 ```
 
 With the allocation and container set we can do a quick smoke test to make sure Pytorch can detect the GPUs available in a node:
@@ -201,12 +201,12 @@ We have downloaded in advance the data set (ImageNet) as that is a time consumin
 
 Here's how the data is organized:
 * Reduced set in scratch storage:
-    * /scratch/project_465001363/data-sets/data-resnet-small
+    * /scratch/project_465001707/data-sets/data-resnet-small
 * Reduced set in flash storage:
-    * /flash/project_465001363/data-sets/data-resnet-small
+    * /flash/project_465001707/data-sets/data-resnet-small
 
 * Tarball container for the data set:
-    * /flash/project_465001363/data-sets/data-resnet-small.tar
+    * /flash/project_465001707/data-sets/data-resnet-small.tar
 
 The container is useful to move the data around as it is much faster to move a single large file rather than many small files, e.g. it is better to untar a container than copy an expanded dataset from elsewhere. The folders `/scratch` and `/flash` contain symbolic links so it is important to mount in your containers `/pfs` as these links are pointing there.
 
@@ -235,7 +235,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
           --dist-url "tcp://$(scontrol show hostname "$SLURM_NODELIST" | head -n1):45678" \
           --dist-backend 'nccl' \
           --epochs 2 \
-          /flash/project_465001363/data-sets/data-resnet-small
+          /flash/project_465001707/data-sets/data-resnet-small
 ```
 Here we are doing training using ResNet-50 over 2 epochs with 512 batch-size per GPU. We use the same 7 workers as before. The dataset is given by the last argument - we use the small data set but you are free to try the complete one. The other arguments are similar to what we used before to translate information from the SLURM environment.
 
@@ -304,7 +304,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
           --local_rank \$SLURM_LOCALID \
           --world-size \$SLURM_NPROCS \
           --epochs 2 \
-          /flash/project_465001363/data-sets/data-resnet-small
+          /flash/project_465001707/data-sets/data-resnet-small
 ```
 Note that, in spite of this being a similar example to what we tested before the options and their meaning changed a bit. E.g. the number of worker is per GPU in this case.
 
@@ -321,7 +321,7 @@ You are welcome to try larger data-sets and from different storage types to see 
 
 If limited by I/O, we could try in-memory storage. LUMI nodes don't have local SSD but have significant ammount of memory, so that could be sufficient for your needs. To store data in memory it is sufficient to do it as files under `/tmp` as that lives in memory. So we can do:
 ```
-srun tar -C /tmp -xf /flash/project_465001363/data-sets/data-resnet-small.tar 
+srun tar -C /tmp -xf /flash/project_465001707/data-sets/data-resnet-small.tar 
 ```
 to expand the trimmed down data set into memory and then we can just our model training there:
 ```
