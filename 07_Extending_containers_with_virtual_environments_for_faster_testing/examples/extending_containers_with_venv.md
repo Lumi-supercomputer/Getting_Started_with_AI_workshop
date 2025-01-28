@@ -61,8 +61,6 @@ Alternatively, we can turn the `myenv` directory into a SquashFS file and bind m
 mksquashfs myenv myenv.sqsh
 rm -rf myenv
 singularity exec -B myenv.sqsh:/user-software:image-src=/ minimal_pytorch.sif bash -c '
-    source /user-software/bin/activate &&
-    export VIRTUAL_ENV=/user-software &&
     export PATH=/user-software/bin:$PATH &&
     python my_script.py
 '
