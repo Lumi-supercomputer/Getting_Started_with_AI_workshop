@@ -46,7 +46,13 @@ export LOCAL_WORLD_SIZE=$SLURM_GPUS_PER_NODE
 
 # As opposed to the example in `run_torchrun.sh`, we can set the CPU binds directly via the slurm command, since we have
 #  one task per GPU. In this case we do NOT need to set them from within the Python code itself.
-srun singularity exec $CONTAINER \
+
+# Set up the CPU bind masks (can only be used with full node runs (standard-g or small-g with slurm argument `--exclusive`))
+CPU_BIND_MASKS="0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000"
+
+# tell slurm to configure the cpu binds specified by the mask, additional option v prints to configuration to the logs
+srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS \
+    singularity exec $CONTAINER \
     bash -c "RANK=\$SLURM_PROCID \
              LOCAL_RANK=\$SLURM_LOCALID \
              python GPT-neo-IMDB-finetuning.py \

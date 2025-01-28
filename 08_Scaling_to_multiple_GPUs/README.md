@@ -92,6 +92,10 @@
 
    In this setting you could then also do the CPU bindings from the slurm batch file instead of Python, to keep the training script free of system specific setup.
 
+## Solutions
+
+The folder `reference_solution/` contains an example solution for this exercise parts 1, 2 and 4. `reference_solution/prints_only_from_single_process` extends this to ensure that `print` statements in the code are run only by a single process. `reference_solution/with_cpu_bindings` shows how CPU bindings can be used both from within Python (when using torchrun) and directly via SLURM (exercise part 3).
+
 ## Further Examples
 
 - For a native PyTorch DDP example (without using HuggingFace modules), see [/bonus_material/pytorch_cotainr_container_basics](/bonus_material/pytorch_cotainr_container_basics), specifically

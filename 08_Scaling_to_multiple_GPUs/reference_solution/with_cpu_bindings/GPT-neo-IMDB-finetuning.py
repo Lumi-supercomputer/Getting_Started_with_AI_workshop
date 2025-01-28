@@ -12,15 +12,38 @@
 
 import argparse
 import math
+import os
 import time
 from pprint import pprint
 
+import psutil
 import torch
 from datasets import load_dataset
 from util import preprocess_data, get_output_paths
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           DataCollatorForLanguageModeling, Trainer,
                           TrainingArguments)
+
+
+def set_cpu_affinity(local_rank):
+    LUMI_GPU_CPU_map = {
+        # A mapping from GCD to the closest CPU cores in a LUMI-G node
+        # Note that CPU cores 0, 8, 16, 24, 32, 40, 48, 56 are reserved for the
+        # system and not available for the user
+        # See https://docs.lumi-supercomputer.eu/hardware/lumig/
+        0: [49, 50, 51, 52, 53, 54, 55],
+        1: [57, 58, 59, 60, 61, 62, 63],
+        2: [17, 18, 19, 20, 21, 22, 23],
+        3: [25, 26, 27, 28, 29, 30, 31],
+        4: [1, 2, 3, 4, 5, 6, 7],
+        5: [9, 10, 11, 12, 13, 14, 15],
+        6: [33, 34, 35, 36, 37, 38, 39],
+        7: [41, 42, 43, 44, 45, 46, 47],
+    }
+    cpu_list = LUMI_GPU_CPU_map[local_rank]
+    print(f"Rank {rank} (local {local_rank}) binding to cpus: {cpu_list}")
+    psutil.Process().cpu_affinity(cpu_list)
+
 
 if __name__ == "__main__":
 
@@ -49,13 +72,31 @@ if __name__ == "__main__":
         default=1,
         help="The number of CPU worker processes to use.",
     )
+    parser.add_argument(
+        "--set-cpu-binds",
+        default=False,
+        action="store_true",
+        help="Bind the process to the CPU cores closest to the GPU used by the process (identified by the LOCAL_RANK environment variable).",
+    )
     args, _ = parser.parse_known_args()
+
+    # Read the environment variables provided by torchrun
+    rank = int(os.environ["RANK"])
+    local_rank = int(os.environ["LOCAL_RANK"])
+    world_size = int(os.environ["WORLD_SIZE"])
+    local_world_size = int(os.environ["LOCAL_WORLD_SIZE"])
+
+    # Set up CPU binding if --set-cpu-binds is given
+    if args.set_cpu_binds:
+        set_cpu_affinity(local_rank)
 
     # Then we determine the device on which to train the model.
     print("Using PyTorch version:", torch.__version__)
     if torch.cuda.is_available():
-        # <!!! ACTION REQUIRED: ADJUST THIS SO THAT EACH PROCESS PICKS THE APPROPRIATE GPU !!!>
-        device = torch.device("cuda")
+        print(
+            f"Rank {rank} of {world_size} (local: {local_rank}) sees {torch.cuda.device_count()} devices"
+        )
+        device = torch.device("cuda", local_rank)
         print("Using GPU, device name:", torch.cuda.get_device_name(device))
     else:
         print("No GPU found, using CPU instead.")
@@ -102,7 +143,6 @@ if __name__ == "__main__":
     pprint(train_dataset[200])
 
     # #### Setting up the training configuration
-    # <!!! ACTION REQUIRED: ADJUST THIS SO THAT EACH PROCESS ONLY HANDLES A SHARE OF THE TOTAL BATCH SIZE !!!>
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
 
@@ -117,12 +157,14 @@ if __name__ == "__main__":
         learning_rate=2e-5,
         weight_decay=0.01,
         bf16=True,  # use 16-bit floating point precision
-        per_device_train_batch_size=train_batch_size,
+        # divide the total training batch size by the number of GCDs for the per-device batch size
+        per_device_train_batch_size=train_batch_size // world_size,
         per_device_eval_batch_size=eval_batch_size,
         max_steps=1000,
         dataloader_num_workers=args.num_workers,
         dataloader_pin_memory=True,
         report_to=["tensorboard"],  # log statistics for tensorboard
+        ddp_find_unused_parameters=False,  # there are no unused parameters, causing PyTorch to issue a warning should this be set to True
     )
 
     # #### Preprocessing of training data

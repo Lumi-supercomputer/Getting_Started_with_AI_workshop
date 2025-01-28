@@ -12,6 +12,7 @@
 
 import argparse
 import math
+import os
 import time
 from pprint import pprint
 
@@ -21,6 +22,7 @@ from util import preprocess_data, get_output_paths
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           DataCollatorForLanguageModeling, Trainer,
                           TrainingArguments)
+
 
 if __name__ == "__main__":
 
@@ -51,11 +53,19 @@ if __name__ == "__main__":
     )
     args, _ = parser.parse_known_args()
 
+    # Read the environment variables provided by torchrun
+    rank = int(os.environ["RANK"])
+    local_rank = int(os.environ["LOCAL_RANK"])
+    world_size = int(os.environ["WORLD_SIZE"])
+    local_world_size = int(os.environ["LOCAL_WORLD_SIZE"])
+    
     # Then we determine the device on which to train the model.
     print("Using PyTorch version:", torch.__version__)
     if torch.cuda.is_available():
-        # <!!! ACTION REQUIRED: ADJUST THIS SO THAT EACH PROCESS PICKS THE APPROPRIATE GPU !!!>
-        device = torch.device("cuda")
+        print(
+            f"Rank {rank} of {world_size} (local: {local_rank}) sees {torch.cuda.device_count()} devices"
+        )
+        device = torch.device("cuda", local_rank)
         print("Using GPU, device name:", torch.cuda.get_device_name(device))
     else:
         print("No GPU found, using CPU instead.")
@@ -71,7 +81,8 @@ if __name__ == "__main__":
     # Let's start with getting the appropriate tokenizer.
     pretrained_model = "EleutherAI/gpt-neo-1.3B"
 
-    print("Loading model and tokenizer")
+    if rank == 0:
+        print("Loading model and tokenizer")
     start = time.time()
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
     tokenizer.pad_token = tokenizer.eos_token
@@ -80,7 +91,8 @@ if __name__ == "__main__":
     model = AutoModelForCausalLM.from_pretrained(pretrained_model)
     model.to(device)
     stop = time.time()
-    print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
+    if rank == 0:
+        print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
 
     # #### Loading the IMDb data set
     #
@@ -98,11 +110,11 @@ if __name__ == "__main__":
     )
 
     # Let's print one sample from the dataset.
-    print("Sample from dataset")
-    pprint(train_dataset[200])
+    if rank == 0:
+        print("Sample from dataset")
+        pprint(train_dataset[200])
 
     # #### Setting up the training configuration
-    # <!!! ACTION REQUIRED: ADJUST THIS SO THAT EACH PROCESS ONLY HANDLES A SHARE OF THE TOTAL BATCH SIZE !!!>
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
 
@@ -117,12 +129,14 @@ if __name__ == "__main__":
         learning_rate=2e-5,
         weight_decay=0.01,
         bf16=True,  # use 16-bit floating point precision
-        per_device_train_batch_size=train_batch_size,
+        # divide the total training batch size by the number of GCDs for the per-device batch size
+        per_device_train_batch_size=train_batch_size // world_size,
         per_device_eval_batch_size=eval_batch_size,
         max_steps=1000,
         dataloader_num_workers=args.num_workers,
         dataloader_pin_memory=True,
         report_to=["tensorboard"],  # log statistics for tensorboard
+        ddp_find_unused_parameters=False,  # there are no unused parameters, causing PyTorch to issue a warning should this be set to True
     )
 
     # #### Preprocessing of training data
@@ -136,12 +150,13 @@ if __name__ == "__main__":
     )
 
     # Sanity check: How does the training data look like after preprocessing?
-    print("Sample of tokenized data")
-    for b in train_dataset_tokenized:
-        pprint(b, compact=True)
-        print("Length of input_ids:", len(b["input_ids"]))
-        break
-    print("Length of dataset (tokenized)", len(train_dataset_tokenized))
+    if rank == 0:
+        print("Sample of tokenized data")
+        for b in train_dataset_tokenized:
+            pprint(b, compact=True)
+            print("Length of input_ids:", len(b["input_ids"]))
+            break
+        print("Length of dataset (tokenized)", len(train_dataset_tokenized))
 
     # #### Training
     # We use the Hugging Face trainer instead of a manual training loop.
@@ -163,8 +178,9 @@ if __name__ == "__main__":
     # With 1000 steps, batch size 32 and a single GCD, this should take just under 30 minutes.
     trainer.train()
 
-    print()
-    print("Training done, you can find all the model checkpoints in", output_dir)
+    if rank == 0:
+        print()
+        print("Training done, you can find all the model checkpoints in", output_dir)
 
     # #### Evaluating the finetuned model
     with torch.no_grad():
@@ -173,18 +189,23 @@ if __name__ == "__main__":
         eval_results = trainer.evaluate()
         test_results = trainer.evaluate(eval_dataset_tokenized)
 
-        print(f'Perplexity on validation: {math.exp(eval_results["eval_loss"]):.2f}')
-        print(f'Perplexity on test: {math.exp(test_results["eval_loss"]):.2f}')
+        if rank == 0:
+            print(
+                f'Perplexity on validation: {math.exp(eval_results["eval_loss"]):.2f}'
+            )
+            print(f'Perplexity on test: {math.exp(test_results["eval_loss"]):.2f}')
 
-        # Let's print a few sample generated reviews; this is the same as in the previous exercise
-        # but now we use the finetuned model
-        prompt = "The movie 'How to run ML on LUMI - A documentation' was great because"
-        inputs = tokenizer(prompt, return_tensors="pt").to(device)
-        outputs = model.generate(
-            **inputs, do_sample=True, max_length=80, num_return_sequences=4
-        )
-        decoded_outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+            # Let's print a few sample generated reviews; this is the same as in the previous exercise
+            # but now we use the finetuned model
+            prompt = (
+                "The movie 'How to run ML on LUMI - A documentation' was great because"
+            )
+            inputs = tokenizer(prompt, return_tensors="pt").to(device)
+            outputs = model.generate(
+                **inputs, do_sample=True, max_length=80, num_return_sequences=4
+            )
+            decoded_outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
-        print("Sample generated review:")
-        for txt in decoded_outputs:
-            print("-", txt)
+            print("Sample generated review:")
+            for txt in decoded_outputs:
+                print("-", txt)

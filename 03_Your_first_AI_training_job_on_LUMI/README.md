@@ -85,6 +85,10 @@
         >
         > If your earlier training job is still running, you can stop it using the `scancel` command.
 
+## Solutions
+
+The folder `reference_solution/` contains an example solution for this exercise parts 1 and 2. `reference_solution/resume_from_checkpoint/` additionally contains the changes for part 4
+
 ## Further Examples
 
 - For a native PyTorch DDP example (without using HuggingFace modules), see [/bonus_material/pytorch_cotainr_container_basics](/bonus_material/pytorch_cotainr_container_basics), specifically check

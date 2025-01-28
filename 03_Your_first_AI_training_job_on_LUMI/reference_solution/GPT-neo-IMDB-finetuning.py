@@ -12,7 +12,6 @@
 
 import argparse
 import math
-import os
 import time
 from pprint import pprint
 
@@ -49,12 +48,6 @@ if __name__ == "__main__":
         type=int,
         default=1,
         help="The number of CPU worker processes to use.",
-    )
-    parser.add_argument(
-        "--resume",
-        default=False,
-        action="store_true",
-        help="If set, continue from a previously interrupted run. Otherwise, overwrite existing checkpoints.",
     )
     args, _ = parser.parse_known_args()
 
@@ -113,7 +106,6 @@ if __name__ == "__main__":
 
     training_args = TrainingArguments(
         output_dir=output_dir,
-        overwrite_output_dir=not args.resume,
         save_strategy="steps",
         save_steps=100,
         save_total_limit=4,
@@ -171,7 +163,7 @@ if __name__ == "__main__":
     )
 
     # With 1000 steps, batch size 32 and a single GCD, this should take just under 30 minutes.
-    trainer.train(resume_from_checkpoint=args.resume)
+    trainer.train()
 
     print()
     print("Training done, you can find all the model checkpoints in", output_dir)

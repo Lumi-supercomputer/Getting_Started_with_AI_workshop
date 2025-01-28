@@ -40,4 +40,5 @@ srun singularity exec $CONTAINER \
         --model-name gpt-imdb-model \
         --output-path $OUTPUT_DIR \
         --logging-path $LOGGING_DIR \
-        --num-workers ${SLURM_CPUS_PER_TASK}
+        --num-workers ${SLURM_CPUS_PER_TASK} \
+        --resume  # Comment this for the first run, uncomment to resume in later runs

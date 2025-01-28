@@ -49,12 +49,17 @@ if __name__ == "__main__":
         default=1,
         help="The number of CPU worker processes to use.",
     )
+    parser.add_argument(
+        "--resume",
+        default=False,
+        action="store_true",
+        help="If set, continue from a previously interrupted run. Otherwise, overwrite existing checkpoints.",
+    )
     args, _ = parser.parse_known_args()
 
     # Then we determine the device on which to train the model.
     print("Using PyTorch version:", torch.__version__)
     if torch.cuda.is_available():
-        # <!!! ACTION REQUIRED: ADJUST THIS SO THAT EACH PROCESS PICKS THE APPROPRIATE GPU !!!>
         device = torch.device("cuda")
         print("Using GPU, device name:", torch.cuda.get_device_name(device))
     else:
@@ -102,12 +107,12 @@ if __name__ == "__main__":
     pprint(train_dataset[200])
 
     # #### Setting up the training configuration
-    # <!!! ACTION REQUIRED: ADJUST THIS SO THAT EACH PROCESS ONLY HANDLES A SHARE OF THE TOTAL BATCH SIZE !!!>
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
 
     training_args = TrainingArguments(
         output_dir=output_dir,
+        overwrite_output_dir=not args.resume,
         save_strategy="steps",
         save_steps=100,
         save_total_limit=4,
@@ -151,6 +156,10 @@ if __name__ == "__main__":
     # https://huggingface.co/docs/transformers/v4.37.0/en/main_classes/trainer#transformers.TrainingArguments
     #
 
+    collator = DataCollatorForLanguageModeling(
+        tokenizer, mlm=False, return_tensors="pt"
+    )
+
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -161,7 +170,7 @@ if __name__ == "__main__":
     )
 
     # With 1000 steps, batch size 32 and a single GCD, this should take just under 30 minutes.
-    trainer.train()
+    trainer.train(resume_from_checkpoint=args.resume)
 
     print()
     print("Training done, you can find all the model checkpoints in", output_dir)
