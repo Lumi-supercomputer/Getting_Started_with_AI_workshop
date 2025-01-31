@@ -59,7 +59,7 @@ rm -rf myenv
 Alternatively, we can turn the `myenv` directory into a SquashFS file and bind mount it to the container:
 ```bash
 mksquashfs myenv myenv.sqsh
-rm -rf myenv
-export SINGULARITYENV_PREPEND_PATH=/user-software/bin
+rm -rf myenv # the myenv directory can be deleted
+export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
 singularity exec -B myenv.sqsh:/user-software:image-src=/ minimal_pytorch.sif python my_script.py
 ```
