@@ -146,7 +146,7 @@ exit
 If you don't bind mount the CPE bits, you will get an error about `libmpi_cray.so.12` not being available:
 
 ```bash
-$ SINGULARITY_BIND=   singularity shell /appl/local/containers/sif-images/lumi-tensorflow-rocm-6.2.0-python-3.10-tensorflow-2.16.1-horovod-0.28.1.sif
+$ singularity shell /appl/local/containers/sif-images/lumi-tensorflow-rocm-6.2.0-python-3.10-tensorflow-2.16.1-horovod-0.28.1.sif
 Singularity> $WITH_CONDA
 (tensorflow) Singularity> python3
 Python 3.10.14 (main, May  6 2024, 19:42:50) [GCC 11.2.0] on linux
