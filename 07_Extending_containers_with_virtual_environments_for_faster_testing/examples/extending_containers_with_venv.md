@@ -6,8 +6,7 @@ This is a short example of how to extend the containers built via `cotainr` via 
 
 We assume you have built a container from a `conda` environment file via something like:
 ```bash
-module use /appl/local/training/modules/AI-20241126
-module load cotainr
+module load LUMI/24.03 cotainr   
 cotainr build minimal_pytorch.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif --conda-env=minimal_pytorch.yml --accept-license
 ```
 
@@ -19,8 +18,8 @@ singularity shell --bind /pfs,/scratch,/projappl,/project,/flash,/appl minimal_p
 ```
 Note that setting `--bind` is optional, you achieve the same by
 ```bash
-module use /appl/local/training/modules/AI-20241126/
-module load singularity-userfilesystems
+module use  /appl/local/containers/ai-modules
+module load singularity-AI-bindings
 singularity shell minimal_pytorch.sif
 ```
 
@@ -60,5 +59,7 @@ rm -rf myenv
 Alternatively, we can turn the `myenv` directory into a SquashFS file and bind mount it to the container:
 ```bash
 mksquashfs myenv myenv.sqsh
-singularity exec -B myenv.sqsh:/user-software:image-src=/ minimal_pytorch.sif bash -c 'source /user-software/bin/activate && python my_script.py'
+rm -rf myenv
+export SINGULARITYENV_PREPEND_PATH=/user-software/bin
+singularity exec -B myenv.sqsh:/user-software:image-src=/ minimal_pytorch.sif python my_script.py
 ```
