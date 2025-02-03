@@ -166,7 +166,7 @@ with:
 ```
 and place a `import sys ; sys.exit(0)` statement after:
 ```
-    trainer.train(resume_from_checkpoint=args.resume)
+    trainer.train()
 ```
 
 Now we can just run the profiler by preceding our original command with `rocprof`.
