@@ -5,6 +5,12 @@ These examples are based on the ROCm container provided to you at:
 /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif 
 ```
 
+To avoid running into any storage issues, we recomment running the examples from a folder you create in the scratch file system, e.g.:
+```
+mkdir -p /scratch/project_465001707/$(whoami)
+cd /scratch/project_465001707/$(whoami)
+```
+
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
 salloc -p small-g --account=project_465001707 --reservation=AI_workshop_1 --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
