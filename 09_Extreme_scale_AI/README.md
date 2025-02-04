@@ -84,7 +84,8 @@ There are a lot of components to set and monitor the right environment for our t
 
 Let's recover our multiple GPU LLM training application:
 ```
-curl -o GPT-neo-IMDB-finetuning-mp.py -L https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/03_Your_first_AI_training_job_on_LUMI/reference_solution/GPT-neo-IMDB-finetuning.py
+curl -o GPT-neo-IMDB-finetuning.py -L https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/03_Your_first_AI_training_job_on_LUMI/reference_solution/GPT-neo-IMDB-finetuning.py
+curl -o util.py -L https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/03_Your_first_AI_training_job_on_LUMI/util.py
 ```
 The only change we will do is selecting a different thread multiprocessing strategy. We will add:
 ```
