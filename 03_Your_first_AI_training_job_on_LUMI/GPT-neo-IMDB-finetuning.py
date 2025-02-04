@@ -149,6 +149,10 @@ if __name__ == "__main__":
     # https://huggingface.co/docs/transformers/v4.37.0/en/main_classes/trainer#transformers.TrainingArguments
     #
 
+    collator = DataCollatorForLanguageModeling(
+        tokenizer, mlm=False, return_tensors="pt"
+    )
+
     trainer = Trainer(
         model=model,
         args=training_args,
