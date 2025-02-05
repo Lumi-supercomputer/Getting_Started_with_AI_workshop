@@ -14,7 +14,7 @@
 # If you are interested, you can check the exact paths being mounted from
 #   /appl/local/containers/ai-modules/singularity-AI-bindings/24.03.lua
 module purge
-module use  /appl/local/containers/ai-modules
+module use /appl/local/containers/ai-modules
 module load singularity-AI-bindings
 
 CONTAINER=/project/project_465001707/containers/pytorch_transformers.sif

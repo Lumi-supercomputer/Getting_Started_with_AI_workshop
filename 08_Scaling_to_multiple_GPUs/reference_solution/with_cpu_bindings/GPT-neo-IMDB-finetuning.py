@@ -143,7 +143,8 @@ if __name__ == "__main__":
     pprint(train_dataset[200])
 
     # #### Setting up the training configuration
-    train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
+    global_train_batch_size = 32  # We keep the overall batch size (across all GPUs) the same as before ...
+    per_device_train_batch_size = global_train_batch_size // world_size # ... which means we divide by the number of processes for the batch size of each GPU
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
 
     training_args = TrainingArguments(
@@ -157,8 +158,7 @@ if __name__ == "__main__":
         learning_rate=2e-5,
         weight_decay=0.01,
         bf16=True,  # use 16-bit floating point precision
-        # divide the total training batch size by the number of GCDs for the per-device batch size
-        per_device_train_batch_size=train_batch_size // world_size,
+        per_device_train_batch_size=per_device_train_batch_size,
         per_device_eval_batch_size=eval_batch_size,
         max_steps=1000,
         dataloader_num_workers=args.num_workers,
