@@ -14,7 +14,7 @@
    - `MASTER_ADDR`: The URL of the host that is running worker with rank 0; used to initialize the Torch Distributed backend.
    - `MASTER_PORT`: The port on the `MASTER_ADDR` the different processes use to communicate.
 
-   In this exercise we will use all the GCDs available we will not use multiple nodes. Therefore `LOCAL_WORLD_SIZE` and `LOCAL_RANK` will be identical to `WORLD_SIZE` and `RANK`.
+   In this exercise we will use only a single node (but all 8 GPUs from it). Therefore `LOCAL_WORLD_SIZE` and `LOCAL_RANK` will be identical to `WORLD_SIZE` and `RANK`.
 
    Using torchrun, every process sees all GCDs on a node, so we need to make sure that our script selects one GCD it is going to train on according to its local rank.
 
@@ -74,7 +74,7 @@
       >
       > Use the `psutil.Process().cpu_affinity(...)` function to set the binding from inside the Python script.
 
-4. (Optional/Bonus): Running without PyTorch.
+4. (Optional/Bonus): Running without torchrun.
 
    We can also start worker processes directly without using torchrun to have direct control over all processes.
 
@@ -95,13 +95,3 @@
 ## Solutions
 
 The folder `reference_solution/` contains an example solution for this exercise parts 1, 2 and 4. `reference_solution/prints_only_from_single_process` extends this to ensure that `print` statements in the code are run only by a single process. `reference_solution/with_cpu_bindings` shows how CPU bindings can be used both from within Python (when using torchrun) and directly via SLURM (exercise part 3).
-
-## Further Examples
-
-- For a native PyTorch DDP example (without using HuggingFace modules), see [/bonus_material/pytorch_cotainr_container_basics](/bonus_material/pytorch_cotainr_container_basics), specifically
-  - for torchrun usage, check
-    - [train_multi_gpu_ddp_torchrun.py](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.py)
-    - [train_multi_gpu_ddp_torchrun.sh](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_torchrun.sh)
-  - for manual process setup, check
-    - [train_multi_gpu_ddp_env_setup.py](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.py)
-    - [train_multi_gpu_ddp_env_setup.sh](/bonus_material/pytorch_cotainr_container_basics/train_multi_gpu_ddp_env_setup.sh)
