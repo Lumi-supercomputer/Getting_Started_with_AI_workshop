@@ -96,6 +96,7 @@ right after:
 if __name__ == "__main__":  
 ```
 This is meant to workaround an issue in Pytorch around the registration of threads (https://github.com/pytorch/pytorch/issues/119845).
+The updated file should be named `GPT-neo-IMDB-finetuning-mp.py`.
 
 One might need to reduce the training batch size from 32 if we use too much memory. That can be done by setting:
 ```
@@ -144,7 +145,7 @@ We can monitor activity as before. However, if you want to use the profiler when
 To profile just a single rank you can create a copy of your run script, let's call it `run-profile.sh` and replace the last `eval` command with:
 ```
 pcmd=''
-if [ $RANK -eq 14 ] then
+if [ $RANK -eq 14 ]; then
   pcmd='rocprof --hip-trace --stats'
 fi
 
