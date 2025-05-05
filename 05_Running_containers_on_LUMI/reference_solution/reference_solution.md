@@ -123,7 +123,7 @@ To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 FMA, in other 
 exit
 ```
 
-Remember that instead of manually specifying the bind mounts, you may load the `singulariy-CPE-bits` module:
+Remember that instead of manually specifying the bind mounts, you may load the `singularity-AI-bindings` module:
 
 ```bash
 $ module use /appl/local/containers/ai-modules
