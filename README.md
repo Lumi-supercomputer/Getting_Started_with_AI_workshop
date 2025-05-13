@@ -1,6 +1,6 @@
 # Training material for "Moving your AI training jobs to LUMI: A Hands-On Workshop"
 
-The workshop is held in Ostrava, Czech Republic, November 26-27, 2024. It is co-organized by the [LUMI User Support Team (LUST)](https://lumi-supercomputer.eu/user-support/) and the [EuroCC National Competence Centers (NCCs) in Finland](https://www.eurocc-access.eu/about-us/meet-the-nccs/ncc-finland/) and the [IT4Innovations](https://www.it4i.cz/) national competence center. The workshop is hosted by the [IT4Innovations](https://www.it4i.cz/) .
+The workshop is held in Amsterdam, Netherlands, May 27-28, 2025. It is co-organized by the [LUMI User Support Team (LUST)](https://lumi-supercomputer.eu/user-support/), the [EuroCC National Competence Centers (NCCs) in Finland](https://www.eurocc-access.eu/about-us/meet-the-nccs/ncc-finland/), the [Danish e-Infrastructure Consortium](https://www.deic.dk/en) and [SURF](https://www.surf.nl/en), the IT cooperative of Dutch education and research institutions. The workshop is hosted by [SURF](https://www.surf.nl/en) and [EuroCC NL](https://eurocc-netherlands.nl/nl/).
 
 This repository contains Jupyter notebooks, jobscripts, and other files related to the examples and hands-on exercises presented with each lecture in the workshop.
 
