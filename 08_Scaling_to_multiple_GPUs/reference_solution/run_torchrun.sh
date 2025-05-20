@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --account=project_465001707
-#SBATCH --reservation=AI_workshop_2   # comment this out if the reservation is no longer available
+#SBATCH --account=project_465001958
+##SBATCH --reservation=AI_workshop_2   # comment this out if the reservation is no longer available
 #SBATCH --partition=standard-g
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=8
@@ -18,7 +18,7 @@ module purge
 module use /appl/local/containers/ai-modules
 module load singularity-AI-bindings
 
-CONTAINER=/project/project_465001707/containers/pytorch_transformers.sif
+CONTAINER=/project/project_465001958/containers/pytorch_transformers.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"

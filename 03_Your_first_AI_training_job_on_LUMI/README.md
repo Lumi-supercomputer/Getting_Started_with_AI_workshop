@@ -39,7 +39,7 @@
         - `--model-name` (a name under which the model produced by the run will be stored; optional)
         - `--num-workers` (optional, is used to set the number of PyTorch dataloader processes)
 
-        Please set the paths to some destination of your choice within your `/scratch/project_465001707/<username>` directory.
+        Please set the paths to some destination of your choice within your `/scratch/project_465001958/<username>` directory.
 
         > **Tip**
         >
