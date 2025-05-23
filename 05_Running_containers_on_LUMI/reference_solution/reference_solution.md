@@ -7,7 +7,7 @@
 >    - A LUMI login node
 >    - A LUMI-G compute node
 
-For this exercise, we may use e.g. the lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif container found in /appl/local/containers/sif-images/.
+For this exercise, we may use e.g. the lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif container found in /appl/local/containers/sif-images/.
 
 To run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch container, we must remember to:
 
@@ -21,12 +21,12 @@ On a LUMI login node, it may be done by:
 ```bash
 $ module use /appl/local/containers/ai-modules
 $ module load singularity-AI-bindings
-$ singularity exec /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
+$ singularity exec /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
 Hello LUMI GPU World from uan03
 ********************************************************************************
- - We are running in the Singularity container /project/project_465001363/containers/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif
- - We are running Python version 3.12.6 | packaged by Anaconda, Inc. | (main, Oct  3 2024, 07:30:27) [GCC 11.2.0] from /opt/miniconda3/envs/pytorch/bin/python3
-/opt/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/cuda/__init__.py:703: UserWarning: Can't initialize amdsmi - Error code: 34
+ - We are running in the Singularity container /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif
+ - We are running Python version 3.12.9 | packaged by Anaconda, Inc. | (main, Feb  6 2025, 18:56:27) [GCC 11.2.0] from /opt/miniconda3/envs/pytorch/bin/python3
+/opt/miniconda3/envs/pytorch/lib/python3.12/site-packages/torch/cuda/__init__.py:721: UserWarning: Can't initialize amdsmi - Error code: 34
   warnings.warn(f"Can't initialize amdsmi - Error code: {e.err_code}")
  - The number of GPUs (really GCDs) available to PyTorch is 0
  - Our SLURM job ID is N/A
@@ -39,16 +39,16 @@ On a LUMI-G node, it may be done by:
 ```bash
 $ module use /appl/local/containers/ai-modules
 $ module load singularity-AI-bindings
-$ srun --account=project_465001707 --partition=small-g --time=00:00:30 --nodes=1 --gpus=4 singularity exec /project/project_465001707/containers/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
+$ srun --account=project_465001958 --partition=small-g --time=00:00:30 --nodes=1 --gpus=4 singularity exec /project/project_465001958/containers/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
 
-srun: job 8473926 queued and waiting for resources
-srun: job 8473926 has been allocated resources
-Hello LUMI GPU World from nid005034
+srun: job 11170342 queued and waiting for resources
+srun: job 11170342 has been allocated resources
+Hello LUMI GPU World from nid007856
 ********************************************************************************
- - We are running in the Singularity container /project/project_465001363/containers/lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif
- - We are running Python version 3.12.6 | packaged by Anaconda, Inc. | (main, Oct  3 2024, 07:30:27) [GCC 11.2.0] from /opt/miniconda3/envs/pytorch/bin/python3
+ - We are running in the Singularity container /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif
+ - We are running Python version 3.12.9 | packaged by Anaconda, Inc. | (main, Feb  6 2025, 18:56:27) [GCC 11.2.0] from /opt/miniconda3/envs/pytorch/bin/python3
  - The number of GPUs (really GCDs) available to PyTorch is 4
- - Our SLURM job ID is 8473926
+ - Our SLURM job ID is 11170342
 ********************************************************************************
 $
 ```
@@ -57,7 +57,7 @@ $
 > The number of GPUs/GCDs available to PyTorch is based on how many you request from SLURM. The default is 0!
 
 > [!NOTE]
-> It is a good idea to copy the `lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif` container to your project folder and run it from there to enable you to reproduce your results. We may remove or replace `lumi-pytorch-rocm-6.2.1-python-3.12-pytorch-20240918-vllm-4075b35.sif` at any point in time!
+> It is a good idea to copy the `lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif` container to your project folder and run it from there to enable you to reproduce your results. We may remove or replace `lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif` at any point in time!
 
 ## Exercise 2
 
@@ -118,7 +118,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 2024-11-25 23:13:09.704705: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 2024-11-25 23:13:11.553455: E external/local_xla/xla/stream_executor/plugin_registry.cc:91] Invalid plugin kind specified: DNN
->>>
+>>> exit()
 (tensorflow) Singularity> exit
 exit
 ```
@@ -138,7 +138,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 2024-11-25 23:27:46.333772: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
 To enable the following instructions: SSE3 SSE4.1 SSE4.2 AVX AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
 2024-11-25 23:27:52.266194: E external/local_xla/xla/stream_executor/plugin_registry.cc:91] Invalid plugin kind specified: DNN
->>>
+>>> exit()
 (tensorflow) Singularity> exit
 exit
 ```
@@ -173,7 +173,7 @@ Traceback (most recent call last):
   File "/opt/miniconda3/envs/tensorflow/lib/python3.10/site-packages/tensorflow/python/framework/load_library.py", line 54, in load_op_library
     lib_handle = py_tf.TF_LoadLibrary(library_filename)
 tensorflow.python.framework.errors_impl.NotFoundError: libmpi_cray.so.12: cannot open shared object file: No such file or directory
->>>
+>>> exit()
 Singularity> exit
 ```
 
@@ -188,6 +188,6 @@ Type "help", "copyright", "credits" or "license" for more information.
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 ModuleNotFoundError: No module named 'horovod'
->>>
+>>> exit()
 Singularity> exit
 ```
