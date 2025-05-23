@@ -12,10 +12,12 @@
 To build a container using cotainr on LUMI, we must remember to:
 
 1. Load the cotainr module on LUMI
-2. Determine the relevant system (LUMI-C/LUMI-G) or, alternatively, pick a suitable base image
+2. Determine a suitable base image. For this exercise, we use the `lumi-rocm-rocm-6.0.3.sif` container found in `/appl/local/containers/sif-images/`.
 3. Run cotainr using `srun`, redirect stdout/stderr, and accept all licenses up-front when building non-interactively on a compute node
 
-Since the `python312.yml` environment only contains Python 3.12, we don't need ROCm or other special system libraries, so using `--system=lumi-c` with cotainr is sufficient for getting a fairly minimal base image.
+Since the `python312.yml` environment only contains Python 3.12, we don't need ROCm or other special system libraries. 
+Thus, using `--system=lumi-c` instead of `--base-image=...` with cotainr would be sufficient for getting a fairly minimal base image.
+However, for sake of consistency we will use the ROCm base image. (Feel free to experiment with the `--system=lumi-c` or `--system=lumi-g` options!)
 
 On a login node, we may build the container interactively by:
 
@@ -23,7 +25,7 @@ On a login node, we may build the container interactively by:
 $ module purge
 $ module use /appl/local/training/modules/AI-20241126
 $ module load cotainr
-$ cotainr build python312.sif --system=lumi-c --conda-env=python312.yml
+$ cotainr build python312.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif --conda-env=examples/python312.yml
 ```
 
 > [!NOTE]
@@ -35,7 +37,7 @@ On a LUMI-C compute node, we may build the container non-interactively by:
 $ module purge
 $ module use /appl/local/training/modules/AI-20241126
 $ module load cotainr
-$ srun --output=cotainr.out --error=cotainr.err --account=project_465001363 --time=00:05:00 --mem=60G --cpus-per-task=8 --partition=dev-g cotainr build python312.sif --system=lumi-c --conda-env=python312.yml --accept-licenses
+$ srun --output=cotainr.out --error=cotainr.err --account=project_465001958 --time=00:15:00 --mem=100G --cpus-per-task=8 --partition=dev-g cotainr build python312.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif --conda-env=examples/python312.yml --accept-licenses
 ```
 
 > [!WARNING]
@@ -49,7 +51,7 @@ Now, if we run the `python3 -c "import sys; print(sys.executable); print(sys.ver
 ```bash
 $ singularity exec python312.sif python3 -c "import sys; print(sys.executable); print(sys.version)"
 /opt/conda/envs/conda_container_env/bin/python3
-3.12.7 | packaged by conda-forge | (main, Oct  4 2024, 16:05:46) [GCC 13.3.0]
+3.12.10 | packaged by conda-forge | (main, Apr 10 2025, 22:21:13) [GCC 13.3.0]
 ```
 
 whereas directly on LUMI we get:
@@ -64,9 +66,8 @@ which shows that within the container we directly have access to the Python 3.12
 
 ```bash
 $ python3 -c "import sys; print(sys.executable); print(sys.version)"
-/opt/cray/pe/python/3.9.13.1/bin/python3
-3.9.13 (main, Aug 10 2022, 17:20:06)
-[GCC 9.3.0 20200312 (Cray Inc.)]
+/opt/cray/pe/python/3.11.7/bin/python3
+3.11.7 (main, Feb  8 2024, 20:49:32) [GCC 12.3.0]
 ```
 
 since the cotainr module loads the cray-python module to get a Python >= 3.8 which is needed for running cotainr.
@@ -103,7 +104,7 @@ Now we can build the updated container:
 ```bash
 $ module use /appl/local/training/modules/AI-20241126
 $ module load cotainr
-$ cotainr build python312_extra.sif --system=lumi-c --conda-env=python312_extra.yml
+$ cotainr build python312_extra.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif --conda-env=python312_extra.yml
 ```
 
 and open an interactive shell and an interactive Python interpreter in it, and import our added packages:
@@ -217,7 +218,7 @@ Now we can build a container the usual way:
 ```bash
 $ module use /appl/local/training/modules/AI-20241126
 $ module load cotainr
-$ cotainr build panopticapi.sif --system=lumi-c --conda-env=panopticapi.yml
+$ cotainr build panopticapi.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif --conda-env=panopticapi.yml
 ```
 
 > [!NOTE]

@@ -4,7 +4,7 @@
 
 - An example of a complete PandasAI conda environment specification is provided in [PandasAI.yml](examples/PandasAI.yml).
 - An absolute minimal conda environment specification only including Python 3.12 is provided in [python312.yml](examples/python312.yml).
-- The minimal conda environment PyTorch recipe for LUMI-G is provided in [minimal_pytorch.yml](examples/minimal_pytorch.yml).
+- The minimal conda environment PyTorch recipe for LUMI-G is provided in [minimal_pytorch.yml](examples/minimal_pytorch.yml). This environment file can also be used with the `/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif` base image. 
 
 ## Hands-on exercises
 
