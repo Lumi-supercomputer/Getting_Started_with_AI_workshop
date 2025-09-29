@@ -2,23 +2,23 @@
 
 These examples are based on the ROCm container provided to you at:
 ```
-/appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif 
+/appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif
 ```
 
 To avoid running into any storage issues, we recomment running the examples from a folder you create in the scratch file system, e.g.:
 ```
-mkdir -p /scratch/project_465001958/$(whoami)
-cd /scratch/project_465001958/$(whoami)
+mkdir -p /scratch/project_465002178/$(whoami)
+cd /scratch/project_465002178/$(whoami)
 ```
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
-salloc -p small-g --account=project_465001958 --reservation=AI_workshop_1 --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
+salloc -p small-g --account=project_465002178 --reservation=AI_workshop_Day1 --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
 ```
 This is very similiar to what you have been doing with `sbatch` should you be using a run script with:
 ```
-#SBATCH --account=project_465001958
-#SBATCH --reservation=AI_workshop_1
+#SBATCH --account=project_465002178
+#SBATCH --reservation=AI_workshop_Day1
 #SBATCH --partition=small-g
 #SBATCH --gpus-per-node=1
 #SBATCH --ntasks-per-node=1
@@ -28,19 +28,10 @@ This is very similiar to what you have been doing with `sbatch` should you be us
 ```
 The difference is that it gives you a mechanism to just allocate the nodes without running anything. You can then issue `srun` commands interactively which can be useful to experiment more easily. You are always welcome to transition to use `sbatch` if that is preferred.
 
-<!--
-We'll also leverage the configuration for singularity provided by:
-```
-module purge
-module use /appl/local/training/modules/AI-20241126/
-module load singularity-userfilesystems singularity-CPEbits
-``` 
--->
-
 With the allocation and container set we can do a quick smoke test to make sure Pytorch can detect the GPUs available in a node:
 ```
 srun singularity exec \
-  /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif  \
+  /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif \
     bash -c '$WITH_CONDA ; \
              python -c "import torch; print(torch.cuda.device_count())"'
 ```
@@ -67,7 +58,7 @@ mkdir -p torch-cache hf-cache
 
 srun -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif\
     bash -c '$WITH_CONDA ; cd /workdir ; \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
@@ -127,7 +118,7 @@ So, running the following:
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif\
     bash -c '$WITH_CONDA ;  cd /workdir ; \
              HIP_VISIBLE_DEVICES=0 \
              AMD_LOG_LEVEL=4 \
@@ -157,7 +148,7 @@ Another way to check for GPU activity is to use a profiler. There is a GPU profi
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-   /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
+   /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif\
     rocprof --help
 ```
 Given that Pytorch uses the HIP runtime in its implementation, one of the most relevant options is `--hip-trace` to instruct the profiler to collect the HIP runtime activity. Another option that is convinient is `--stats` that generates some statistics on the usage of the GPU. 
@@ -180,7 +171,7 @@ Now we can just run the profiler by preceding our original command with `rocprof
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif\
     bash -c '$WITH_CONDA ; cd /workdir ;  \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
@@ -228,7 +219,7 @@ Run as before:
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.1.3-python-3.12-pytorch-v2.4.1.sif \
+    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.7.1.sif\
     bash -c '$WITH_CONDA ; cd /workdir ;  \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
