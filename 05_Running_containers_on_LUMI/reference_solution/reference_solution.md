@@ -39,7 +39,7 @@ On a LUMI-G node, it may be done by:
 ```bash
 $ module use /appl/local/containers/ai-modules
 $ module load singularity-AI-bindings
-$ srun --account=project_465001958 --partition=small-g --time=00:00:30 --nodes=1 --gpus=4 singularity exec /project/project_465001958/containers/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
+$ srun --account=project_465002178 --partition=small-g --time=00:00:30 --nodes=1 --gpus=4 singularity exec /project/project_465002178/containers/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif bash -c "\$WITH_CONDA; python3 Hello_LUMI_GPU_World.py"
 
 srun: job 11170342 queued and waiting for resources
 srun: job 11170342 has been allocated resources
