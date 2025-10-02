@@ -46,7 +46,7 @@
 
       It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 
-      > ** Tip **
+      > **Tip**
       >
       > You can use a different `--model-name` than in Exercise 3, to start a fresh training run without overwriting your
       > earlier results. The environment variable `MODEL_NAME` is a suggestion for a name that you can use.
