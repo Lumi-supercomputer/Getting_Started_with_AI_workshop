@@ -10,7 +10,7 @@
    2. Create your own subdirectory in `/project/project_465002757/` and `/scratch/project_465002757/`. Use your username for the directory name. You can either
         - Use the built-in file explorer ("Home Directory"), or
         - Use the login node shell app in the webinterface
-   3. Clone the [exercise repository](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop) to your folder in `/project/project_465002757/<username>`. You can either use the login node shell app in the webinterface for that.
+   3. Clone the [exercise repository](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop) to your folder in `/project/project_465002757/<username>`. You can use the login node shell app in the webinterface for that.
    4. Get familiar with the exercise repository layout.
 
 2. Start an interactive Jupyter lab job and run inference with GPT-neo.
