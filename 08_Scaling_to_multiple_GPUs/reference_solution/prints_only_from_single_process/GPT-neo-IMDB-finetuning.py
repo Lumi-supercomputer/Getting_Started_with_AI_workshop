@@ -96,6 +96,7 @@ if __name__ == "__main__":
     stop = time.time()
     if rank == 0:
         print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
+    print ("\n" * 4)
 
     # #### Loading the IMDb data set
     #
@@ -116,6 +117,7 @@ if __name__ == "__main__":
     if rank == 0:
         print("Sample from dataset")
         pprint(train_dataset[200])
+        print ("\n" * 4)
 
     # #### Setting up the training configuration
     global_train_batch_size = 32  # We keep the overall batch size (across all GPUs) the same as before ...
@@ -159,6 +161,7 @@ if __name__ == "__main__":
             pprint(b, compact=True)
             print("Length of input_ids:", len(b["input_ids"]))
             break
+        print ("\n" * 4)
         print("Length of dataset (tokenized)", len(train_dataset_tokenized))
 
     # #### Training
@@ -184,6 +187,7 @@ if __name__ == "__main__":
     if rank == 0:
         print()
         print("Training done, you can find all the model checkpoints in", output_dir)
+        print ("\n" * 4)
 
     # #### Evaluating the finetuned model
     with torch.no_grad():

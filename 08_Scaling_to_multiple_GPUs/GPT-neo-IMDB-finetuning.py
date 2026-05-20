@@ -85,6 +85,7 @@ if __name__ == "__main__":
     model.to(device)
     stop = time.time()
     print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
+    print ("\n" * 4)
 
     # #### Loading the IMDb data set
     #
@@ -104,6 +105,7 @@ if __name__ == "__main__":
     # Let's print one sample from the dataset.
     print("Sample from dataset")
     pprint(train_dataset[200])
+    print ("\n" * 4)
 
     # #### Setting up the training configuration
     # <!!! ACTION REQUIRED: ADJUST THIS SO THAT EACH PROCESS ONLY HANDLES A SHARE OF THE TOTAL BATCH SIZE !!!>
@@ -146,6 +148,7 @@ if __name__ == "__main__":
         print("Length of input_ids:", len(b["input_ids"]))
         break
     print("Length of dataset (tokenized)", len(train_dataset_tokenized))
+    print ("\n" * 4)
 
     # #### Training
     # We use the Hugging Face trainer instead of a manual training loop.
@@ -169,6 +172,7 @@ if __name__ == "__main__":
 
     print()
     print("Training done, you can find all the model checkpoints in", output_dir)
+    print ("\n" * 4)
 
     # #### Evaluating the finetuned model
     with torch.no_grad():

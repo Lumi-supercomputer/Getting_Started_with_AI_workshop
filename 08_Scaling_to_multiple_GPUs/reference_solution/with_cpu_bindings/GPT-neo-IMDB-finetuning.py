@@ -125,6 +125,7 @@ if __name__ == "__main__":
     model.to(device)
     stop = time.time()
     print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
+    print ("\n" * 4)
 
     # #### Loading the IMDb data set
     #
@@ -144,8 +145,9 @@ if __name__ == "__main__":
     # Let's print one sample from the dataset.
     print("Sample from dataset")
     pprint(train_dataset[200])
+    print ("\n" * 4)
 
-    # #### Setting up the training configuration
+    # #### Setting up the training configurationt
     global_train_batch_size = 32  # We keep the overall batch size (across all GPUs) the same as before ...
     per_device_train_batch_size = global_train_batch_size // world_size # ... which means we divide by the number of processes for the batch size of each GPU
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
@@ -187,6 +189,7 @@ if __name__ == "__main__":
         print("Length of input_ids:", len(b["input_ids"]))
         break
     print("Length of dataset (tokenized)", len(train_dataset_tokenized))
+    print ("\n" * 4)
 
     # #### Training
     # We use the Hugging Face trainer instead of a manual training loop.
@@ -210,6 +213,7 @@ if __name__ == "__main__":
 
     print()
     print("Training done, you can find all the model checkpoints in", output_dir)
+    print ("\n" * 4)
 
     # #### Evaluating the finetuned model
     with torch.no_grad():
