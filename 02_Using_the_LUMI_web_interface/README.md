@@ -28,7 +28,7 @@
         - Press Advanced
         - Custom Python Type: `Container`
         - Modules to load: `Local-LAIF lumi-aif-singularity-bindings`
-        - Path to container with Python: `/appl/local/laifs/containers/lumi-multitorch-u24r64f21m43t29-20260319_153422/lumi-multitorch-full-u24r64f21m43t29-20260319_153422.sif`
+        - Path to container with Python: `/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif`
         - Container arguments: leave empty
         - Init script for container: leave empty
     2. Wait for the session to start, then press `Connect to Jupyter`
