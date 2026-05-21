@@ -12,7 +12,7 @@
 # NOTE: the loaded module makes relevant filesystem locations available inside the singularity container
 #   (/scratch, /project, etc)
 # If you are interested, you can check the exact paths being mounted from
-#   /appl/local/laifs/modules/lumi-aif-singularity-bindings/1.0.0.lua
+#   /appl/local/laifs/modules/lumi-aif-singularity-bindings/1.0.1.lua
 module purge
 module use /appl/local/laifs/modules
 module load lumi-aif-singularity-bindings
