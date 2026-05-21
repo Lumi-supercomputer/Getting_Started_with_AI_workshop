@@ -50,4 +50,4 @@ srun singularity run $CONTAINER \
              --output-path $OUTPUT_DIR \
              --logging-path $LOGGING_DIR \
              --num-workers $(( SLURM_CPUS_PER_TASK / SLURM_GPUS_PER_NODE )) \
-             --set-cpu-binds  # enable setting of the CPU binds in the training script (can only be used with full node runs (standard-g or small-g with slurm argument `--exclusive`))
+             --numa-binding=exclusive # for CPU-GPU bindings
