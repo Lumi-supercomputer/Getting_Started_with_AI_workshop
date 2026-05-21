@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=project_465002757
-#SBATCH --reservation=LUST_AI_Day1   # comment this out if the reservation is no longer available
+#SBATCH --reservation=AI_workshop_Day1   # comment this out if the reservation is no longer available
 #SBATCH --partition=small-g
 #SBATCH --gpus-per-node=1
 #SBATCH --ntasks-per-node=1
