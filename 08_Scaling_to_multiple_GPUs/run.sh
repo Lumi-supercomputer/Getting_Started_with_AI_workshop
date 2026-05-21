@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --account=project_465002757
-#SBATCH --reservation=AI_workshop_Day2   # comment this out if the reservation is no longer available
+#SBATCH --reservation=LUST_AI_Day2   # comment this out if the reservation is no longer available
 #SBATCH --partition=...
 ## <!!! ACTION REQUIRED: SPECIFY ADDITIONAL SLURM PARAMETERS HERE!!!>
 
