@@ -45,8 +45,7 @@ srun singularity run $CONTAINER \
     torchrun --standalone \
              --nnodes=1 \
              --nproc-per-node=${SLURM_GPUS_PER_NODE} \
-             # for CPU-GPU bindings (can only be used with full node runs (standard-g or small-g with slurm argument `--exclusive`)
-             --numa-binding=exclusive \ 
+             --numa-binding=exclusive  \  # for CPU-GPU bindings (can only be used with full node runs (standard-g or small-g with slurm argument `--exclusive`) 
              GPT-neo-IMDB-finetuning.py \
              --model-name $MODEL_NAME \
              --output-path $OUTPUT_DIR \
