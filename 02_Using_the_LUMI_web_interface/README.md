@@ -25,12 +25,9 @@
         - Memory (GB): `16`
         - Time: `0:30:00`
         - Working directory: `/project/$PROJECT`
-        - Press Advanced
-        - Custom Python Type: `Container`
-        - Modules to load: `Local-LAIF lumi-aif-singularity-bindings`
-        - Path to container with Python: `/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif`
-        - Container arguments: leave empty
-        - Init script for container: leave empty
+        - Python: `lumi-multitorch (PyTorch, LUMI AI Factory)`
+        - Module version: You can use the default here.
+        - Virtual environment path: leave empty
     2. Wait for the session to start, then press `Connect to Jupyter`
 
         > **Note**
