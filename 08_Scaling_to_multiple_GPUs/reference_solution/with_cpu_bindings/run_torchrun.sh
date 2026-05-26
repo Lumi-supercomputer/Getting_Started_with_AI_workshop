@@ -38,14 +38,13 @@ export MODEL_NAME=gpt-imdb-model-multigpu
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
-# Since we start only one task with slurm which then starts subprocesses, we cannot use slurm to configure CPU binds.
-# Therefore we need to set them up in the Python code itself.
+#  --numa-binding=exclusive for CPU-GPU bindings (can only be used with full node runs (standard-g or small-g with slurm argument `--exclusive`) 
 
 srun singularity run $CONTAINER \
     torchrun --standalone \
              --nnodes=1 \
              --nproc-per-node=${SLURM_GPUS_PER_NODE} \
-             --numa-binding=exclusive  \  # for CPU-GPU bindings (can only be used with full node runs (standard-g or small-g with slurm argument `--exclusive`) 
+             --numa-binding=exclusive  \ 
              GPT-neo-IMDB-finetuning.py \
              --model-name $MODEL_NAME \
              --output-path $OUTPUT_DIR \
