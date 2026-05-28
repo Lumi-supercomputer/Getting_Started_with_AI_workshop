@@ -116,7 +116,7 @@ if __name__ == "__main__":
     pprint(train_dataset[200])
     print ("\n" * 4)
 
-    # #### Setting up the training configurationt
+    # #### Setting up the training configuration
     global_train_batch_size = 32  # We keep the overall batch size (across all GPUs) the same as before ...
     per_device_train_batch_size = global_train_batch_size // world_size # ... which means we divide by the number of processes for the batch size of each GPU
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
