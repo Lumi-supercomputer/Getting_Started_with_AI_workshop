@@ -27,7 +27,7 @@
         - Working directory: `/project/$PROJECT`
         - Python: `lumi-multitorch (PyTorch, LUMI AI Factory)`
         - Module version: You can use the default here.
-        - Virtual environment path: leave empty
+        - Enable virtual environment: Do not select this
     2. Wait for the session to start, then press `Connect to Jupyter`
 
         > **Note**
