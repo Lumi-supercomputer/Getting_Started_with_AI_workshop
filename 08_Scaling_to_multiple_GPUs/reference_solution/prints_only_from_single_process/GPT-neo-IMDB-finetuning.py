@@ -96,7 +96,7 @@ if __name__ == "__main__":
     stop = time.time()
     if rank == 0:
         print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
-    print ("\n" * 4)
+        print ("\n" * 4)
 
     # #### Loading the IMDb data set
     #
