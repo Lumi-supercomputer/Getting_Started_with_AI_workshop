@@ -38,9 +38,6 @@ export MODEL_NAME=gpt-imdb-model-multigpu
 
 set -xv # print the command so that we can verify setting arguments correctly from the logs
 
-# Since we start only one task with slurm which then starts subprocesses, we cannot use slurm to configure CPU binds.
-# Therefore we need to set them up in the Python code itself.
-
 srun singularity run $CONTAINER \
     torchrun --standalone \
              --nnodes=1 \
