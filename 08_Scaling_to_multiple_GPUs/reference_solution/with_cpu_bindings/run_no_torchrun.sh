@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=project_465002178
+#SBATCH --account=project_465002757
 #SBATCH --reservation=AI_workshop_Day2   # comment this out if the reservation is no longer available
 #SBATCH --partition=standard-g
 #SBATCH --nodes=1
@@ -11,14 +11,14 @@
 
 # Set up the software environment
 # NOTE: the loaded module makes relevant filesystem locations available inside the singularity container
-#   (/scratch, /project, etc) as well as mounts some important system libraries that are optimized for LUMI
+#   (/scratch, /project, etc)
 # If you are interested, you can check the exact paths being mounted from
-#   /appl/local/containers/ai-modules/singularity-AI-bindings/24.03.lua
+#   /appl/local/laifs/modules/lumi-aif-singularity-bindings/1.0.1.lua
 module purge
-module use /appl/local/containers/ai-modules
-module load singularity-AI-bindings
+module use /appl/local/laifs/modules
+module load lumi-aif-singularity-bindings
 
-CONTAINER=/appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif
+CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
@@ -44,15 +44,14 @@ export MASTER_PORT=25900
 export WORLD_SIZE=$SLURM_NPROCS
 export LOCAL_WORLD_SIZE=$SLURM_GPUS_PER_NODE
 
-# As opposed to the example in `run_torchrun.sh`, we can set the CPU binds directly via the slurm command, since we have
-#  one task per GPU. In this case we do NOT need to set them from within the Python code itself.
+# As opposed to the example in `run_torchrun.sh`, we set the CPU-GPU bindings a bit differently.
 
 # Set up the CPU bind masks (can only be used with full node runs (standard-g or small-g with slurm argument `--exclusive`))
 CPU_BIND_MASKS="0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000"
 
 # tell slurm to configure the cpu binds specified by the mask, additional option v prints to configuration to the logs
 srun --cpu-bind=v,mask_cpu=$CPU_BIND_MASKS \
-    singularity exec $CONTAINER \
+    singularity run $CONTAINER \
     bash -c "RANK=\$SLURM_PROCID \
              LOCAL_RANK=\$SLURM_LOCALID \
              python GPT-neo-IMDB-finetuning.py \

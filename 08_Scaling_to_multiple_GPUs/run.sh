@@ -1,19 +1,19 @@
 #!/bin/bash
-#SBATCH --account=project_465002178
+#SBATCH --account=project_465002757
 #SBATCH --reservation=AI_workshop_Day2   # comment this out if the reservation is no longer available
 #SBATCH --partition=...
 ## <!!! ACTION REQUIRED: SPECIFY ADDITIONAL SLURM PARAMETERS HERE!!!>
 
 # Set up the software environment
 # NOTE: the loaded module makes relevant filesystem locations available inside the singularity container
-#   (/scratch, /project, etc) as well as mounts some important system libraries that are optimized for LUMI
+#   (/scratch, /project, etc)
 # If you are interested, you can check the exact paths being mounted from
-#   /appl/local/containers/ai-modules/singularity-AI-bindings/24.03.lua
+#   /appl/local/laifs/modules/lumi-aif-singularity-bindings/1.0.1.lua
 module purge
-module use /appl/local/containers/ai-modules
-module load singularity-AI-bindings
+module use /appl/local/laifs/modules
+module load lumi-aif-singularity-bindings
 
-CONTAINER=/appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif
+CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"

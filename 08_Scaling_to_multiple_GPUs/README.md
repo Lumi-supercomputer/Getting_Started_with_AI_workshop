@@ -63,16 +63,11 @@
 
 3. (Optional/Bonus): Set up CPU bindings.
 
-   In order to achieve optimal CPU-GPU data transfer performance we can ensure that each script runs on the CPU cores closest to the respective GPU.
-   As we are using torchrun to manage the worker processes, we cannot handle these CPU bindings via slurm but must set them up in our Python training script.
+   In order to achieve optimal CPU-GPU data transfer performance we can ensure that each script runs on the CPU cores closest to the respective GPU. You can find a [figure showing which cores ae closest to which GCD](https://docs.lumi-supercomputer.eu/assets/images/lumig-cpu-gpu-links.svg) on the [LUMI Docs LUMI-G page](https://docs.lumi-supercomputer.eu/hardware/lumig/).
 
-   1. Edit [08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py](GPT-neo-IMDB-finetuning.py) to set up the correct CPU-GPU bindings based on the processes rank.
+   1. Edit [08_Scaling_to_multiple_GPUs/run.sh](run.sh) to set up the correct CPU-GPU bindings based on the processes rank.
 
-      You can find a [figure showing which cores are closest to which GCD](https://docs.lumi-supercomputer.eu/assets/images/lumig-cpu-gpu-links.svg) on the [LUMI Docs LUMI-G page](https://docs.lumi-supercomputer.eu/hardware/lumig/).
-
-      > **Tip**
-      >
-      > Use the `psutil.Process().cpu_affinity(...)` function to set the binding from inside the Python script.
+      When torchrun is used, we can rely on [NUMA binding](https://docs.pytorch.org/docs/2.11/elastic/numa.html#module-torch.numa) with `--numa-binding=exclusive` to set this automatically for us.
 
 4. (Optional/Bonus): Running without torchrun.
 
@@ -90,8 +85,8 @@
       > hostname
       > ```
 
-   In this setting you could then also do the CPU bindings from the slurm batch file instead of Python, to keep the training script free of system specific setup.
+   In this setting you need to set the CPU-GPU bindings a bit differently. This is tricky, but you can check out the reference solution if you struggle with this part of the exercise.
 
 ## Solutions
 
-The folder `reference_solution/` contains an example solution for this exercise parts 1, 2 and 4. `reference_solution/prints_only_from_single_process` extends this to ensure that `print` statements in the code are run only by a single process. `reference_solution/with_cpu_bindings` shows how CPU bindings can be used both from within Python (when using torchrun) and directly via SLURM (exercise part 3).
+The folder `reference_solution/` contains an example solution for this exercise parts 1, 2 and 4. `reference_solution/prints_only_from_single_process` extends this to ensure that `print` statements in the code are run only by a single process. `reference_solution/with_cpu_bindings` shows how CPU bindings can be used both when using torchrun and directly via SLURM (exercise part 3).

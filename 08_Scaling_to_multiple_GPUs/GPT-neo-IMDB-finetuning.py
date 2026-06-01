@@ -75,13 +75,17 @@ if __name__ == "__main__":
     print("Loading model and tokenizer")
     start = time.time()
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
-    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token_id = 50256 # adjusting tokenizer and model 
 
     # Load the actual base model from Hugging Face
     model = AutoModelForCausalLM.from_pretrained(pretrained_model)
+     # adjusting tokenizer and model
+    model.config.pad_token_id = 50256
+    model.generation_config.pad_token_id = 50256
     model.to(device)
     stop = time.time()
     print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
+    print ("\n" * 4)
 
     # #### Loading the IMDb data set
     #
@@ -101,6 +105,7 @@ if __name__ == "__main__":
     # Let's print one sample from the dataset.
     print("Sample from dataset")
     pprint(train_dataset[200])
+    print ("\n" * 4)
 
     # #### Setting up the training configuration
     # <!!! ACTION REQUIRED: ADJUST THIS SO THAT EACH PROCESS ONLY HANDLES A SHARE OF THE TOTAL BATCH SIZE !!!>
@@ -143,6 +148,7 @@ if __name__ == "__main__":
         print("Length of input_ids:", len(b["input_ids"]))
         break
     print("Length of dataset (tokenized)", len(train_dataset_tokenized))
+    print ("\n" * 4)
 
     # #### Training
     # We use the Hugging Face trainer instead of a manual training loop.
@@ -155,7 +161,7 @@ if __name__ == "__main__":
     trainer = Trainer(
         model=model,
         args=training_args,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         data_collator=collator,
         train_dataset=train_dataset_tokenized,
         eval_dataset=validate_dataset_tokenized,
@@ -166,6 +172,7 @@ if __name__ == "__main__":
 
     print()
     print("Training done, you can find all the model checkpoints in", output_dir)
+    print ("\n" * 4)
 
     # #### Evaluating the finetuned model
     with torch.no_grad():
