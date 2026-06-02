@@ -2,22 +2,22 @@
 
 These examples are based on the ROCm container provided to you at:
 ```
-/appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif
+/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif
 ```
 
 To avoid running into any storage issues, we recomment running the examples from a folder you create in the scratch file system, e.g.:
 ```
-mkdir -p /scratch/project_465002178/$(whoami)
-cd /scratch/project_465002178/$(whoami)
+mkdir -p /scratch/project_465002757/$(whoami)
+cd /scratch/project_465002757/$(whoami)
 ```
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
-salloc -p small-g --account=project_465002178 --reservation=AI_workshop_Day1 --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
+salloc -p small-g --account=project_465002757 --reservation=AI_workshop_Day1 --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
 ```
 This is very similiar to what you have been doing with `sbatch` should you be using a run script with:
 ```
-#SBATCH --account=project_465002178
+#SBATCH --account=project_465002757
 #SBATCH --reservation=AI_workshop_Day1
 #SBATCH --partition=small-g
 #SBATCH --gpus-per-node=1
@@ -31,9 +31,8 @@ The difference is that it gives you a mechanism to just allocate the nodes witho
 With the allocation and container set we can do a quick smoke test to make sure Pytorch can detect the GPUs available in a node:
 ```
 srun singularity exec \
-  /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif \
-    bash -c '$WITH_CONDA ; \
-             python -c "import torch; print(torch.cuda.device_count())"'
+  /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    bash -c 'python -c "import torch; print(torch.cuda.device_count())"'
 ```
 
 It should yield `2` given that only two GPUs were requested. Note that each time a node is used for the first time, there is a latency to have the container loaded. Running the command above again on the same allocation should complete faster.
@@ -58,8 +57,8 @@ mkdir -p torch-cache hf-cache
 
 srun -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif\
-    bash -c '$WITH_CONDA ; cd /workdir ; \
+    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    bash -c 'cd /workdir ; \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
              HF_HOME=/workdir/hf-cache \
@@ -104,7 +103,11 @@ GPU  Temp   AvgPwr  SCLK     MCLK     Fan  Perf    PwrCap  VRAM%  GPU%
 ```
 As expected we only have activity on one GCD but the power metrics are per GPU. Note that these numbers needs to be interpreted. For example, if `GPU%` shows `100%` that does NOT necessarily mean the GPU is being well utilized. A better metric is drawn power `AvgPwr`: oscillating around `500.0W` is an indication there is significant compute activity on the full GPU.
 
-Here we see drawn power to oscillate around `300.0W` while a single GCD is being used, which is an indication that we might be compute bound.
+Here we see drawn power to oscillate around `300.0-400.0W` while a single GCD is being used, which is an indication that we might be compute bound.
+
+An alternative to `rocm-smi` and recommended for the very latest ROCm versions is to use `amd-smi`. Similar information can be obtained with `amd-smi monitor --watch 1`. It is formatted differently thought.
+
+`amd-smi` has also Python interface and it is possible to programatically query GPU activity from your Python code.
 
 ### 4. Activate logging reporting GPU activity
 
@@ -118,8 +121,8 @@ So, running the following:
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif\
-    bash -c '$WITH_CONDA ;  cd /workdir ; \
+    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    bash -c 'cd /workdir ; \
              HIP_VISIBLE_DEVICES=0 \
              AMD_LOG_LEVEL=4 \
              TORCH_HOME=/workdir/torch-cache \
@@ -133,25 +136,40 @@ srun -n1 singularity exec \
 ```
 would return something like the following for a given kernel and its dispatch configuration:
 ```
-:3:hip_module.cpp           :662 : 117659918626 us: 8088 : [tid:0x14b2015e9700]  hipLaunchKernel ( 0x14b5ec183ed0, {32768,1,1}, {512,1,1}, 0x14b2015e71b0, 0, stream:<null> )                                                       :4:command.cpp              :349 : 117659918630 us: 8088 : [tid:0x14b2015e9700] Command (KernelExecution) enqueued: 0x14b151fe3b00                                                                                                  :3:rocvirtual.cpp           :786 : 117659918634 us: 8088 : [tid:0x14b2015e9700] Arg0:   = val:16777216                                                                                                                              
-:3:rocvirtual.cpp           :786 : 117659918636 us: 8088 : [tid:0x14b2015e9700] Arg1:   = val:22689590804480                                                                                                                        :3:rocvirtual.cpp           :2853: 117659918639 us: 8088 : [tid:0x14b2015e9700] ShaderName : _ZN2at6native6legacy18elementwise_kernelILi512ELi1EZNS0_15gpu_kernel_implIZZZNS0_23direct_copy_kernel_cudaERNS_18TensorIteratorBaseEENK
-UlvE0_clEvENKUlvE5_clEvEUlfE_EEvS5_RKT_EUliE_EEviT1_                                                                                                                                                                                
-:4:rocvirtual.cpp           :891 : 117659918644 us: 8088 : [tid:0x14b2015e9700] HWq=0x14b30ee00000, Dispatch Header = 0xb02 (type=2, barrier=1, acquire=1, release=1), setup=3, grid=[16777216, 1, 1], workgroup=[512, 1, 1], privat
-e_seg_size=0, group_seg_size=0, kernel_obj=0x14b4a5220000, kernarg_address=0x14b30ec73780, completion_signal=0x0                                                                                                                    
-:3:hip_module.cpp           :663 : 117659918649 us: 8088 : [tid:0x14b2015e9700] hipLaunchKernel: Returned hipSuccess :    
+:3:hip_module.cpp           :812 : 9529939547052 us: [pid:31271 tid: 0x145b173466c0]  hipLaunchKernel ( 0x145bd3dc0e30, {65536,1,1}, {256,1,1}, 0x145b17344480, 0, stream:<null> ) 
+:4:hip_device.cpp           :35  : 9529939547073 us: [pid:31271 tid: 0x145b173466c0] NullStream 0x101fe7b0, wait 1  
+:4:command.cpp              :169 : 9529939547067 us: [pid:31271 tid: 0x1457f1aaf6c0] Command 0x1449648f6fe0 complete      
+:4:command.cpp              :169 : 9529939547081 us: [pid:31271 tid: 0x1457f1aaf6c0] Command 0x144964976700 complete                                          
+:4:command.cpp              :357 : 9529939547077 us: [pid:31271 tid: 0x145b173466c0] Command (KernelExecution) enqueued: 0x144964749e60 to queue: 0x101fe7b0
+:3:rocvirtual.cpp           :883 : 9529939547090 us: [pid:31271 tid: 0x145b173466c0] Arg0:   = val:0x4000000 (size:0x4)
+:4:command.cpp              :169 : 9529939547084 us: [pid:31271 tid: 0x1457f1aaf6c0] Command 0x1449649769a0 complete                                                                             
+:4:command.cpp              :169 : 9529939547097 us: [pid:31271 tid: 0x1457f1aaf6c0] Command 0x14496495dfa0 complete                  
+:3:rocvirtual.cpp           :883 : 9529939547093 us: [pid:31271 tid: 0x145b173466c0] Arg1:   = val:0x3 (size:0x1)                                                                  
+:3:rocvirtual.cpp           :879 : 9529939547106 us: [pid:31271 tid: 0x145b173466c0] Arg2:   = 0x00 00 60 53 4b 14 00 00 00 00 40 43 4b 14 00 00  (size:0x10)
+:3:rocvirtual.cpp           :3351: 9529939547112 us: [pid:31271 tid: 0x145b173466c0] ShaderName : void at::native::vectorized_elementwise_kernel<4, at::native::(anonymous namespace)::pow_tensor_scala
+r_kernel_impl<float, float>(at::TensorIteratorBase&, float)::{lambda(float)#1}, std::array<char*, 2ul> >(int, at::native::(anonymous namespace)::pow_tensor_scalar_kernel_impl<float, float>(at::Tensor
+IteratorBase&, float)::{lambda(float)#1}, std::array<char*, 2ul>)                                                                                                                                      
+:3:rocvirtual.cpp           :3549: 9529939547119 us: [pid:31271 tid: 0x145b173466c0] KernargSegmentByteSize = 24 KernargSegmentAlignment = 128
+:4:command.cpp              :169 : 9529939547100 us: [pid:31271 tid: 0x1457f1aaf6c0] Command 0x14496495e240 complete
+:4:rocvirtual.cpp           :1083: 9529939547131 us: [pid:31271 tid: 0x145b173466c0] SWq=0x14590ce70000, HWq=0x1457f1700000, id=1, Dispatch Header = 0xb02 (type=2, barrier=1, acquire=1, release=1), s
+etup=3, grid=[16777216, 1, 1], workgroup=[256, 1, 1], private_seg_size=0, group_seg_size=0, kernel_obj=0x1454f82b71c0, kernarg_address=0x1457f1544280, completion_signal=0x0, correlation_id=0, rptr=39
+030, wptr=39805                                                                                                                                                                                        
+:4:command.cpp              :169 : 9529939547137 us: [pid:31271 tid: 0x1457f1aaf6c0] Command 0x144964978020 complete
+:4:command.cpp              :169 : 9529939547142 us: [pid:31271 tid: 0x1457f1aaf6c0] Command 0x14496497a990 complete
+:3:hip_module.cpp           :813 : 9529939547138 us: [pid:31271 tid: 0x145b173466c0] hipLaunchKernel: Returned hipSuccess : : duration: 86 us 
 ```
 Try to interpret the different kinds of activity.
 
 ### 5. Using a profiler to assess GPU activity.
 
-Another way to check for GPU activity is to use a profiler. There is a GPU profiler included in any ROCm instalation: `ROCprofiler`. This profiler is also available inside the containers, so no extra instalations is required. It has a command-line driver called `rocprof` and you can see the options one can use with:
+Another way to check for GPU activity is to use a profiler. There is a GPU profiler included in any ROCm instalation: `ROCprofiler`. This profiler is also available inside the containers, so no extra instalations is required. It has a command-line driver called `rocprofv3` and you can see the options one can use with:
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-   /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif\
-    rocprof --help
+   /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    rocprofv3 --help
 ```
-Given that Pytorch uses the HIP runtime in its implementation, one of the most relevant options is `--hip-trace` to instruct the profiler to collect the HIP runtime activity. Another option that is convinient is `--stats` that generates some statistics on the usage of the GPU. 
+Given that Pytorch uses the HIP runtime in its implementation, some of the most relevant options are `--hip-trace`, `--kernel-trace` amd `--memory-copy-trace` to instruct the profiler to collect the HIP runtime, GPU kernel, and copies activity, respectively. Another option that is convinient is `--stats --output-format csv` that generates some statistics on the usage of the GPU and runtime activity and `--output-format pftrace` that generates timelines that can visualized.
 
 Just to allow a quicker completion time, let's focus on just a few training steps. For that just open the file `GPT-neo-IMDB-finetuning.py` and replace:
 ```
@@ -166,27 +184,70 @@ and place a `import sys ; sys.exit(0)` statement after:
     trainer.train()
 ```
 
-Now we can just run the profiler by preceding our original command with `rocprof`.
+Now we can just run the profiler by preceding our original command with `rocprofv3`.
 
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif\
-    bash -c '$WITH_CONDA ; cd /workdir ;  \
+    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    bash -c 'cd /workdir ;  \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
              HF_HOME=/workdir/hf-cache \
              TOKENIZERS_PARALLELISM=false \
-             rocprof --hip-trace --stats python -u /workdir/GPT-neo-IMDB-finetuning.py \
-               --model-name gpt-imdb-model \
-               --output-path /workdir/train-output \
-               --logging-path /workdir/train-logging \
-               --num-workers 7'
+             rocprofv3 --hip-trace --kernel-trace --memory-copy-trace --output-format=pftrace -- \
+               python -u /workdir/GPT-neo-IMDB-finetuning.py \
+                 --model-name gpt-imdb-model \
+                 --output-path /workdir/train-output \
+                 --logging-path /workdir/train-logging \
+                 --num-workers 7'
 ```
-This will generate a few files named `results.*`. For example, `results.stats.csv` will provide the stats of the kernels that were executed in the GPU in descending order of combined execution time. These, can sometimes be easier to read if imported into a spreadsheet. 
+
+This command would actually fail as some profilling dependencies are not installed in the container. We can install the missing dependencies in a `squashfs` layers and mount it to our container. E.g.:
+
+```
+singularity exec \
+  -B .:/workdir \
+  /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+  bash -c -eux '
+    
+    mkdir /workdir/deps
+    cd /workdir/deps ;
+    
+    for i in libdw1t64 ; do
+      apt-get download $i ;
+      dpkg -x $i*.deb . ;
+      rm -rf $i*.deb ;
+    done
+  '
+
+mksquashfs deps deps.sqsh -xattrs-exclude lustre.lov 
+```
+More on how to extend containers in a later session.
+
+We can now rerun our example with the missing dependency - notice the `--overlay`:
+```
+srun -n1 singularity exec \
+    -B .:/workdir \
+    --overlay deps.sqsh:ro \
+    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    bash -c 'cd /workdir ;  \
+             HIP_VISIBLE_DEVICES=0 \
+             TORCH_HOME=/workdir/torch-cache \
+             HF_HOME=/workdir/hf-cache \
+             TOKENIZERS_PARALLELISM=false \
+             rocprofv3 --hip-trace --kernel-trace --memory-copy-trace --output-format=pftrace -- \
+               python -u /workdir/GPT-neo-IMDB-finetuning.py \
+                 --model-name gpt-imdb-model \
+                 --output-path /workdir/train-output \
+                 --logging-path /workdir/train-logging \
+                 --num-workers 7'
+```
+
+This will generate a file named `nid<node number>/<pid>__results.pftrace`. For example, `nid005024/40587_results.pftrace` will provide the timeline for the execution profilled in node `5024` and process ID `40587`.
 
 ### 6. Visualizing a profile trace
-Other file that might be interesting to look at is `results.json`. This can be loaded into the web app `https://ui.perfetto.dev/v46.0-35b3d9845/#/` and will allow you to visualize the GPU execution. Here is a snapshot of the 10 steps executed:
+To visualize `nid<node number>/<pid>__results.pftrace`, download it to your workstation and load it into the web app `https://ui.perfetto.dev` and will allow you to visualize the GPU execution. Here is a snapshot of the 10 steps executed:
 
 ![image](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/04_Understanding_GPU_activity_and_checking_jobs/images/profile.png)
 
@@ -219,8 +280,8 @@ Run as before:
 ```
 srun -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/containers/sif-images/lumi-pytorch-rocm-6.2.4-python-3.12-pytorch-v2.6.0.sif\
-    bash -c '$WITH_CONDA ; cd /workdir ;  \
+    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    bash -c 'cd /workdir ;  \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
              HF_HOME=/workdir/hf-cache \
@@ -234,3 +295,5 @@ srun -n1 singularity exec \
 Then you can visualize the file `trace.json`.
 
 A solution `GPT-neo-IMDB-finetuning-profile.py` is available [here](reference_solution/GPT-neo-IMDB-finetuning-profile.py).
+
+TIP: JSON is a text format that compresses very well - consider to compress the file prior to copying it to your workstation, it may save you a lot of a time depending on the ammount of activity profiled and your connection speed. 

@@ -12,7 +12,6 @@
 
 import argparse
 import math
-import os
 import time
 from pprint import pprint
 
@@ -51,12 +50,6 @@ if __name__ == "__main__":
         default=1,
         help="The number of CPU worker processes to use.",
     )
-    parser.add_argument(
-        "--resume",
-        default=False,
-        action="store_true",
-        help="If set, continue from a previously interrupted run. Otherwise, overwrite existing checkpoints.",
-    )
     args, _ = parser.parse_known_args()
 
     # Then we determine the device on which to train the model.
@@ -81,13 +74,17 @@ if __name__ == "__main__":
     print("Loading model and tokenizer")
     start = time.time()
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
-    tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.pad_token_id = 50256 # adjusting tokenizer and model 
 
     # Load the actual base model from Hugging Face
     model = AutoModelForCausalLM.from_pretrained(pretrained_model)
+     # adjusting tokenizer and model
+    model.config.pad_token_id = 50256
+    model.generation_config.pad_token_id = 50256
     model.to(device)
     stop = time.time()
     print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
+    print ("\n" * 4)
 
     # #### Loading the IMDb data set
     #
@@ -106,9 +103,8 @@ if __name__ == "__main__":
 
     # Let's print one sample from the dataset.
     print("Sample from dataset")
-    for b in train_dataset:
-        pprint(b)
-        break
+    pprint(train_dataset[200])
+    print ("\n" * 4)
 
     # #### Setting up the training configuration
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
@@ -116,7 +112,6 @@ if __name__ == "__main__":
 
     training_args = TrainingArguments(
         output_dir=output_dir,
-        overwrite_output_dir=not args.resume,
         save_strategy="steps",
         save_steps=100,
         save_total_limit=4,
@@ -151,6 +146,7 @@ if __name__ == "__main__":
         print("Length of input_ids:", len(b["input_ids"]))
         break
     print("Length of dataset (tokenized)", len(train_dataset_tokenized))
+    print ("\n" * 4)
 
     # #### Training
     # We use the Hugging Face trainer instead of a manual training loop.
@@ -167,26 +163,23 @@ if __name__ == "__main__":
     trainer = Trainer(
         model=model,
         args=training_args,
-        tokenizer=tokenizer,
+        processing_class=tokenizer,
         data_collator=collator,
         train_dataset=train_dataset_tokenized,
         eval_dataset=validate_dataset_tokenized,
     )
 
     # With 1000 steps, batch size 32 and a single GCD, this should take just under 30 minutes.
-
     prof = profile(activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA])
     prof.start()
-    trainer.train(resume_from_checkpoint=args.resume)
+    trainer.train()
     prof.stop()
     prof.export_chrome_trace("trace.json")
 
     print()
     print("Training done, you can find all the model checkpoints in", output_dir)
+    print ("\n" * 4)
 
-    import sys
-    sys.exit(0)
-    
     # #### Evaluating the finetuned model
     with torch.no_grad():
         model.eval()
