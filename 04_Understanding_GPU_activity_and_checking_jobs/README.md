@@ -292,7 +292,9 @@ srun -n1 singularity exec \
                --logging-path /workdir/train-logging \
                --num-workers 7'
 ```
-Then you can visualize the file `trace.json`.
+Then you can visualize the file `trace.json`. It should look like:
+
+![image](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/04_Understanding_GPU_activity_and_checking_jobs/images/profile-torch.png)
 
 A solution `GPT-neo-IMDB-finetuning-profile.py` is available [here](reference_solution/GPT-neo-IMDB-finetuning-profile.py).
 
