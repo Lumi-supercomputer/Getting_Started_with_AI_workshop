@@ -6,8 +6,11 @@ This is a short example of how to extend the containers built via `cotainr` via 
 
 We assume you have built a container from a `conda` environment file via something like:
 ```bash
-module load LUMI/24.03 cotainr   
-cotainr build minimal_pytorch.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif --conda-env=minimal_pytorch.yml --accept-license
+module load LUMI/25.03 cotainr
+
+BASE_CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-mpich-u24r70f21m50t210-20260513_121430.sif
+   
+cotainr build minimal_pytorch.sif --base-image=$BASE_CONTAINER --conda-env=minimal_pytorch.yml --accept-license
 ```
 
 ## Set up a virtual environment
@@ -18,8 +21,8 @@ singularity shell --bind /pfs,/scratch,/projappl,/project,/flash,/appl minimal_p
 ```
 Note that setting `--bind` is optional, you achieve the same by
 ```bash
-module use  /appl/local/containers/ai-modules
-module load singularity-AI-bindings
+module use /appl/local/laifs/modules
+module load lumi-aif-singularity-bindings
 singularity shell minimal_pytorch.sif
 ```
 
@@ -50,7 +53,7 @@ singularity exec minimal_pytorch.sif bash -c "source myenv/bin/activate && pytho
 ## Option 1: Create a new container with `cotainr`
 After having found all packages needed for our project, we should create a new container with an updated `conda` environment file. The virtual environment should then be deleted
 ```bash
-cotainr build updated_pytorch.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif --conda-env=updated_pytorch.yml --accept-license
+cotainr build updated_pytorch.sif --base-image=$BASE_CONTAINER --conda-env=updated_pytorch.yml --accept-license
 rm -rf myenv
 ```
 

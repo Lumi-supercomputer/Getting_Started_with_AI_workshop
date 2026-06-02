@@ -1,6 +1,6 @@
 # Training material for "Moving your AI training jobs to LUMI: A Hands-On Workshop"
 
-The workshop is held in Stockholm, Sweden, October 8-9, 2025. It is co-organized by the [LUMI User Support Team (LUST)](https://lumi-supercomputer.eu/user-support/), the [EuroCC National Competence Centers (NCCs) in Finland](https://www.eurocc-access.eu/about-us/meet-the-nccs/ncc-finland/), the [Danish e-Infrastructure Consortium](https://www.deic.dk/en) and [PDC Center for High Performance Computing](https://www.pdc.kth.se/about/what-does-pdc-do-and-how/introduction-to-pdc-1.736562). 
+The workshop is held in Tromsø, Norway, June 11-12, 2026. It is co-organized by the [LUMI User Support Team (LUST)](https://lumi-supercomputer.eu/user-support/), the [EuroCC National Competence Centers (NCCs) in Finland](https://www.eurocc-access.eu/about-us/meet-the-nccs/ncc-finland/), the [Danish e-Infrastructure Consortium](https://www.deic.dk/en) and [PDC Center for High Performance Computing](https://www.pdc.kth.se/about/what-does-pdc-do-and-how/introduction-to-pdc-1.736562). 
 
 This repository contains Jupyter notebooks, jobscripts, and other files related to the examples and hands-on exercises presented with each lecture in the workshop.
 
