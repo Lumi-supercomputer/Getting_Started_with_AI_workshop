@@ -8,6 +8,10 @@ Here's how to setup a wrapper script:
 cat > run.sh << EOF
 #!/bin/bash -e
 
+module purge
+module use /appl/local/laifs/modules
+module load lumi-aif-singularity-bindings
+
 # Report affinity
 echo "Rank \$SLURM_PROCID --> \$(taskset -p \$\$)"
 
@@ -17,9 +21,6 @@ if [ \$SLURM_LOCALID -eq 0 ] ; then
 else
   sleep 2
 fi
-
-# Start conda environment inside the container
-\$WITH_CONDA
 
 # Setting the caches relevant to our application.
 export TORCH_HOME=/workdir/torch-cache
@@ -44,6 +45,19 @@ fi
 # export NCCL_DEBUG=INFO 
 # export NCCL_DEBUG_SUBSYS=INIT,COLL
 # export NCCL_DEBUG_FILE=/tmp/$(whoami)-rccl-rank\$SLURM_PROCID.txt
+
+# LIBFABRIC tunning
+export HSA_FORCE_FINE_GRAIN_PCIE=1 # Enable peer-to-peer access to large BAR addressing support.
+export FI_MR_CACHE_MONITOR=userfaultfd # Sets the memory cache monitor to detect changes between virtual and physical memory pages. kdreg2 is another valid option.
+export FI_CXI_DISABLE_HOST_REGISTER=1 # Avoids ROCm allocation calls from the provider that may cause RCCL deadlocks.
+export FI_CXI_DEFAULT_CQ_SIZE=131072 # Should be increased, especially for large jobs.
+export FI_CXI_RDZV_PROTO=alt_read # Use the alt_read rendezvous protocol.
+export FI_CXI_RX_MATCH_MODE=hybrid # It allows the network stack to transition to software matching if hardware resources are exhausted.
+export FI_CXI_RDZV_EAGER_SIZE=0 # Prevents sending data before the receiver is ready.
+export FI_CXI_RDZV_THRESHOLD=0 # Sets the message size threshold above which the rendezvous protocol is used; setting to 0 forces all messages through the rendezvous path.
+export FI_CXI_RDZV_GET_MIN=0 # Disables the rendezvous get optimization; use with FI_CXI_RDZV_PROTO=alt_read.
+export FI_CXI_DEFAULT_TX_SIZE=2048 # Should be set especially for large jobs that are dependent on unexpected rendezvous messaging.
+
 
 # Translate SLURM environment 
 
