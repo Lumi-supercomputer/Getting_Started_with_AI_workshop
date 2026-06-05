@@ -8,10 +8,6 @@ Here's how to setup a wrapper script:
 cat > run.sh << EOF
 #!/bin/bash -e
 
-module purge
-module use /appl/local/laifs/modules
-module load lumi-aif-singularity-bindings
-
 # Report affinity
 echo "Rank \$SLURM_PROCID --> \$(taskset -p \$\$)"
 

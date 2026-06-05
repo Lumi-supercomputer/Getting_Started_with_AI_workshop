@@ -235,7 +235,7 @@ The container is useful to move the data around as it is much faster to move a s
 We are ready to run with one or more nodes (adjust `N` for the number of nodes) just by issuing:
 
 ```
-N=1 ; \
+N=2 ; \
 srun -N $N -n $((N*8)) --gpus $((N*8)) \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
@@ -290,10 +290,12 @@ We can try one of the DeepSpeed examples on our setup similar to our computer vi
 curl -L -o cv_example_ds.py \
 https://github.com/microsoft/DeepSpeedExamples/raw/master/training/imagenet/main.py
 
+sed -i 's/range(ngpus_per_node)/range(int(os.environ["WORLD_SIZE"]))/g' cv_example_ds.py
+
 curl -LO \
 https://github.com/microsoft/DeepSpeedExamples/raw/master/training/imagenet/config/ds_fp16_z1_config.json
 ```
-Parse the files to create some understanding of the differences.
+Parse the files to create some understanding of the differences. To expedite things disable the saving of the checkpoint n `save_checkpoint`. The edit with `sed` is meant to adapt the code to expect one rank per GPU instead of one rank per node.
 
 ### 2. Running DeepSpeed with required dependencies 
 This container has DeepSpeed already installed so we will leverage it: `/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif`.
@@ -325,6 +327,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
           --deepspeed_config /workdir/ds_fp16_z1_config.json \
           -a resnet50 \
           --batch-size $((8*512)) \
+          --gpu \$SLURM_LOCALID \
           --workers 7  \
           --local_rank \$SLURM_LOCALID \
           --world-size \$SLURM_NPROCS \
@@ -350,7 +353,7 @@ srun tar -C /tmp -xf /flash/project_465002757/data-sets/data-resnet-small.tar
 ```
 to expand the trimmed down data set into memory and then we can just our model training there:
 ```
-N=1 ; \    
+N=2 ; \    
 srun -N $N -n $((N*8)) --gpus $((N*8)) \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
@@ -362,6 +365,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
           -a resnet50 \
           --batch-size $((8*512)) \
           --workers $((8*7))  \
+          --gpu \$SLURM_LOCALID \
           --world-size \$SLURM_NPROCS \
           --rank \$SLURM_PROCID \
           --dist-url "tcp://$(scontrol show hostname "$SLURM_NODELIST" | head -n1):45678" \
