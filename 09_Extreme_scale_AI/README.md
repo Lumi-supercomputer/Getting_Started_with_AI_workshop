@@ -278,7 +278,7 @@ GPU  Temp   AvgPwr  SCLK     MCLK     Fan  Perf    PwrCap  VRAM%  GPU%
 ================================================================================
 ============================= End of ROCm SMI Log ==============================
 ```
-It is like some GPUs are intermitently idle, holding everyone else back. This is related with some I/O bottlenecks, as images have the potential of putting more strain on the filesystem. We'll learn more about that in the next session.
+It you see GPUs are intermitently idle, holding everyone else back. This is related with some I/O bottlenecks, as images have the potential of putting more strain on the filesystem. We'll learn more about that in the next session.
 
 ## Distributed training frameworks hands-on exercise
 
@@ -336,7 +336,7 @@ Note that, in spite of this being a similar example to what we tested before the
 
 ## I/O considerations hands-on exercise
 
-In our computer vision example, we experienced the I/O limits - we aimed at using flash storage. If one would have used scratch storage it would have been worse. However, the limits of flash storage wouldn't have let us have the complete set of files. So there are always tradeoffs we have to observe.
+In our computer vision example, we were close to I/O limits - we aimed at using flash storage. If one would have used scratch storage it would have been worse. However, the limits of flash storage wouldn't have let us have the complete set of files. So there are always tradeoffs we have to observe.
 
 ### 1. Play with datasets and training models
 
