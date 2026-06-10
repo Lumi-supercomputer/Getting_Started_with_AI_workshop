@@ -1,0 +1,8 @@
+name: minimal_tensorflow
+channels:
+  - conda-forge
+dependencies:
+  - pip=24.0
+  - python=3.12.3
+  - pip:
+    - https://repo.radeon.com/rocm/manylinux/rocm-rel-7.0.2/tensorflow_rocm-2.19.1-cp312-cp312-manylinux_2_28_x86_64.whl
