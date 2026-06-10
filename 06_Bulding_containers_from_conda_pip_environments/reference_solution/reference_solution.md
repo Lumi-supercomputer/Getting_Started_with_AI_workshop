@@ -18,7 +18,7 @@ To build a container using cotainr on LUMI, we must remember to:
 
 Since the `python312.yml` environment only contains Python 3.12, we don't need ROCm or other special system libraries. 
 Thus, using `--system=lumi-c` instead of `--base-image=...` with cotainr would be sufficient for getting a fairly minimal base image.
-However, for sake of consistency we will use the ROCm base image. (Feel free to experiment with the `--system=lumi-c` or `--system=lumi-g` options. However, note that the base images referenced by both `lumi-c` and `lumi-g` are a bit older.)
+However, for sake of consistency we will use the ROCm base image. (Feel free to experiment with the `--system=lumi-c` or `--system=lumi-g` options. However, note that the base images referenced by both `lumi-c` and `lumi-g` are a bit older and you may run into ROCm compatability issues.)
 
 On a login node, we may build the container interactively by:
 
