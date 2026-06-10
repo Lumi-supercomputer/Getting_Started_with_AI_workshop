@@ -2,9 +2,9 @@
 
 ## Examples
 
-- An example of a complete PandasAI conda environment specification is provided in [PandasAI.yml](examples/PandasAI.yml).
 - An absolute minimal conda environment specification only including Python 3.12 is provided in [python312.yml](examples/python312.yml).
-- The minimal conda environment PyTorch recipe for LUMI-G is provided in [minimal_pytorch.yml](examples/minimal_pytorch.yml). This environment file can also be used with the `/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif` base image. 
+- The minimal conda environment PyTorch recipe for LUMI-G is provided in [minimal_pytorch.yml](examples/minimal_pytorch.yml). This environment file can also be used with the `/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif` base image. If you want to do exercise 3 on your own do not look at this example until after the exercise. 
+- A minimal conda environment for Jax is provided in [jax.yml](examples/jax.yml).
 
 ## Hands-on exercises
 
@@ -28,8 +28,8 @@
 
 3. Creative pip installs using cotainr
 
-   In this exercise you will learn how to install Python packages in a container using cotainr when no conda package or pip wheel exists for the package.
+   In this exercise you will learn how to install Python packages in a container using cotainr when no conda package exists for the package.
 
-   1. Check the [panopticapi](https://github.com/cocodataset/panopticapi) GitHub repo for ways to install it from source. Also check the [setup.py](https://github.com/cocodataset/panopticapi/blob/master/setup.py) for hints about the dependencies needed by panopticapi
-   2. Create a conda environment file for installing panopticapi
-   3. Use the conda environment file to build a container for LUMI-C using cotainr
+   1. Create a conda yaml file based on the `python312.yml` and add ROCm 7.0 versions of torch, torchvision, torchaudio and triton-rocm. 
+   2. Build a new container image using cotainr on LUMI-C.
+   3. Confirm that pytorch has access to the AMD GPUs on LUMI-G.
