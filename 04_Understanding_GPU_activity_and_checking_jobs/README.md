@@ -34,7 +34,7 @@ The difference is that it gives you a mechanism to just allocate the nodes witho
 
 With the allocation and container set we can do a quick smoke test to make sure Pytorch can detect the GPUs available in a node:
 ```
-srun singularity exec \
+srun --gpus 2 singularity exec \
   /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
     bash -c 'python -c "import torch; print(torch.cuda.device_count())"'
 ```
@@ -59,7 +59,7 @@ We can now run our training as:
 ```
 mkdir -p torch-cache hf-cache
 
-srun -n1 singularity exec \
+srun --gpus 2 -n1 singularity exec \
     -B .:/workdir \
     /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
     bash -c 'cd /workdir ; \
