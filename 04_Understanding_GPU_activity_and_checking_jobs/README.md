@@ -123,7 +123,7 @@ Other ways to understand the activity connected to GPU-enabled libraries is to e
 
 So, running the following:
 ```
-srun -n1 singularity exec \
+srun --gpus 2 -n1 singularity exec \
     -B .:/workdir \
     /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
     bash -c 'cd /workdir ; \
@@ -168,7 +168,7 @@ Try to interpret the different kinds of activity.
 
 Another way to check for GPU activity is to use a profiler. There is a GPU profiler included in any ROCm instalation: `ROCprofiler`. This profiler is also available inside the containers, so no extra instalations is required. It has a command-line driver called `rocprofv3` and you can see the options one can use with:
 ```
-srun -n1 singularity exec \
+srun --gpus 2  -n1 singularity exec \
     -B .:/workdir \
    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
     rocprofv3 --help
@@ -191,7 +191,7 @@ and place a `import sys ; sys.exit(0)` statement after:
 Now we can just run the profiler by preceding our original command with `rocprofv3`.
 
 ```
-srun -n1 singularity exec \
+srun --gpus 2 -n1 singularity exec \
     -B .:/workdir \
     /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
     bash -c 'cd /workdir ;  \
@@ -231,7 +231,7 @@ More on how to extend containers in a later session.
 
 We can now rerun our example with the missing dependency - notice the `--overlay`:
 ```
-srun -n1 singularity exec \
+srun --gpus 2 -n1 singularity exec \
     -B .:/workdir \
     --overlay deps.sqsh:ro \
     /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
@@ -282,7 +282,7 @@ trainer.train(resume_from_checkpoint=args.resume)
 ```
 Run as before:
 ```
-srun -n1 singularity exec \
+srun --gpus 2 -n1 singularity exec \
     -B .:/workdir \
     /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
     bash -c 'cd /workdir ;  \
