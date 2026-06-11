@@ -11,33 +11,28 @@
 
 To build a container using cotainr on LUMI, we must remember to:
 
-1. Load the cotainr module on LUMI
-2. Determine a suitable base image. For this exercise, we use the `lumi-rocm-rocm-6.0.3.sif` container found in `/appl/local/containers/sif-images/`.
-3. Run cotainr using `srun`, redirect stdout/stderr, and accept all licenses up-front when building non-interactively on a compute node
+1. Unload the `lumi-aif-singularity-bindings` module. If the module is loaded you will encounter the following error: `FATAL:   container creation failed: mount /var/spool/slurmd->/var/spool/slurmd error: while mounting /var/spool/slurmd: destination /var/spool/slurmd doesn't exist in container`
+2. Load the cotainr module on LUMI `module load CrayEnv cotainr`.
+3. Determine a suitable base image. For this exercise, we use the `lumi-multitorch-torch-u24r70f21m50t210-20260415_130625.sif` container found in `/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/`.
+4. Run cotainr using `srun`, redirect stdout/stderr, and accept all licenses up-front when building non-interactively on a compute node
 
 Since the `python312.yml` environment only contains Python 3.12, we don't need ROCm or other special system libraries. 
 Thus, using `--system=lumi-c` instead of `--base-image=...` with cotainr would be sufficient for getting a fairly minimal base image.
-However, for sake of consistency we will use the ROCm base image. (Feel free to experiment with the `--system=lumi-c` or `--system=lumi-g` options!)
+However, for sake of consistency we will use the ROCm base image. (Feel free to experiment with the `--system=lumi-c` or `--system=lumi-g` options. However, note that the base images referenced by both `lumi-c` and `lumi-g` are a bit older and you may run into ROCm compatability issues.)
 
 On a login node, we may build the container interactively by:
 
 ```bash
-$ module purge
-$ module use /appl/local/training/modules/AI-20241126
-$ module load cotainr
-$ cotainr build python312.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif --conda-env=examples/python312.yml
+$ module load CrayEnv cotainr
+$ cotainr build python312.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif --conda-env=examples/python312.yml
 ```
-
-> [!NOTE]
-> The `module use /appl/local/training/modules/AI-20241126` provides the most recent version of cotainr installed in the AI workshop training project. If you don't include this, you get an older version of cotainr installed in the default LUMI software stack.
 
 On a LUMI-C compute node, we may build the container non-interactively by:
 
 ```bash
 $ module purge
-$ module use /appl/local/training/modules/AI-20241126
-$ module load cotainr
-$ srun --output=cotainr.out --error=cotainr.err --account=project_465002178 --time=00:15:00 --mem=100G --cpus-per-task=8 --partition=dev-g cotainr build python312.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif --conda-env=examples/python312.yml --accept-licenses
+$ module load CrayEnv cotainr
+$ srun --output=cotainr.out --error=cotainr.err --account=project_465002757 --time=00:15:00 --mem=60G --cpus-per-task=32 --partition=debug cotainr build python312.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif --conda-env=examples/python312.yml --accept-licenses
 ```
 
 > [!WARNING]
@@ -50,24 +45,22 @@ Now, if we run the `python3 -c "import sys; print(sys.executable); print(sys.ver
 
 ```bash
 $ singularity exec python312.sif python3 -c "import sys; print(sys.executable); print(sys.version)"
-/opt/conda/envs/conda_container_env/bin/python3
-3.12.10 | packaged by conda-forge | (main, Apr 10 2025, 22:21:13) [GCC 13.3.0]
+/opt/cotainr/conda/envs/conda_container_env/bin/python3
+3.12.13 | packaged by conda-forge | (main, Mar  5 2026, 16:50:00) [GCC 14.3.0]
 ```
 
 whereas directly on LUMI we get:
 
 ```bash
-$ python3 -c "import sys; print(sys.executable); print(sys.version)"
-/usr/bin/python3
+$ python3 -c "import sys; print(sys.executable); usr/bin/python3
 3.6.15 (default, Sep 23 2021, 15:41:43) [GCC]
 ```
 
 which shows that within the container we directly have access to the Python 3.12 we installed as part of our conda environment instead of the Python 3.6 provided by the OS. Note that if you run `python3 -c "import sys; print(sys.executable); print(sys.version)"` after having run `module load cotainr`, you will get
 
 ```bash
-$ python3 -c "import sys; print(sys.executable); print(sys.version)"
-/opt/cray/pe/python/3.11.7/bin/python3
-3.11.7 (main, Feb  8 2024, 20:49:32) [GCC 12.3.0]
+$ python3 -c "import sys; print(sys.executable); /opt/cray/pe/python/3.11.7/bin/python3
+3.11.7 (main, Jun 17 2024, 15:36:19) [GCC 12.3.0]
 ```
 
 since the cotainr module loads the cray-python module to get a Python >= 3.8 which is needed for running cotainr.
@@ -91,8 +84,8 @@ channels:
 dependencies:
   - pip=24.0
   - python=3.12.3
-  - pandas=2.2.0
-  - scikit-learn=1.4.2
+  - pandas=3.0.3
+  - scikit-learn=1.9.0
   - pip:
     - env-var==1.0.1
 ```
@@ -102,9 +95,8 @@ where we have added `pandas`and `scikit-learn` as Conda packages and `env-var` a
 Now we can build the updated container:
 
 ```bash
-$ module use /appl/local/training/modules/AI-20241126
-$ module load cotainr
-$ cotainr build python312_extra.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif --conda-env=python312_extra.yml
+$ module load CrayEnv cotainr
+$ cotainr build python312_extra.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif --conda-env=python312_extra.yml0
 ```
 
 and open an interactive shell and an interactive Python interpreter in it, and import our added packages:
@@ -122,104 +114,116 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 > [!NOTE]
 > Even though we pin the versions of the added packages, their dependencies are not pinned and may change if building the container again at a later point in time. To be able to build a new container with the exact same set of all packages (including dependencies), you need to use the output of `conda env export` (in the container) as the conda environment file provided to cotainr (or specify all dependencies manually). The output of `conda env export` in the container looks something like:
->
-> ```bash
-> Singularity> conda env export
-> name: conda_container_env
-> channels:
->   - conda-forge
-> dependencies:
->   - _libgcc_mutex=0.1=conda_forge
->   - _openmp_mutex=4.5=2_gnu
->   - bzip2=1.0.8=hd590300_5
->   - ca-certificates=2024.2.2=hbcca054_0
->   - joblib=1.4.2=pyhd8ed1ab_0
->   - ld_impl_linux-64=2.40=h55db66e_0
->   - libblas=3.9.0=22_linux64_openblas
->   - libcblas=3.9.0=22_linux64_openblas
->   - libexpat=2.6.2=h59595ed_0
->   - libffi=3.4.2=h7f98852_5
->   - libgcc-ng=13.2.0=h77fa898_7
->   - libgfortran-ng=13.2.0=h69a702a_7
->   - libgfortran5=13.2.0=hca663fb_7
->   - libgomp=13.2.0=h77fa898_7
->   - liblapack=3.9.0=22_linux64_openblas
->   - libnsl=2.0.1=hd590300_0
->   - libopenblas=0.3.27=pthreads_h413a1c8_0
->   - libsqlite=3.45.3=h2797004_0
->   - libstdcxx-ng=13.2.0=hc0a3c3a_7
->   - libuuid=2.38.1=h0b41bf4_0
->   - libxcrypt=4.4.36=hd590300_1
->   - libzlib=1.2.13=hd590300_5
->   - ncurses=6.5=h59595ed_0
->   - numpy=1.26.4=py312heda63a1_0
->   - openssl=3.3.0=hd590300_0
->   - pandas=2.2.0=py312hfb8ada1_0
->   - pip=24.0=pyhd8ed1ab_0
->   - python=3.12.3=hab00c5b_0_cpython
->   - python-dateutil=2.9.0=pyhd8ed1ab_0
->   - python-tzdata=2024.1=pyhd8ed1ab_0
->   - python_abi=3.12=4_cp312
->   - pytz=2024.1=pyhd8ed1ab_0
->   - readline=8.2=h8228510_1
->   - scikit-learn=1.4.2=py312h394d371_0
->   - scipy=1.13.0=py312hc2bc53b_1
->   - setuptools=69.5.1=pyhd8ed1ab_0
->   - six=1.16.0=pyh6c4a22f_0
->   - threadpoolctl=3.5.0=pyhc1e730c_0
->   - tk=8.6.13=noxft_h4845f30_101
->   - tzdata=2024a=h0c530f3_0
->   - wheel=0.43.0=pyhd8ed1ab_1
->   - xz=5.2.6=h166bdaf_0
->   - pip:
->       - arrow==1.3.0
->       - decorator==5.1.1
->       - env-var==1.0.1
->       - isoduration==20.11.0
->       - rfc3339-validator==0.1.4
->       - rfc3986-validator==0.1.1
->       - types-python-dateutil==2.9.0.20240316
->       - validators==0.18.2
-> prefix: /opt/conda/envs/conda_container_env
-> ```
 
-## Exercise 3
-
-> 1. Create a conda environment file for installing [panopticapi](https://github.com/cocodataset/panopticapi)
-> 2. Use the conda environment file to build a container for LUMI-C using cotainr
-
-To build a container for panopticapi using cotainr on LUMI, we must remember to:
-
-1. Include as many of panopticapi's dependencies (in this case listed in the `setup.py` file) as possible as Conda packages in our conda environment file.
-2. List the panopticapi GitHub repo master branch as a pip dependency since no conda/pip packages exist for panopticapi.
-3. Add git as a conda dependency for pip to be able to pull the panopticapi GitHub repo.
-
-A `panopticapi.yml` conda environment file may look like:
-
-```yaml
-name: panopticapi
+```bash
+Singularity> conda env export
+name: conda_container_env
 channels:
   - conda-forge
 dependencies:
-  - git=2.45.1
-  - numpy=1.26.4
-  - pillow=10.3.0
-  - pip=24.0
-  - python=3.9
+  - _openmp_mutex=4.5=20_gnu
+  - bzip2=1.0.8=hda65f42_9
+  - ca-certificates=2026.5.20=hbd8a1cb_0
+  - joblib=1.5.3=pyhd8ed1ab_0
+  - ld_impl_linux-64=2.45.1=default_hbd61a6d_102
+  - libblas=3.11.0=8_h4a7cf45_openblas
+  - libcblas=3.11.0=8_h0358290_openblas
+  - libexpat=2.8.1=hecca717_0
+  - libffi=3.5.2=h3435931_0
+  - libgcc=15.2.0=he0feb66_19
+  - libgcc-ng=15.2.0=h69a702a_19
+  - libgfortran=15.2.0=h69a702a_19
+  - libgfortran5=15.2.0=h68bc16d_19
+  - libgomp=15.2.0=he0feb66_19
+  - liblapack=3.11.0=8_h47877c9_openblas
+  - liblzma=5.8.3=hb03c661_0
+  - liblzma-devel=5.8.3=hb03c661_0
+  - libnsl=2.0.1=hb9d3cd8_1
+  - libopenblas=0.3.33=pthreads_h94d23a6_0
+  - libsqlite=3.53.2=h0c1763c_0
+  - libstdcxx=15.2.0=h934c35e_19
+  - libuuid=2.42.1=h5347b49_0
+  - libxcrypt=4.4.36=hd590300_1
+  - libzlib=1.3.2=h25fd6f3_2
+  - narwhals=2.22.1=pyhcf101f3_0
+  - ncurses=6.6=hdb14827_0
+  - numpy=2.4.6=py312h33ff503_0
+  - openssl=3.6.2=h35e630c_0
+  - packaging=26.2=pyhc364b38_0
+  - pandas=3.0.3=py312h8ecdadd_0
+  - pip=24.0=pyhd8ed1ab_0
+  - python=3.12.3=hab00c5b_0_cpython
+  - python-dateutil=2.9.0.post0=pyhe01879c_2
+  - python_abi=3.12=8_cp312
+  - readline=8.3=h853b02a_0
+  - scikit-learn=1.9.0=np2py312h3226591_0
+  - scipy=1.17.1=py312h54fa4ab_1
+  - setuptools=82.0.1=pyh332efcf_0
+  - six=1.17.0=pyhe01879c_1
+  - threadpoolctl=3.6.0=pyhecae5ae_0
+  - tk=8.6.13=noxft_h366c992_103
+  - wheel=0.47.0=pyhd8ed1ab_0
+  - xz=5.8.3=ha02ee65_0
+  - xz-gpl-tools=5.8.3=ha02ee65_0
+  - xz-tools=5.8.3=hb03c661_0
+  - zstd=1.5.7=hb78ec9c_6
   - pip:
-    - git+https://github.com/cocodataset/panopticapi.git
+      - arrow==1.4.0
+      - decorator==5.3.1
+      - env-var==1.0.1
+      - isoduration==20.11.0
+      - rfc3339-validator==0.1.4
+      - rfc3986-validator==0.1.1
+      - tzdata==2026.2
+      - validators==0.18.2
+prefix: /opt/cotainr/conda/envs/conda_container_env
 ```
 
-> [!NOTE]
-> panopticapi is a somewhat old package that does not have any specific release and no pinned versions of dependencies. Thus, one may need some trial & error to install versions of numpy and pillow that are compatible with the current master branch of panopticapi. Maybe the above works...
+## Exercise 3
 
-Now we can build a container the usual way:
+> 1. Create a conda yaml file based on the `python312.yml` and add ROCm 7.0 versions of torch, torchvision, torchaudio and triton-rocm. 
+> 2. Build a new container image using cotainr on LUMI-C.
+> 3. Confirm that pytorch has access to the AMD GPUs on LUMI-G.
+
+
+1. You can look for torch wheels [here](https://download.pytorch.org/whl/). The correct link for ROCm 7.0, is: https://download.pytorch.org/whl/rocm7.0/. We need to add this link under the pip section in the conda yaml as an `extra-index-url`. After that we can define the versions of our libraries in the pip section. 
+
+
+```yaml
+name: pytorch
+channels:
+  - conda-forge
+dependencies:
+  - pip=24.0
+  - python=3.12
+  - pip:
+    - --extra-index-url https://download.pytorch.org/whl/rocm7.0/
+    - triton-rocm==3.6.0
+    - torch==2.10.0+rocm7.0
+    - torchaudio==2.10.0+rocm7.0
+    - torchvision==0.25.0+rocm7.0
+```
+
+2. Now we can build a container in the usual way:
 
 ```bash
-$ module use /appl/local/training/modules/AI-20241126
-$ module load cotainr
-$ cotainr build panopticapi.sif --base-image=/appl/local/containers/sif-images/lumi-rocm-rocm-6.0.3.sif --conda-env=panopticapi.yml
+$ module load CrayEnv cotainr
+$ cotainr build pytorch.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif --conda-env=minimal_pytorch.yml
 ```
 
+You can also find a slightly more extensive `pytorch.yml` in the examples folder. This yaml pins the versions of some of the dependencies that torch installs. 
+
+3. To use the container we first load the `lumi-aif-singularity-bindings` module and then use `srun` with `singularity run`.
+
+```bash
+$ module load Local-LAIF lumi-aif-singularity-bindings
+$ srun --account=project_465002757 --time=00:15:00 --mem=10G -n 1 --cpus-per-task=1 --partition=dev-g --gpus-per-task=1 singularity run pytorch.sif python -c "import torch; print(torch.cuda.is_available()); print(torch.cuda.device_count())"
+srun: job 19127979 queued and waiting for resources
+srun: job 19127979 has been allocated resources
+True
+1
+```
+
+
 > [!NOTE]
-> When you install directly from (private) Git(Hub) repos, you may need to install extra Conda packages needed by pip to connect to the repo, e.g. git and openssh. Alternatively, you can also install directly from a zip archive of the repo, e.g. specifying https://github.com/cocodataset/panopticapi/archive/master.zip instead of git+https://github.com/cocodataset/panopticapi.git. See the [cotainr conda environment documentation](https://cotainr.readthedocs.io/en/latest/user_guide/conda_env.html#pip-packages-from-private-repositories) for a more elaborate example.
+> You can install packages with conda from Git(Hub) repos. When you install directly from (private) Git(Hub) repos, you may need to install extra Conda packages needed by pip to connect to the repo, e.g. git and openssh. Alternatively, you can also install directly from a zip archive of the repo, e.g. specifying https://github.com/cocodataset/panopticapi/archive/master.zip instead of git+https://github.com/cocodataset/panopticapi.git. See the [cotainr conda environment documentation](https://cotainr.readthedocs.io/en/latest/user_guide/conda_env.html#pip-packages-from-private-repositories) for a more elaborate example.

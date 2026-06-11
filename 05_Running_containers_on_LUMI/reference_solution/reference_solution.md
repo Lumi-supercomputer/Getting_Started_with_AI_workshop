@@ -7,9 +7,9 @@
 >    - A LUMI login node
 >    - A LUMI-G compute node
 
-To run the `Hello_LUMI_GPU_World.py` Python script using one of the LUMI PyTorch container, we must remember to:
+To run the `Hello_LUMI_GPU_World.py` Python script using one of the LAIF PyTorch container, we must remember to:
 
-1. Bind mount the folder in which the `Hello_LUMI_GPU_World.py` script is placed (if not it's not your home folder)
+1. Bind mount the folder in which the `Hello_LUMI_GPU_World.py` script is placed. If the script is placed in the `/project` or `/scratch` you can just load the correct bindings. 
 2. Run the container using `singularity exec`
 3. Activate the conda environment in the container by running `$WITH_CONDA` in the container
 4. Submit the job using `srun` when using a LUMI-G compute node
@@ -51,7 +51,8 @@ Hello LUMI GPU World from nid007898
 > The number of GPUs/GCDs available to PyTorch is based on how many you request from SLURM. The default is 0!
 
 > [!NOTE]
-> It is a good idea to copy the `lumi-multitorch-torch-u24r70f21m50t210-20260415_130625.sif` container to your project folder and run it from there to enable you to reproduce your results. We may remove or replace `lumi-multitorch-torch-u24r70f21m50t210-20260415_130625.sif` at any point in time!
+
+> It is a good idea to copy the `lumi-multitorch-torch-u24r70f21m50t210-20260415_130625.sif` container to your project folder and run it from there to enable you to reproduce your results. Containers may be removed in the future!
 
 ## Exercise 2
 

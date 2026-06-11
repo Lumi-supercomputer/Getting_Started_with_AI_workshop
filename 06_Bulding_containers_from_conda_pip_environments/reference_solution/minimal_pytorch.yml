@@ -1,0 +1,12 @@
+name: pytorch
+channels:
+  - conda-forge
+dependencies:
+  - pip=24.0
+  - python=3.12
+  - pip:
+    - --extra-index-url https://download.pytorch.org/whl/rocm7.0/
+    - triton-rocm==3.6.0
+    - torch==2.10.0+rocm7.0
+    - torchaudio==2.10.0+rocm7.0
+    - torchvision==0.25.0+rocm7.0

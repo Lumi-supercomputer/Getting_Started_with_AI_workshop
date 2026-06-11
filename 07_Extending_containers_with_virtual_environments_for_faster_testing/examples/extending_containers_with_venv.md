@@ -59,9 +59,24 @@ rm -rf myenv
 
 
 ## Option 2: Turn `myenv` into a SquashFS file
-Alternatively, we can turn the `myenv` directory into a SquashFS file and bind mount it to the container:
+Alternatively, we can turn the `myenv` directory into a SquashFS file and bind mount it to the container.
+
+Create a SquashFS file:
 ```bash
 mksquashfs myenv myenv.sqsh
+```
+Or better, use the following options:
+```bash
+mksquashfs myenv myenv.sqsh -processors 1 -all-root -action "chmod(a+rX) @true"
+```
+
+Where the additional options mean the following:
+- `-processors 1`: use 1 core to the keep load on the login node low. Use a value between 1 and 16.
+- `-all-root`: reset user and group IDs of all files to root. This is optional and useful to anonymize the container.
+- `-action "chmod(a+rX) @true"`: reset all file and directory permissions for everybody to read and execute where needed.
+
+Then remove the myenv directory and bind mount the SquashFS file to the container:
+```bash
 rm -rf myenv # the myenv directory can be deleted
 export SINGULARITYENV_PREPEND_PATH=/user-software/bin # gives access to packages inside the container
 singularity exec -B myenv.sqsh:/user-software:image-src=/ minimal_pytorch.sif python my_script.py
