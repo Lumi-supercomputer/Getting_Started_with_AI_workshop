@@ -13,12 +13,12 @@ To build a container using cotainr on LUMI, we must remember to:
 
 1. Unload the `lumi-aif-singularity-bindings` module. If the module is loaded you will encounter the following error: `FATAL:   container creation failed: mount /var/spool/slurmd->/var/spool/slurmd error: while mounting /var/spool/slurmd: destination /var/spool/slurmd doesn't exist in container`
 2. Load the cotainr module on LUMI `module load CrayEnv cotainr`.
-3. Determine a suitable base image. For this exercise, we use the `lumi-multitorch-torch-u24r70f21m50t210-20260415_130625.sif` container found in `/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/`.
+3. Determine a suitable base image. For this exercise, we use the `lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif` container found in `/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/`.
 4. Run cotainr using `srun`, redirect stdout/stderr, and accept all licenses up-front when building non-interactively on a compute node
 
 Since the `python312.yml` environment only contains Python 3.12, we don't need ROCm or other special system libraries. 
 Thus, using `--system=lumi-c` instead of `--base-image=...` with cotainr would be sufficient for getting a fairly minimal base image.
-However, for sake of consistency we will use the ROCm base image. (Feel free to experiment with the `--system=lumi-c` or `--system=lumi-g` options. However, note that the base images referenced by both `lumi-c` and `lumi-g` are a bit older and you may run into ROCm compatability issues.)
+However, for sake of consistency we will use the MPICH base image. (Feel free to experiment with the `--system=lumi-c` or `--system=lumi-g` options. However, note that the base images referenced by both `lumi-c` and `lumi-g` are a bit older and you may run into ROCm compatability issues.)
 
 On a login node, we may build the container interactively by:
 

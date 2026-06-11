@@ -11,8 +11,7 @@ To run the `Hello_LUMI_GPU_World.py` Python script using one of the LAIF PyTorch
 
 1. Bind mount the folder in which the `Hello_LUMI_GPU_World.py` script is placed. If the script is placed in the `/project` or `/scratch` you can just load the correct bindings. 
 2. Run the container using `singularity exec`
-3. Activate the conda environment in the container by running `$WITH_CONDA` in the container
-4. Submit the job using `srun` when using a LUMI-G compute node
+3. Submit the job using `srun` when using a LUMI-G compute node
 
 On a LUMI login node, it may be done by:
 
