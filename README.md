@@ -4,6 +4,10 @@ The workshop is held in Tromsø, Norway, June 11-12, 2026. It is co-organized by
 
 This repository contains Jupyter notebooks, jobscripts, and other files related to the examples and hands-on exercises presented with each lecture in the workshop.
 
+> [!NOTE]  
+> This repository is being updated for the workshops, but is not meant to be always kept up to date.
+> For a general and more up-to-date reference the [LUMI AI Guide](https://github.com/Lumi-supercomputer/LUMI-AI-Guide) is more suitable.
+
 ## Structure of this repository
 
 All files related to each lecture are placed in a subfolder created for that lecture. Each such subfolder contains an `README.md` file that list the examples and exercises for that lecture.
