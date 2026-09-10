@@ -26,7 +26,7 @@
         - number of CPUs requested
         - number of GPUs requested (1)
         - RAM requested
-        - requested runtime (recommended: 15 minutes, so you can continue with sub-exercise 4 below)
+        - requested runtime. Set this to 15 minutes. The full run takes about 30 minutes on a single GCD, so it won't finish in that time and will get cut off partway through. That is on purpose: in sub-exercise 4 you will pick up where it left off using the checkpoints it saves along the way.
 
         It can also be helpful to specify a name for the slurm logfile that contains the command line outputs of the script.
 
@@ -69,7 +69,9 @@
 
     Using checkpoints can be helpful to recover from failing runs (either due to errors encountered in your code or due to hardware or scheduler issues) without losing all your progress. It also allows to split your total training into smaller pieces that are more likely to pass through the scheduler queue quickly.
 
-    The script currently already writes checkpoints but always starts training with from the basic GPT-neo model (i.e., it ignores previously written checkpoints).
+    By now the job you started in exercise 2 has run out of its 15 minutes and stopped before the training finished. Rather than start over, you will get the script to continue from the last checkpoint it saved, so hardly any of that work is lost.
+
+    The script currently already writes checkpoints but always starts training from the basic GPT-neo model (i.e., it ignores previously written checkpoints).
 
     1. Change the training script so it can load a checkpoint from a previously interrupted training run and resume training. Check the [documentation about HuggingFace Trainer](https://huggingface.co/docs/transformers/main_classes/trainer) for guidance on this.
 
