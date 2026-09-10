@@ -7,10 +7,10 @@
     In this exercise you will gain first experience with using the LUMI web interface to navigate files and directories on the LUMI supercomputer. You will also set up your own copy of the exercise repository on the system, so that you can work on them without interfering with the other course participants.
 
    1. Log in to the LUMI web interface: https://www.lumi.csc.fi
-   2. Create your own subdirectory in `/project/project_465002757/` and `/scratch/project_465002757/`. Use your username for the directory name. You can either
+   2. Create your own subdirectory in `/scratch/project_465002757/`. Use your username for the directory name. You can either
         - Use the built-in file explorer ("Home Directory"), or
         - Use the login node shell app in the webinterface
-   3. Clone the [exercise repository](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop) to your folder in `/project/project_465002757/<username>`. You can use the login node shell app in the webinterface for that.
+   3. Clone the [exercise repository](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop) to your folder in `/scratch/project_465002757/<username>`. You can use the login node shell app in the webinterface for that.
    4. Get familiar with the exercise repository layout.
 
 2. Start an interactive Jupyter lab job and run inference with GPT-neo.
@@ -24,7 +24,7 @@
         - Number of CPU cores: `7`
         - Memory (GB): `16`
         - Time: `0:30:00`
-        - Working directory: `/project/$PROJECT`
+        - Working directory: `/scratch/$PROJECT`
         - Python: `lumi-multitorch (PyTorch, LUMI AI Factory)`
         - Module version: You can use the default here.
         - Enable virtual environment: Do not select this
