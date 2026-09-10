@@ -14,8 +14,7 @@
 # If you are interested, you can check the exact paths being mounted from
 #   /appl/local/laifs/modules/lumi-aif-singularity-bindings/1.0.1.lua
 module purge
-module use /appl/local/laifs/modules
-module load lumi-aif-singularity-bindings
+module load Local-LAIF lumi-aif-singularity-bindings
 
 CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif
 
