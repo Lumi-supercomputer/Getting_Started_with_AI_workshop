@@ -43,9 +43,9 @@ srun singularity run $CONTAINER \
     torchrun --standalone \
              --nnodes=1 \
              --nproc-per-node=${SLURM_GPUS_PER_NODE} \
-             --numa-binding=exclusive  \
+             --numa-binding=exclusive \
              GPT-neo-IMDB-finetuning.py \
              --model-name $MODEL_NAME \
              --output-path $OUTPUT_DIR \
              --logging-path $LOGGING_DIR \
-             --num-workers $(( SLURM_CPUS_PER_TASK / SLURM_GPUS_PER_NODE )) 
+             --num-workers $(( SLURM_CPUS_PER_TASK / SLURM_GPUS_PER_NODE ))
