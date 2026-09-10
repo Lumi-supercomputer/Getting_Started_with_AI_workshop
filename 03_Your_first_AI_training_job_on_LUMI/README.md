@@ -57,7 +57,7 @@
 
 3. Check your job.
 
-    1. From a login node shell, use the slurm command `squeue --me` to check that your job is running. You can use the `tail -f` command to check the outputs of the job from the slurm log file `/03_Your_first_AI_training_job_on_LUMI/slurm-<jobid>.out` that is created once the job is running.
+    1. From a login node shell, use the slurm command `squeue --me` to check that your job is running. You can use the `tail -f` command to check the outputs of the job from the slurm log file `03_Your_first_AI_training_job_on_LUMI/slurm-<jobid>.out` that is created once the job is running.
 
         You can also check your active jobs from the LUMI web interface: Navigate to Jobs > Active Jobs.
 
