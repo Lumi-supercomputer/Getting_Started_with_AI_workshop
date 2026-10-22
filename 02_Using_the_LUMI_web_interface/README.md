@@ -7,10 +7,10 @@
     In this exercise you will gain first experience with using the LUMI web interface to navigate files and directories on the LUMI supercomputer. You will also set up your own copy of the exercise repository on the system, so that you can work on them without interfering with the other course participants.
 
    1. Log in to the LUMI web interface: https://www.lumi.csc.fi
-   2. Create your own subdirectory in `/scratch/project_465002757/`. Use your username for the directory name. You can either
+   2. Create your own subdirectory in `/scratch/project_465003393/`. Use your username for the directory name. You can either
         - Use the built-in file explorer ("Home Directory"), or
         - Use the login node shell app in the webinterface
-   3. Clone the [exercise repository](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop) to your folder in `/scratch/project_465002757/<username>`. You can use the login node shell app in the webinterface for that.
+   3. Clone the [exercise repository](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop) to your folder in `/scratch/project_465003393/<username>`. You can use the login node shell app in the webinterface for that.
    4. Get familiar with the exercise repository layout.
 
 2. Start an interactive Jupyter lab job and run inference with GPT-neo.
@@ -18,7 +18,7 @@
     In this exercise you will learn how to reserve resources for and start an interactive job to run a Jupyter notebook via the LUMI web interface. The notebook itself introduces you to our running example of finetuning a language model using PyTorch and the training libraries provided by Huggingface. In this exercise you will not do any training, but familiarise yourself a bit with the software and the base model.
 
     1. Start an interactive Jupyter session: Open the Jupyter app (! not "Jupyter for Courses" !) in the LUMI webinterface and set the following settings before pressing `Launch`
-        - Project: `project_465002757 (LUST Training ...)`
+        - Project: `project_465003393 (LUST Training ...)`
         - Reservation: Use the course reservation `AI_workshop_Day1` (there should only be one available option)
         - Partition: `small-g` (not needed if you select the reservation)
         - Number of CPU cores: `7`
