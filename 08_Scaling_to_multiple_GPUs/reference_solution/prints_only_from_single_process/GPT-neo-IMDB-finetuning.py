@@ -17,12 +17,15 @@ import time
 import warnings
 from pprint import pprint
 
-# Only rank 0 shows warnings; the other ranks would just print the same messages again.
+# Only rank 0 shows warnings and progress bars; the other ranks would just print the same messages again.
 # This has to happen before importing the libraries below, as some of them warn already on import.
 if int(os.environ["RANK"]) != 0:
     warnings.simplefilter("ignore")
     os.environ["TRANSFORMERS_VERBOSITY"] = "error"
     os.environ["DATASETS_VERBOSITY"] = "error"
+    os.environ["HF_HUB_VERBOSITY"] = "error"
+    os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+    os.environ["HF_DATASETS_DISABLE_PROGRESS_BARS"] = "1"
 
 import torch
 from datasets import load_dataset
