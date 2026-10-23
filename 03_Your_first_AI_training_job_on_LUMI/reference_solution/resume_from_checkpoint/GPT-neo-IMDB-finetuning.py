@@ -175,7 +175,7 @@ if __name__ == "__main__":
     #
     # You can read about the many, many different parameters to the
     # Hugging Face trainer here:
-    # https://huggingface.co/docs/transformers/v4.37.0/en/main_classes/trainer#transformers.TrainingArguments
+    # https://huggingface.co/docs/transformers/main/en/main_classes/trainer#transformers.TrainingArguments
     #
 
     collator = DataCollatorForLanguageModeling(

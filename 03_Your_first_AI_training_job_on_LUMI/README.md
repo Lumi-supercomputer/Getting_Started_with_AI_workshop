@@ -81,7 +81,7 @@
 
         > **Important**
         >
-        > Make sure to use the same `MODEL_NAME` (and paths) when resuming training from the checkpoint.
+        > Make sure to use the same `--model-name`, `--output-path` and `--logging-path` when resuming training from the checkpoint.
 
         > **Note**
         >

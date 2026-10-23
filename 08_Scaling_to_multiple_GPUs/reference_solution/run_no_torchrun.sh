@@ -45,6 +45,7 @@ export LOCAL_WORLD_SIZE=$SLURM_GPUS_PER_NODE
 
 # As opposed to the example in `run_torchrun.sh`, we can set the CPU binds directly via the slurm command, since we have
 #  one task per GPU. In this case we do NOT need to set them from within the Python code itself.
+# This script does not set them; see with_cpu_bindings/run_no_torchrun.sh for the version with bindings.
 srun singularity run $CONTAINER \
     bash -c "RANK=\$SLURM_PROCID \
              LOCAL_RANK=\$SLURM_LOCALID \
