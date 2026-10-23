@@ -14,7 +14,15 @@ import argparse
 import math
 import os
 import time
+import warnings
 from pprint import pprint
+
+# Only rank 0 shows warnings; the other ranks would just print the same messages again.
+# This has to happen before importing the libraries below, as some of them warn already on import.
+if int(os.environ["RANK"]) != 0:
+    warnings.simplefilter("ignore")
+    os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+    os.environ["DATASETS_VERBOSITY"] = "error"
 
 import torch
 from datasets import load_dataset
@@ -144,6 +152,7 @@ if __name__ == "__main__":
         dataloader_pin_memory=True,
         report_to=["tensorboard"],  # log statistics for tensorboard
         ddp_find_unused_parameters=False,  # there are no unused parameters, causing PyTorch to issue a warning should this be set to True
+        log_level_replica="error",  # the Trainer resets the log level, so we need to tell it to keep warnings off ranks other than 0
     )
 
     # #### Preprocessing of training data
