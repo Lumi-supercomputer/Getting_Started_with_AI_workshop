@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Slurm job logs
+slurm-*.out
+
+# Containers and virtual environments built during the exercises
+*.sif
+*.sqsh
+venv/
+.venv/
+
