@@ -12,6 +12,7 @@
 
 import argparse
 import math
+import os
 import time
 from pprint import pprint
 
@@ -109,12 +110,14 @@ if __name__ == "__main__":
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
 
+    # TensorBoard reads its logging directory from this environment variable
+    os.environ["TENSORBOARD_LOGGING_DIR"] = logging_dir
+
     training_args = TrainingArguments(
         output_dir=output_dir,
         save_strategy="steps",
         save_steps=100,
         save_total_limit=4,
-        logging_dir=logging_dir,
         eval_strategy="steps",
         eval_steps=200,  # compute validation loss every 200 steps
         learning_rate=2e-5,
@@ -190,11 +193,7 @@ if __name__ == "__main__":
         prompt = "The movie 'How to run ML on LUMI - A documentation' was great because"
         inputs = tokenizer(prompt, return_tensors="pt").to(device)
         outputs = model.generate(
-            **inputs,
-            do_sample=True,
-            max_length=80,
-            num_return_sequences=4,
-            pad_token_id=tokenizer.eos_token_id,
+            **inputs, do_sample=True, max_length=80, num_return_sequences=4
         )
         decoded_outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
