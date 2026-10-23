@@ -22,6 +22,7 @@ from util import preprocess_data, get_output_paths
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           DataCollatorForLanguageModeling, Trainer,
                           TrainingArguments)
+from transformers.trainer_utils import get_last_checkpoint
 
 if __name__ == "__main__":
 
@@ -54,7 +55,7 @@ if __name__ == "__main__":
         "--resume",
         default=False,
         action="store_true",
-        help="If set, continue from a previously interrupted run. Otherwise, overwrite existing checkpoints.",
+        help="If set, continue from a previously interrupted run. Otherwise, start from scratch (refuses to run if checkpoints already exist).",
     )
     args, _ = parser.parse_known_args()
 
@@ -69,6 +70,15 @@ if __name__ == "__main__":
 
     # We also ensure that output paths exist
     output_dir, logging_dir = get_output_paths(args)
+
+    # Refuse to start from scratch if checkpoints of an earlier run are still around,
+    # so that old and new checkpoints do not get mixed up
+    last_checkpoint = get_last_checkpoint(output_dir)
+    if last_checkpoint is not None and not args.resume:
+        raise SystemExit(
+            f"Found existing checkpoint {last_checkpoint}. "
+            f"Pass --resume to continue from it, or delete {output_dir} to start from scratch."
+        )
 
     # #### Loading the GPT-neo model
     #
@@ -121,7 +131,6 @@ if __name__ == "__main__":
 
     training_args = TrainingArguments(
         output_dir=output_dir,
-        overwrite_output_dir=not args.resume,
         save_strategy="steps",
         save_steps=100,
         save_total_limit=4,
