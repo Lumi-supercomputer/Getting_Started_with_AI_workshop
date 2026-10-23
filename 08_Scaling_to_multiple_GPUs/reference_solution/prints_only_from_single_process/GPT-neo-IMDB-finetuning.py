@@ -209,7 +209,11 @@ if __name__ == "__main__":
             )
             inputs = tokenizer(prompt, return_tensors="pt").to(device)
             outputs = model.generate(
-                **inputs, do_sample=True, max_length=80, num_return_sequences=4
+                **inputs,
+                do_sample=True,
+                max_length=80,
+                num_return_sequences=4,
+                pad_token_id=tokenizer.eos_token_id,
             )
             decoded_outputs = tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
