@@ -10,17 +10,17 @@ module load Local-LAIF lumi-aif-singularity-bindings
 
 To avoid running into any storage issues, we recomment running the examples from a folder you create in the scratch file system, e.g.:
 ```
-mkdir -p /scratch/project_465002757/$(whoami)
-cd /scratch/project_465002757/$(whoami)
+mkdir -p /scratch/project_465003393/$(whoami)
+cd /scratch/project_465003393/$(whoami)
 ```
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
-salloc -p small-g --account=project_465002757 --reservation=AI_workshop_Day1 --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
+salloc -p small-g --account=project_465003393 --reservation=AI_workshop_Day1 --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
 ```
 This is very similiar to what you have been doing with `sbatch` should you be using a run script with:
 ```
-#SBATCH --account=project_465002757
+#SBATCH --account=project_465003393
 #SBATCH --reservation=AI_workshop_Day1
 #SBATCH --partition=small-g
 #SBATCH --gpus-per-node=1

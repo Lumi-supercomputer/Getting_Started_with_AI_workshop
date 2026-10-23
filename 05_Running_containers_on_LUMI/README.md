@@ -6,7 +6,7 @@
 - **Showing the top directory trees on LUMI and in an Ubuntu container**: The [build_ubuntu_tree.sh](examples/build_ubuntu_tree.sh) may be used to build the `ubuntu_tree.sif`. And then the [print_directory_trees.sh](examples/print_directory_trees.sh) script may be used on LUMI to print:
    1. The `tree -L 1 /` of the `ubuntu_tree.sif` container
    2. The `tree -L 1 /` of LUMI
-   3. The `tree -L 1 /` of `ubuntu_tree.sif` with the `/project/project_465002757` folder from LUMI bind mounted
+   3. The `tree -L 1 /` of `ubuntu_tree.sif` with the `/project/project_465003393` folder from LUMI bind mounted
 
 ## Hands-on exercises
 

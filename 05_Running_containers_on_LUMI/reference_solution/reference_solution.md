@@ -33,7 +33,7 @@ On a LUMI-G node, it may be done by:
 
 ```bash
 $ module load Local-LAIF lumi-aif-singularity-bindings
-$ srun --account=project_465002757 --partition=small-g --time=00:00:30 --nodes=1 --gpus=4 singularity exec /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-torch-u24r70f21m50t210-20260415_130625.sif bash -c "python3 Hello_LUMI_GPU_World.py"
+$ srun --account=project_465003393 --partition=small-g --time=00:00:30 --nodes=1 --gpus=4 singularity exec /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-torch-u24r70f21m50t210-20260415_130625.sif bash -c "python3 Hello_LUMI_GPU_World.py"
 
 srun: job 19023213 queued and waiting for resources
 srun: job 19023213 has been allocated resources
@@ -79,7 +79,7 @@ INFO:    Inserting Singularity configuration...
 INFO:    Creating SIF file...
 $
 $ ls -al alpine_3.23.4.sif
--rwxrwx--- 1 username project_465002757 3837952 Jun  3 16:17 alpine_3.23.4.sif
+-rwxrwx--- 1 username project_465003393 3837952 Jun  3 16:17 alpine_3.23.4.sif
 $
 ```
 
