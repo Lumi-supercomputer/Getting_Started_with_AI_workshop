@@ -94,10 +94,10 @@ if __name__ == "__main__":
     # for testing and 50,000 without labels (unsupervised) that we also use for training.
 
     train_dataset = load_dataset(
-        "imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True
+        "stanford/imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True
     )
     eval_dataset = load_dataset(
-        "imdb", split="test", trust_remote_code=False, keep_in_memory=True
+        "stanford/imdb", split="test", trust_remote_code=False, keep_in_memory=True
     )
 
     # Let's print one sample from the dataset.
