@@ -79,6 +79,10 @@ if __name__ == "__main__":
             f"Found existing checkpoint {last_checkpoint}. "
             f"Pass --resume to continue from it, or delete {output_dir} to start from scratch."
         )
+    if args.resume:
+        if last_checkpoint is None:
+            raise SystemExit(f"--resume was passed, but no checkpoint was found in {output_dir}.")
+        print("Resuming training from checkpoint", last_checkpoint)
 
     # #### Loading the GPT-neo model
     #
