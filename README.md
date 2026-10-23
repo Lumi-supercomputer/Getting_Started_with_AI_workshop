@@ -1,6 +1,6 @@
 # Training material for "Moving your AI training jobs to LUMI: A Hands-On Workshop"
 
-The workshop is held in Tromsø, Norway, June 11-12, 2026. It is co-organized by the [LUMI User Support Team (LUST)](https://lumi-supercomputer.eu/user-support/), the [EuroCC National Competence Centers (NCCs) in Finland](https://www.eurocc-access.eu/about-us/meet-the-nccs/ncc-finland/), the [Danish e-Infrastructure Consortium](https://www.deic.dk/en) and [PDC Center for High Performance Computing](https://www.pdc.kth.se/about/what-does-pdc-do-and-how/introduction-to-pdc-1.736562). 
+The workshop is held in [Riga, Latvia, November 25-26, 2026](https://lumi-supercomputer.github.io/LUMI-training-materials/ai-20261125/). It is co-organized by the [LUMI User Support Team (LUST)](https://lumi-supercomputer.eu/user-support/), the [EuroCC National Competence Centers (NCCs) in Finland](https://www.eurocc-access.eu/about-us/meet-the-nccs/ncc-finland/), the [Danish e-Infrastructure Consortium](https://www.deic.dk/en) and [PDC Center for High Performance Computing](https://www.pdc.kth.se/about/what-does-pdc-do-and-how/introduction-to-pdc-1.736562). 
 
 This repository contains Jupyter notebooks, jobscripts, and other files related to the examples and hands-on exercises presented with each lecture in the workshop.
 
@@ -11,5 +11,3 @@ This repository contains Jupyter notebooks, jobscripts, and other files related 
 ## Structure of this repository
 
 All files related to each lecture are placed in a subfolder created for that lecture. Each such subfolder contains an `README.md` file that list the examples and exercises for that lecture.
-
-Additionally, the `bonus_material` subfolder contains training material that is not related to a specific lecture but rather the workshop in its entirety. Each such "set" of bonus material is placed in its own subfolder to the `bonus_material` folder.

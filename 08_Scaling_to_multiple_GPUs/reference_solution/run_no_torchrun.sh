@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=project_465002757
+#SBATCH --account=project_465003393
 #SBATCH --reservation=AI_workshop_Day2   # comment this out if the reservation is no longer available
 #SBATCH --partition=standard-g
 #SBATCH --nodes=1
@@ -15,10 +15,9 @@
 # If you are interested, you can check the exact paths being mounted from
 #   /appl/local/laifs/modules/lumi-aif-singularity-bindings/1.0.1.lua
 module purge
-module use /appl/local/laifs/modules
-module load lumi-aif-singularity-bindings
+module load Local-LAIF lumi-aif-singularity-bindings
 
-CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif
+CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
@@ -46,6 +45,7 @@ export LOCAL_WORLD_SIZE=$SLURM_GPUS_PER_NODE
 
 # As opposed to the example in `run_torchrun.sh`, we can set the CPU binds directly via the slurm command, since we have
 #  one task per GPU. In this case we do NOT need to set them from within the Python code itself.
+# This script does not set them; see with_cpu_bindings/run_no_torchrun.sh for the version with bindings.
 srun singularity run $CONTAINER \
     bash -c "RANK=\$SLURM_PROCID \
              LOCAL_RANK=\$SLURM_LOCALID \

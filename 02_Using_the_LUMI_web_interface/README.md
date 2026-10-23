@@ -7,10 +7,12 @@
     In this exercise you will gain first experience with using the LUMI web interface to navigate files and directories on the LUMI supercomputer. You will also set up your own copy of the exercise repository on the system, so that you can work on them without interfering with the other course participants.
 
    1. Log in to the LUMI web interface: https://www.lumi.csc.fi
-   2. Create your own subdirectory in `/project/project_465002757/` and `/scratch/project_465002757/`. Use your username for the directory name. You can either
-        - Use the built-in file explorer ("Home Directory"), or
-        - Use the login node shell app in the webinterface
-   3. Clone the [exercise repository](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop) to your folder in `/project/project_465002757/<username>`. You can use the login node shell app in the webinterface for that.
+   2. Open the [login node shell app](https://www.lumi.csc.fi/pun/sys/shell/ssh/default) in the webinterface.
+   3. Clone the [exercise repository](https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop) into your own subdirectory `/scratch/project_465003393/<username>`. In the shell, run:
+        ```bash
+        git clone https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop.git /scratch/project_465003393/$USER/Getting_Started_with_AI_workshop
+        ```
+        This also creates your subdirectory if it does not exist yet. If you get `fatal: destination path ... already exists and is not an empty directory`, you have already cloned the repository and can continue with the next step.
    4. Get familiar with the exercise repository layout.
 
 2. Start an interactive Jupyter lab job and run inference with GPT-neo.
@@ -18,15 +20,16 @@
     In this exercise you will learn how to reserve resources for and start an interactive job to run a Jupyter notebook via the LUMI web interface. The notebook itself introduces you to our running example of finetuning a language model using PyTorch and the training libraries provided by Huggingface. In this exercise you will not do any training, but familiarise yourself a bit with the software and the base model.
 
     1. Start an interactive Jupyter session: Open the Jupyter app (! not "Jupyter for Courses" !) in the LUMI webinterface and set the following settings before pressing `Launch`
-        - Project: `project_465002757 (LUST Training ...)`
+        - Project: `project_465003393 (LUST Training ...)`
         - Reservation: Use the course reservation `AI_workshop_Day1` (there should only be one available option)
         - Partition: `small-g` (not needed if you select the reservation)
         - Number of CPU cores: `7`
         - Memory (GB): `16`
+        - Number of GPUs (MI250 GCDs): `1`
         - Time: `0:30:00`
-        - Working directory: `/project/$PROJECT`
+        - Working directory: `/scratch/$PROJECT`
         - Python: `lumi-multitorch (PyTorch, LUMI AI Factory)`
-        - Module version: You can use the default here.
+        - Module version: Use the default.
         - Enable virtual environment: Do not select this
     2. Wait for the session to start, then press `Connect to Jupyter`
 

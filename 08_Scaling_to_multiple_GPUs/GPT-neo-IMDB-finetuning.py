@@ -12,6 +12,7 @@
 
 import argparse
 import math
+import os
 import time
 from pprint import pprint
 
@@ -75,13 +76,13 @@ if __name__ == "__main__":
     print("Loading model and tokenizer")
     start = time.time()
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
-    tokenizer.pad_token_id = 50256 # adjusting tokenizer and model 
+    tokenizer.pad_token_id = tokenizer.eos_token_id # adjusting tokenizer and model
 
     # Load the actual base model from Hugging Face
     model = AutoModelForCausalLM.from_pretrained(pretrained_model)
      # adjusting tokenizer and model
-    model.config.pad_token_id = 50256
-    model.generation_config.pad_token_id = 50256
+    model.config.pad_token_id = tokenizer.eos_token_id
+    model.generation_config.pad_token_id = tokenizer.eos_token_id
     model.to(device)
     stop = time.time()
     print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
@@ -96,10 +97,10 @@ if __name__ == "__main__":
     # for testing and 50,000 without labels (unsupervised) that we also use for training.
 
     train_dataset = load_dataset(
-        "imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True
+        "stanfordnlp/imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True
     )
     eval_dataset = load_dataset(
-        "imdb", split="test", trust_remote_code=False, keep_in_memory=True
+        "stanfordnlp/imdb", split="test", trust_remote_code=False, keep_in_memory=True
     )
 
     # Let's print one sample from the dataset.
@@ -112,12 +113,14 @@ if __name__ == "__main__":
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
 
+    # TensorBoard reads its logging directory from this environment variable
+    os.environ["TENSORBOARD_LOGGING_DIR"] = logging_dir
+
     training_args = TrainingArguments(
         output_dir=output_dir,
         save_strategy="steps",
         save_steps=100,
         save_total_limit=4,
-        logging_dir=logging_dir,
         eval_strategy="steps",
         eval_steps=200,  # compute validation loss every 200 steps
         learning_rate=2e-5,
@@ -155,7 +158,7 @@ if __name__ == "__main__":
     #
     # You can read about the many, many different parameters to the
     # Hugging Face trainer here:
-    # https://huggingface.co/docs/transformers/v4.37.0/en/main_classes/trainer#transformers.TrainingArguments
+    # https://huggingface.co/docs/transformers/main/en/main_classes/trainer#transformers.TrainingArguments
     #
 
     trainer = Trainer(

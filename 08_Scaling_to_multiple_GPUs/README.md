@@ -20,7 +20,7 @@
 
    On the other hand, the HuggingFace Trainer will automatically take care of setting up data-parallel training for the model when the above environment variables are set by torchrun, so we do not need to handle that part of the setup manually - but we do need to adjust the batch size handled locally in each process.
 
-   Find the training script in [08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py](08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py). It is the same as the one used earlier for training with a single GCD/GPU.
+   Find the training script in [08_Scaling_to_multiple_GPUs/GPT-neo-IMDB-finetuning.py](GPT-neo-IMDB-finetuning.py). It is the same as the one used earlier for training with a single GCD/GPU.
 
    1. You will need to make the following changes to the script:
 
@@ -63,7 +63,7 @@
 
 3. (Optional/Bonus): Set up CPU bindings.
 
-   In order to achieve optimal CPU-GPU data transfer performance we can ensure that each script runs on the CPU cores closest to the respective GPU. You can find a [figure showing which cores ae closest to which GCD](https://docs.lumi-supercomputer.eu/assets/images/lumig-cpu-gpu-links.svg) on the [LUMI Docs LUMI-G page](https://docs.lumi-supercomputer.eu/hardware/lumig/).
+   In order to achieve optimal CPU-GPU data transfer performance we can ensure that each script runs on the CPU cores closest to the respective GPU. You can find a [figure showing which cores are closest to which GCD](https://docs.lumi-supercomputer.eu/assets/images/lumig-cpu-gpu-links.svg) on the [LUMI Docs LUMI-G page](https://docs.lumi-supercomputer.eu/hardware/lumig/).
 
    1. Edit [08_Scaling_to_multiple_GPUs/run.sh](run.sh) to set up the correct CPU-GPU bindings based on the processes rank.
 

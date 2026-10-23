@@ -12,6 +12,7 @@
 
 import argparse
 import math
+import os
 import time
 from pprint import pprint
 
@@ -95,10 +96,10 @@ if __name__ == "__main__":
     # for testing and 50,000 without labels (unsupervised) that we also use for training.
 
     train_dataset = load_dataset(
-        "imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True
+        "stanfordnlp/imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True
     )
     eval_dataset = load_dataset(
-        "imdb", split="test", trust_remote_code=False, keep_in_memory=True
+        "stanfordnlp/imdb", split="test", trust_remote_code=False, keep_in_memory=True
     )
 
     # Let's print one sample from the dataset.
@@ -110,12 +111,14 @@ if __name__ == "__main__":
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
 
+    # TensorBoard reads its logging directory from this environment variable
+    os.environ["TENSORBOARD_LOGGING_DIR"] = logging_dir
+
     training_args = TrainingArguments(
         output_dir=output_dir,
         save_strategy="steps",
         save_steps=100,
         save_total_limit=4,
-        logging_dir=logging_dir,
         eval_strategy="steps",
         eval_steps=200,  # compute validation loss every 200 steps
         learning_rate=2e-5,

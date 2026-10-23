@@ -12,6 +12,7 @@
 
 import argparse
 import math
+import os
 import time
 from pprint import pprint
 
@@ -21,6 +22,7 @@ from util import preprocess_data, get_output_paths
 from transformers import (AutoModelForCausalLM, AutoTokenizer,
                           DataCollatorForLanguageModeling, Trainer,
                           TrainingArguments)
+from transformers.trainer_utils import get_last_checkpoint
 
 if __name__ == "__main__":
 
@@ -53,7 +55,7 @@ if __name__ == "__main__":
         "--resume",
         default=False,
         action="store_true",
-        help="If set, continue from a previously interrupted run. Otherwise, overwrite existing checkpoints.",
+        help="If set, continue from a previously interrupted run. Otherwise, start from scratch (refuses to run if checkpoints already exist).",
     )
     args, _ = parser.parse_known_args()
 
@@ -69,6 +71,19 @@ if __name__ == "__main__":
     # We also ensure that output paths exist
     output_dir, logging_dir = get_output_paths(args)
 
+    # Refuse to start from scratch if checkpoints of an earlier run are still around,
+    # so that old and new checkpoints do not get mixed up
+    last_checkpoint = get_last_checkpoint(output_dir)
+    if last_checkpoint is not None and not args.resume:
+        raise SystemExit(
+            f"Found existing checkpoint {last_checkpoint}. "
+            f"Pass --resume to continue from it, or delete {output_dir} to start from scratch."
+        )
+    if args.resume:
+        if last_checkpoint is None:
+            raise SystemExit(f"--resume was passed, but no checkpoint was found in {output_dir}.")
+        print("Resuming training from checkpoint", last_checkpoint)
+
     # #### Loading the GPT-neo model
     #
     # We'll use the gpt-neo-1.3B model from the Hugging Face library:
@@ -79,13 +94,13 @@ if __name__ == "__main__":
     print("Loading model and tokenizer")
     start = time.time()
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
-    tokenizer.pad_token_id = 50256 # adjusting tokenizer and model 
+    tokenizer.pad_token_id = tokenizer.eos_token_id # adjusting tokenizer and model
 
     # Load the actual base model from Hugging Face
     model = AutoModelForCausalLM.from_pretrained(pretrained_model)
      # adjusting tokenizer and model
-    model.config.pad_token_id = 50256
-    model.generation_config.pad_token_id = 50256
+    model.config.pad_token_id = tokenizer.eos_token_id
+    model.generation_config.pad_token_id = tokenizer.eos_token_id
     model.to(device)
     stop = time.time()
     print(f"Loading model and tokenizer took: {stop-start:.2f} seconds")
@@ -100,10 +115,10 @@ if __name__ == "__main__":
     # for testing and 50,000 without labels (unsupervised) that we also use for training.
 
     train_dataset = load_dataset(
-        "imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True
+        "stanfordnlp/imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True
     )
     eval_dataset = load_dataset(
-        "imdb", split="test", trust_remote_code=False, keep_in_memory=True
+        "stanfordnlp/imdb", split="test", trust_remote_code=False, keep_in_memory=True
     )
 
     # Let's print one sample from the dataset.
@@ -115,13 +130,14 @@ if __name__ == "__main__":
     train_batch_size = 32  # This just about fits into the VRAM of a single MI250x GCD with 16-bit floats
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
 
+    # TensorBoard reads its logging directory from this environment variable
+    os.environ["TENSORBOARD_LOGGING_DIR"] = logging_dir
+
     training_args = TrainingArguments(
         output_dir=output_dir,
-        overwrite_output_dir=not args.resume,
         save_strategy="steps",
         save_steps=100,
         save_total_limit=4,
-        logging_dir=logging_dir,
         eval_strategy="steps",
         eval_steps=200,  # compute validation loss every 200 steps
         learning_rate=2e-5,
@@ -159,7 +175,7 @@ if __name__ == "__main__":
     #
     # You can read about the many, many different parameters to the
     # Hugging Face trainer here:
-    # https://huggingface.co/docs/transformers/v4.37.0/en/main_classes/trainer#transformers.TrainingArguments
+    # https://huggingface.co/docs/transformers/main/en/main_classes/trainer#transformers.TrainingArguments
     #
 
     collator = DataCollatorForLanguageModeling(

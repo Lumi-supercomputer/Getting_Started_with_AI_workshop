@@ -32,7 +32,7 @@ On a LUMI-C compute node, we may build the container non-interactively by:
 ```bash
 $ module purge
 $ module load CrayEnv cotainr
-$ srun --output=cotainr.out --error=cotainr.err --account=project_465002757 --time=00:15:00 --mem=60G --cpus-per-task=32 --partition=debug cotainr build python312.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif --conda-env=examples/python312.yml --accept-licenses
+$ srun --output=cotainr.out --error=cotainr.err --account=project_465003393 --time=00:15:00 --mem=60G --cpus-per-task=32 --partition=debug cotainr build python312.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif --conda-env=examples/python312.yml --accept-licenses
 ```
 
 > [!WARNING]
@@ -217,7 +217,7 @@ You can also find a slightly more extensive `pytorch.yml` in the examples folder
 
 ```bash
 $ module load Local-LAIF lumi-aif-singularity-bindings
-$ srun --account=project_465002757 --time=00:15:00 --mem=10G -n 1 --cpus-per-task=1 --partition=dev-g --gpus-per-task=1 singularity run pytorch.sif python -c "import torch; print(torch.cuda.is_available()); print(torch.cuda.device_count())"
+$ srun --account=project_465003393 --time=00:15:00 --mem=10G -n 1 --cpus-per-task=1 --partition=dev-g --gpus-per-task=1 singularity run pytorch.sif python -c "import torch; print(torch.cuda.is_available()); print(torch.cuda.device_count())"
 srun: job 19127979 queued and waiting for resources
 srun: job 19127979 has been allocated resources
 True

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --account=project_465002757
+#SBATCH --account=project_465003393
 #SBATCH --reservation=AI_workshop_Day2   # comment this out if the reservation is no longer available
 #SBATCH --partition=standard-g
 #SBATCH --nodes=1
@@ -15,10 +15,9 @@
 # If you are interested, you can check the exact paths being mounted from
 #   /appl/local/laifs/modules/lumi-aif-singularity-bindings/1.0.1.lua
 module purge
-module use /appl/local/laifs/modules
-module load lumi-aif-singularity-bindings
+module load Local-LAIF lumi-aif-singularity-bindings
 
-CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif
+CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
@@ -44,9 +43,9 @@ srun singularity run $CONTAINER \
     torchrun --standalone \
              --nnodes=1 \
              --nproc-per-node=${SLURM_GPUS_PER_NODE} \
-             --numa-binding=exclusive  \
+             --numa-binding=exclusive \
              GPT-neo-IMDB-finetuning.py \
              --model-name $MODEL_NAME \
              --output-path $OUTPUT_DIR \
              --logging-path $LOGGING_DIR \
-             --num-workers $(( SLURM_CPUS_PER_TASK / SLURM_GPUS_PER_NODE )) 
+             --num-workers $(( SLURM_CPUS_PER_TASK / SLURM_GPUS_PER_NODE ))

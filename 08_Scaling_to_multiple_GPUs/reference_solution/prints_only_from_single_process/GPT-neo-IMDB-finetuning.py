@@ -14,7 +14,18 @@ import argparse
 import math
 import os
 import time
+import warnings
 from pprint import pprint
+
+# Only rank 0 shows warnings and progress bars; the other ranks would just print the same messages again.
+# This has to happen before importing the libraries below, as some of them warn already on import.
+if int(os.environ["RANK"]) != 0:
+    warnings.simplefilter("ignore")
+    os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+    os.environ["DATASETS_VERBOSITY"] = "error"
+    os.environ["HF_HUB_VERBOSITY"] = "error"
+    os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+    os.environ["HF_DATASETS_DISABLE_PROGRESS_BARS"] = "1"
 
 import torch
 from datasets import load_dataset
@@ -85,13 +96,13 @@ if __name__ == "__main__":
         print("Loading model and tokenizer")
     start = time.time()
     tokenizer = AutoTokenizer.from_pretrained(pretrained_model, use_fast=True)
-    tokenizer.pad_token_id = 50256 # adjusting tokenizer and model 
+    tokenizer.pad_token_id = tokenizer.eos_token_id # adjusting tokenizer and model
 
     # Load the actual base model from Hugging Face
     model = AutoModelForCausalLM.from_pretrained(pretrained_model)
      # adjusting tokenizer and model
-    model.config.pad_token_id = 50256
-    model.generation_config.pad_token_id = 50256
+    model.config.pad_token_id = tokenizer.eos_token_id
+    model.generation_config.pad_token_id = tokenizer.eos_token_id
     model.to(device)
     stop = time.time()
     if rank == 0:
@@ -107,10 +118,10 @@ if __name__ == "__main__":
     # for testing and 50,000 without labels (unsupervised) that we also use for training.
 
     train_dataset = load_dataset(
-        "imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True
+        "stanfordnlp/imdb", split="train+unsupervised", trust_remote_code=False, keep_in_memory=True
     )
     eval_dataset = load_dataset(
-        "imdb", split="test", trust_remote_code=False, keep_in_memory=True
+        "stanfordnlp/imdb", split="test", trust_remote_code=False, keep_in_memory=True
     )
 
     # Let's print one sample from the dataset.
@@ -124,12 +135,14 @@ if __name__ == "__main__":
     per_device_train_batch_size = global_train_batch_size // world_size # ... which means we divide by the number of processes for the batch size of each GPU
     eval_batch_size = 128  # No optimizer state during evaluation, so can use bigger batches for increased throughput
 
+    # TensorBoard reads its logging directory from this environment variable
+    os.environ["TENSORBOARD_LOGGING_DIR"] = logging_dir
+
     training_args = TrainingArguments(
         output_dir=output_dir,
         save_strategy="steps",
         save_steps=100,
         save_total_limit=4,
-        logging_dir=logging_dir,
         eval_strategy="steps",
         eval_steps=200,  # compute validation loss every 200 steps
         learning_rate=2e-5,
@@ -142,6 +155,7 @@ if __name__ == "__main__":
         dataloader_pin_memory=True,
         report_to=["tensorboard"],  # log statistics for tensorboard
         ddp_find_unused_parameters=False,  # there are no unused parameters, causing PyTorch to issue a warning should this be set to True
+        log_level_replica="error",  # the Trainer resets the log level, so we need to tell it to keep warnings off ranks other than 0
     )
 
     # #### Preprocessing of training data
@@ -169,7 +183,7 @@ if __name__ == "__main__":
     #
     # You can read about the many, many different parameters to the
     # Hugging Face trainer here:
-    # https://huggingface.co/docs/transformers/v4.37.0/en/main_classes/trainer#transformers.TrainingArguments
+    # https://huggingface.co/docs/transformers/main/en/main_classes/trainer#transformers.TrainingArguments
     #
 
     trainer = Trainer(
