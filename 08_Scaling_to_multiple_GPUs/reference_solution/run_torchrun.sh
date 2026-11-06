@@ -17,7 +17,7 @@
 module purge
 module load Local-LAIF lumi-aif-singularity-bindings
 
-CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20260929_104918/lumi-multitorch-full-u24r72f21m50t211-20260929_104918.sif
+CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif
 
 # Some environment variables to set up cache directories
 SCRATCH="/scratch/${SLURM_JOB_ACCOUNT}"
