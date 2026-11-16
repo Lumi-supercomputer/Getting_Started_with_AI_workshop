@@ -10,7 +10,7 @@ module load Local-LAIF lumi-aif-singularity-bindings
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
- N=2 ; salloc -p standard-g --account=project_465003393 --reservation=AI_workshop_Day2 --threads-per-core 1 --exclusive -N $N --gpus $((N*8)) -t 1:00:00 --mem 0
+ N=2 ; salloc -p standard-g --account=project_465003393 --reservation=AI_workshop_Day2_fullnodes --threads-per-core 1 --exclusive -N $N --gpus $((N*8)) -t 1:00:00 --mem 0
 ```
 
 With the allocation and container set we can do a quick smoke test to make sure Pytorch can detect the GPUs available in a node:
