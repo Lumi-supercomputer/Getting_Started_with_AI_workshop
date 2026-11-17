@@ -8,8 +8,8 @@ We assume you have built a container from a `conda` environment file via somethi
 ```bash
 module load LUMI/25.03 cotainr
 
-BASE_CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-mpich-u24r70f21m50t210-20260513_121430.sif
-   
+BASE_CONTAINER=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-mpich-u24r72f21m50t211-20261028_090706.sif
+
 cotainr build minimal_pytorch.sif --base-image=$BASE_CONTAINER --conda-env=minimal_pytorch.yml --accept-license
 ```
 
