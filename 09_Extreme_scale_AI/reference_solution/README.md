@@ -42,7 +42,7 @@ fi
 # export NCCL_DEBUG_SUBSYS=INIT,COLL
 # export NCCL_DEBUG_FILE=/tmp/$(whoami)-rccl-rank\$SLURM_PROCID.txt
 
-# LIBFABRIC tunning
+# LIBFABRIC tuning
 export HSA_FORCE_FINE_GRAIN_PCIE=1 # Enable peer-to-peer access to large BAR addressing support.
 export FI_MR_CACHE_MONITOR=userfaultfd # Sets the memory cache monitor to detect changes between virtual and physical memory pages. kdreg2 is another valid option.
 export FI_CXI_DISABLE_HOST_REGISTER=1 # Avoids ROCm allocation calls from the provider that may cause RCCL deadlocks.

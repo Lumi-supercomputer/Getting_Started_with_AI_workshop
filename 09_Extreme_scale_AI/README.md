@@ -5,7 +5,7 @@ These examples are based on the ROCm container provided to you at:
 module purge
 module load Local-LAIF lumi-aif-singularity-bindings
 
-/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif
+/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif
 ```
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
@@ -16,27 +16,27 @@ The examples also assume there is an allocation in place to be used for one or m
 With the allocation and container set we can do a quick smoke test to make sure Pytorch can detect the GPUs available in a node:
 ```
 srun singularity exec \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
     bash -c 'python -c "import torch; print(torch.cuda.device_count())"'
 ```
 Each node of the allocation should report `8` GPUs available.
 
 ## Things to consider when scaling up a training model
 
-If you have a model that already uses multiple GPUs, scaling it further should not require modifications. It should just work accross nodes as it does accross a node.
+If you have a model that already uses multiple GPUs, scaling it further should not require modifications. It should just work across nodes as it does across a node.
 
 However, there are a few performance implications that result from how GPUs are rigged inside the node: 
 
 ![image](https://docs.olcf.ornl.gov/_images/Frontier_Node_Diagram.jpg)
 
-One of the corollary of this image has to do with the CPU binding to match the GPUs, which we already know we can accomplish with the SLURM option:
+One of the corollaries of this image has to do with the CPU binding to match the GPUs, which we already know we can accomplish with the SLURM option:
 ```
 CPU_BIND_MASKS="0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000"
 
 --cpu-bind=mask_cpu=$CPU_BIND_MASKS 
 ```
 
-You see GPUs connect directly to the high-speed interfaces to comunicate with GPUs in other nodes. The communication library used by most AI applications is RCCL and it is a good idea to tell RCCL what interfaces it should use. This can be accomplished with:
+You see GPUs connect directly to the high-speed interfaces to communicate with GPUs in other nodes. The communication library used by most AI applications is RCCL and it is a good idea to tell RCCL what interfaces it should use. This can be accomplished with:
 ```
 export NCCL_SOCKET_IFNAME=hsn0,hsn1,hsn2,hsn3
 ```
@@ -45,9 +45,9 @@ We should also direct RCCL to do GPU RDMA whenever it can with:
 export NCCL_NET_GDR_LEVEL=PHB
 ```
 
-The other aspect to this is that RCCL needs to be able to comunicate with the network provider. When the application starts, RCCL will look for plugins that it could leverage to effect this communication. In the LUMI case we leverage AWS CXI plugin that has to support AMD GPUs: https://github.com/aws/aws-ofi-nccl.
+The other aspect to this is that RCCL needs to be able to communicate with the network provider. When the application starts, RCCL will look for plugins that it could leverage to effect this communication. In the LUMI case we leverage AWS CXI plugin that has to support AMD GPUs: https://github.com/aws/aws-ofi-nccl.
 
-Luckily, if you use the containers provided, this plugin is already available there so you don't need to worry about it. However, if you get some container from the internet most likely it won't have it so you need to be careful under the penalty of your scaling accross nodes being poor. There are a few environment variables that can help inform us on what RCCL is doing, e.g.:
+Luckily, if you use the containers provided, this plugin is already available there so you don't need to worry about it. However, if you get some container from the internet most likely it won't have it so you need to be careful under the penalty of your scaling across nodes being poor. There are a few environment variables that can help inform us on what RCCL is doing, e.g.:
 ```
 export NCCL_DEBUG=INFO 
 export NCCL_DEBUG_SUBSYS=INIT,COLL
@@ -65,7 +65,7 @@ export MASTER_ADDR=$(scontrol show hostname "$SLURM_NODELIST" | head -n1)
 ```
 Note, however, there are no SLURM tools inside the container, so the master address must be defined outside the container and propagated inside.
 
-Another aspect that we should consider when scalling is to direct the cache folders of some of the libraries, namely MIOpen. MIOpen provides many optimized AI kernels and does just-in-time compilation which results are cached in your home folder by default. With many nodes racing for that cache, the file system might not cope with locks required, so we recommend setting it to each node `/tmp`. If your application relies heavily on these caches you can save them at the end of your job execution and reinstante it at the begginning of your next job.
+Another aspect that we should consider when scaling is to direct the cache folders of some of the libraries, namely MIOpen. MIOpen provides many optimized AI kernels and does just-in-time compilation which results are cached in your home folder by default. With many nodes racing for that cache, the file system might not cope with locks required, so we recommend setting it to each node `/tmp`. If your application relies heavily on these caches you can save them at the end of your job execution and reinstate it at the beginning of your next job.
 
 Selecting different cache locations is fairly easy by setting the environment variables:
 
@@ -90,13 +90,13 @@ export FI_CXI_DEFAULT_TX_SIZE=2048 # Should be set especially for large jobs tha
 
 ## LLM hands-on exercises
 
-We'll continue with our LLM example to explore our scaling oportunities. You might be interested in collating the different steps in a batch script or run interactively as presented. But first...
+We'll continue with our LLM example to explore our scaling opportunities. You might be interested in collating the different steps in a batch script or run interactively as presented. But first...
 
 ### 1. Setting some run scripts is a great idea!
 
 There are a lot of components to set and monitor the right environment for our training jobs as discussed above. Setup a run script with all the relevant bits so that then you allow yourself to forget about it. Can you do that? Let's call it `run.sh` and we have an example in `reference_solution` folder.
 
-### 2. Scalling our LLM example.
+### 2. Scaling our LLM example.
 
 Let's recover our multiple GPU LLM training application:
 ```
@@ -126,7 +126,7 @@ srun -N1 -n8 --gpus 8 \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
     -B .:/workdir \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
     /workdir/run.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
@@ -141,7 +141,7 @@ srun -N2 -n16 --gpus 16 \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
     -B .:/workdir \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif\
+    /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif\
     /workdir/run.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
@@ -179,7 +179,7 @@ srun -N2 -n16 --gpus 16 \
     --cpu-bind=mask_cpu=0x00fe000000000000,0xfe00000000000000,0x0000000000fe0000,0x00000000fe000000,0x00000000000000fe,0x000000000000fe00,0x000000fe00000000,0x0000fe0000000000\
     singularity exec \
     -B .:/workdir \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
     /workdir/run.sh \
         python -u /workdir/GPT-neo-IMDB-finetuning-mp.py \
                --model-name gpt-imdb-model \
@@ -240,7 +240,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     singularity exec \
     -B .:/workdir \
     -B /flash -B /pfs \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
     /workdir/run.sh \
         python -u /workdir/cv_example.py \
           -a resnet50 \
@@ -297,7 +297,7 @@ https://github.com/microsoft/DeepSpeedExamples/raw/master/training/imagenet/conf
 Parse the files to create some understanding of the differences. To expedite things disable the saving of the checkpoint n `save_checkpoint`. The edit with `sed` is meant to adapt the code to expect one rank per GPU instead of one rank per node.
 
 ### 2. Running DeepSpeed with required dependencies 
-This container has DeepSpeed already installed so we will leverage it: `/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif`.
+This container has DeepSpeed already installed so we will leverage it: `/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif`.
 
 You can run the example like the following, however some dependencies might be missing. Can you install those? Can you setup the `spawn` multiprocessing mode?
 ```
@@ -306,7 +306,7 @@ if [ ! -d ./extrapackages ] ; then
     srun -N1 -n1 --gpus 0 \
         singularity exec \
         -B .:/workdir \
-        /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+        /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
         pip install --target /workdir/extrapackages openpyxl
 
 fi
@@ -319,7 +319,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     singularity exec \
     -B .:/workdir \
     -B /flash -B /pfs \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif  \
+    /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif  \
     /workdir/run.sh \
         python -u /workdir/cv_example_ds.py \
           --deepspeed \
@@ -346,7 +346,7 @@ You are welcome to try larger data-sets and from different storage types to see 
 
 ### 2. Pre-stage in memory
 
-If limited by I/O, we could try in-memory storage. LUMI nodes don't have local SSD but have significant ammount of memory, so that could be sufficient for your needs. To store data in memory it is sufficient to do it as files under `/tmp` as that lives in memory. So we can do:
+If limited by I/O, we could try in-memory storage. LUMI nodes don't have local SSD but have significant amount of memory, so that could be sufficient for your needs. To store data in memory it is sufficient to do it as files under `/tmp` as that lives in memory. So we can do:
 ```
 srun tar -C /tmp -xf /flash/project_465003393/data-sets/data-resnet-small.tar 
 ```
@@ -358,7 +358,7 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
     singularity exec \
     -B .:/workdir \
     -B /flash -B /pfs \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
     /workdir/run.sh \
         python -u /workdir/cv_example.py \
           -a resnet50 \
@@ -375,4 +375,4 @@ srun -N $N -n $((N*8)) --gpus $((N*8)) \
 ### 3. Monitor GPU activity
 Try monitor the activity and scale to more nodes. You see the training completes much faster as the I/O pipeline can keep up with the GPU demands.
 
-Note however, that in general, when scalling goes up, one tends to start using smaller batch sizes, which means less work per GPU, which can bring us back to an I/O bottleneck situation.
+Note however, that in general, when scaling goes up, one tends to start using smaller batch sizes, which means less work per GPU, which can bring us back to an I/O bottleneck situation.

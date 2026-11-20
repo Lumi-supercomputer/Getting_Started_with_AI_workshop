@@ -5,10 +5,10 @@ These examples are based on the ROCm container provided to you at:
 module purge
 module load Local-LAIF lumi-aif-singularity-bindings
 
-/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif
+/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif
 ```
 
-To avoid running into any storage issues, we recomment running the examples from a folder you create in the scratch file system, e.g.:
+To avoid running into any storage issues, we recommend running the examples from a folder you create in the scratch file system, e.g.:
 ```
 mkdir -p /scratch/project_465003393/$(whoami)
 cd /scratch/project_465003393/$(whoami)
@@ -18,7 +18,7 @@ The examples also assume there is an allocation in place to be used for one or m
 ```
 salloc -p small-g --account=project_465003393 --reservation=AI_workshop_Day1 --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
 ```
-This is very similiar to what you have been doing with `sbatch` should you be using a run script with:
+This is very similar to what you have been doing with `sbatch` should you be using a run script with:
 ```
 #SBATCH --account=project_465003393
 #SBATCH --reservation=AI_workshop_Day1
@@ -34,7 +34,7 @@ The difference is that it gives you a mechanism to just allocate the nodes witho
 With the allocation and container set we can do a quick smoke test to make sure Pytorch can detect the GPUs available in a node:
 ```
 srun --gpus 2 singularity exec \
-  /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+  /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
     bash -c 'python -c "import torch; print(torch.cuda.device_count())"'
 ```
 
@@ -45,7 +45,7 @@ It should yield `2` given that only two GPUs were requested. Note that each time
 We will leverage here the same LLM example as before with small adaptations. No extra files are needed. You might be interested in collating the different steps in a batch script or run interactively as presented. 
 
 ### 1. Let's recover our LLM example.
-Here we'll recover our fine-tunning example for IMDB movie review generation:
+Here we'll recover our fine-tuning example for IMDB movie review generation:
 
 ```
 curl -o GPT-neo-IMDB-finetuning.py -L https://github.com/Lumi-supercomputer/Getting_Started_with_AI_workshop/raw/main/03_Your_first_AI_training_job_on_LUMI/reference_solution/GPT-neo-IMDB-finetuning.py
@@ -60,7 +60,7 @@ mkdir -p torch-cache hf-cache
 
 srun --gpus 2 -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
     bash -c 'cd /workdir ; \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
@@ -110,7 +110,7 @@ Here we see drawn power to oscillate around `300.0-400.0W` while a single GCD is
 
 An alternative to `rocm-smi` and recommended for the very latest ROCm versions is to use `amd-smi`. Similar information can be obtained with `amd-smi monitor --watch 1`. It is formatted differently thought.
 
-`amd-smi` has also Python interface and it is possible to programatically query GPU activity from your Python code.
+`amd-smi` has also Python interface and it is possible to programmatically query GPU activity from your Python code.
 
 ### 4. Activate logging reporting GPU activity
 
@@ -124,7 +124,7 @@ So, running the following:
 ```
 srun --gpus 2 -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
     bash -c 'cd /workdir ; \
              HIP_VISIBLE_DEVICES=0 \
              AMD_LOG_LEVEL=4 \
@@ -165,14 +165,14 @@ Try to interpret the different kinds of activity.
 
 ### 5. Using a profiler to assess GPU activity.
 
-Another way to check for GPU activity is to use a profiler. There is a GPU profiler included in any ROCm instalation: `ROCprofiler`. This profiler is also available inside the containers, so no extra instalations is required. It has a command-line driver called `rocprofv3` and you can see the options one can use with:
+Another way to check for GPU activity is to use a profiler. There is a GPU profiler included in any ROCm installation: `ROCprofiler`. This profiler is also available inside the containers, so no extra installations are required. It has a command-line driver called `rocprofv3` and you can see the options one can use with:
 ```
 srun --gpus 2  -n1 singularity exec \
     -B .:/workdir \
-   /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+   /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
     rocprofv3 --help
 ```
-Given that Pytorch uses the HIP runtime in its implementation, some of the most relevant options are `--hip-trace`, `--kernel-trace` amd `--memory-copy-trace` to instruct the profiler to collect the HIP runtime, GPU kernel, and copies activity, respectively. Another option that is convinient is `--stats --output-format csv` that generates some statistics on the usage of the GPU and runtime activity and `--output-format pftrace` that generates timelines that can visualized.
+Given that Pytorch uses the HIP runtime in its implementation, some of the most relevant options are `--hip-trace`, `--kernel-trace` and `--memory-copy-trace` to instruct the profiler to collect the HIP runtime, GPU kernel, and copies activity, respectively. Another option that is convenient is `--stats --output-format csv` that generates some statistics on the usage of the GPU and runtime activity and `--output-format pftrace` that generates timelines that can visualized.
 
 Just to allow a quicker completion time, let's focus on just a few training steps. For that just open the file `GPT-neo-IMDB-finetuning.py` and replace:
 ```
@@ -182,7 +182,7 @@ with:
 ```
         max_steps=10,
 ```
-and place a `import sys ; sys.exit(0)` statement after:
+and place a `import os ; os._exit(0)` statement after:
 ```
     trainer.train()
 ```
@@ -192,7 +192,7 @@ Now we can just run the profiler by preceding our original command with `rocprof
 ```
 srun --gpus 2 -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
     bash -c 'cd /workdir ;  \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
@@ -206,46 +206,9 @@ srun --gpus 2 -n1 singularity exec \
                  --num-workers 7'
 ```
 
-This command would actually fail as some profilling dependencies are not installed in the container. We can install the missing dependencies in a `squashfs` layers and mount it to our container. E.g.:
+NOTE: In older containers, this command would fail due to missing profiling dependencies (e.g. `libdw1t64`). The current container already includes these dependencies, so the command above should work directly. If you encounter missing dependencies, you can install them in a `squashfs` overlay and mount it to your container - more on how to extend containers in a later session.
 
-```
-singularity exec \
-  -B .:/workdir \
-  /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
-  bash -c -eux '
-    
-    mkdir /workdir/deps
-    cd /workdir/deps ;
-    
-    for i in libdw1t64 ; do
-      apt-get download $i ;
-      dpkg -x $i*.deb . ;
-      rm -rf $i*.deb ;
-    done
-  '
-
-mksquashfs deps deps.sqsh -xattrs-exclude lustre.lov 
-```
-More on how to extend containers in a later session.
-
-We can now rerun our example with the missing dependency - notice the `--overlay`:
-```
-srun --gpus 2 -n1 singularity exec \
-    -B .:/workdir \
-    --overlay deps.sqsh:ro \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
-    bash -c 'cd /workdir ;  \
-             HIP_VISIBLE_DEVICES=0 \
-             TORCH_HOME=/workdir/torch-cache \
-             HF_HOME=/workdir/hf-cache \
-             TOKENIZERS_PARALLELISM=false \
-             rocprofv3 --hip-trace --kernel-trace --memory-copy-trace --output-format=pftrace -- \
-               python -u /workdir/GPT-neo-IMDB-finetuning.py \
-                 --model-name gpt-imdb-model \
-                 --output-path /workdir/train-output \
-                 --logging-path /workdir/train-logging \
-                 --num-workers 7'
-```
+The profiler run should complete and generate output files:
 
 This will generate a file named `nid<node number>/<pid>__results.pftrace`. For example, `nid005024/40587_results.pftrace` will provide the timeline for the execution profilled in node `5024` and process ID `40587`.
 
@@ -283,7 +246,7 @@ Run as before:
 ```
 srun --gpus 2 -n1 singularity exec \
     -B .:/workdir \
-    /appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260513_121430/lumi-multitorch-full-u24r70f21m50t210-20260513_121430.sif \
+    /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-full-u24r72f21m50t211-20261028_090706.sif \
     bash -c 'cd /workdir ;  \
              HIP_VISIBLE_DEVICES=0 \
              TORCH_HOME=/workdir/torch-cache \
@@ -301,4 +264,4 @@ Then you can visualize the file `trace.json`. It should look like:
 
 A solution `GPT-neo-IMDB-finetuning-profile.py` is available [here](reference_solution/GPT-neo-IMDB-finetuning-profile.py).
 
-TIP: JSON is a text format that compresses very well - consider to compress the file prior to copying it to your workstation, it may save you a lot of a time depending on the ammount of activity profiled and your connection speed. 
+TIP: JSON is a text format that compresses very well - consider to compress the file prior to copying it to your workstation, it may save you a lot of a time depending on the amount of activity profiled and your connection speed. 
