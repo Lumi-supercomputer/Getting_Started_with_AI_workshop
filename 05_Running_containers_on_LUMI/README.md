@@ -14,7 +14,7 @@
 
    In this exercise you get to practice running a Python script inside an official LAIF container on both a LUMI login node and a LUMI-G compute node.
 
-   1. Select the following PyTorch container `/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-torch-u24r70f21m50t210-20260415_130625.sif` found on LUMI.
+   1. Select the following PyTorch container `/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-torch-u24r72f21m50t211-20261028_090706.sif` found on LUMI.
    2. Run the `Hello_LUMI_GPU_World.py` Python script inside the container on:
       - A LUMI login node
       - A LUMI-G compute node
