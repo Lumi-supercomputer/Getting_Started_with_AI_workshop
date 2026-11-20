@@ -2,7 +2,7 @@
 
 ## Exercise 1
 
-> 1. Select the following PyTorch container `/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028090706/lumi-multitorch-torch-u24r72f21m50t211-20261028_090706.sif` found on LUMI.
+> 1. Select the following PyTorch container `/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-torch-u24r72f21m50t211-20261028_090706.sif` found on LUMI.
 > 2. Run the `Hello_LUMI_GPU_World.py` Python script inside the container on:
 >    - A LUMI login node
 >    - A LUMI-G compute node
@@ -17,10 +17,10 @@ On a LUMI login node, it may be done by:
 
 ```bash
 $ module load Local-LAIF lumi-aif-singularity-bindings
-$ singularity exec /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028090706/lumi-multitorch-torch-u24r72f21m50t211-20261028_090706.sif bash -c "python3 Hello_LUMI_GPU_World.py"
+$ singularity exec /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-torch-u24r72f21m50t211-20261028_090706.sif bash -c "python3 Hello_LUMI_GPU_World.py"
 Hello LUMI GPU World from uan02
 ********************************************************************************
- - We are running in the Singularity container /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028090706/lumi-multitorch-torch-u24r72f21m50t211-20261028_090706.sif
+ - We are running in the Singularity container /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-torch-u24r72f21m50t211-20261028_090706.sif
  - We are running Python version 3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0] from /opt/venv/bin/python3
  - The number of GPUs (really GCDs) available to PyTorch is 0
  - Our SLURM job ID is N/A
@@ -33,13 +33,13 @@ On a LUMI-G node, it may be done by:
 
 ```bash
 $ module load Local-LAIF lumi-aif-singularity-bindings
-$ srun --account=project_465003393 --partition=small-g --time=00:00:30 --nodes=1 --gpus=4 singularity exec /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028090706/lumi-multitorch-torch-u24r72f21m50t211-20261028_090706.sif bash -c "python3 Hello_LUMI_GPU_World.py"
+$ srun --account=project_465003393 --partition=small-g --time=00:00:30 --nodes=1 --gpus=4 singularity exec /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-torch-u24r72f21m50t211-20261028_090706.sif bash -c "python3 Hello_LUMI_GPU_World.py"
 
 srun: job 19023213 queued and waiting for resources
 srun: job 19023213 has been allocated resources
 Hello LUMI GPU World from nid007898
 ********************************************************************************
- - We are running in the Singularity container /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028090706/lumi-multitorch-torch-u24r72f21m50t211-20261028_090706.sif
+ - We are running in the Singularity container /appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-torch-u24r72f21m50t211-20261028_090706.sif
  - We are running Python version 3.12.3 (main, Mar  3 2026, 12:15:18) [GCC 13.3.0] from /opt/venv/bin/python3
  - The number of GPUs (really GCDs) available to PyTorch is 4
  - Our SLURM job ID is 19023213
