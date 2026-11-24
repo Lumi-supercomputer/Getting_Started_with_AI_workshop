@@ -13,7 +13,7 @@ To build a container using cotainr on LUMI, we must remember to:
 
 1. Unload the `lumi-aif-singularity-bindings` module. If the module is loaded you will encounter the following error: `FATAL:   container creation failed: mount /var/spool/slurmd->/var/spool/slurmd error: while mounting /var/spool/slurmd: destination /var/spool/slurmd doesn't exist in container`
 2. Load the cotainr module on LUMI `module load CrayEnv cotainr`.
-3. Determine a suitable base image. For this exercise, we use the `lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif` container found in `/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/`.
+3. Determine a suitable base image. For this exercise, we use the `lumi-multitorch-mpich-u24r72f21m50t211-20261028_090706.sif` container found in `/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/`.
 4. Run cotainr using `srun`, redirect stdout/stderr, and accept all licenses up-front when building non-interactively on a compute node
 
 Since the `python312.yml` environment only contains Python 3.12, we don't need ROCm or other special system libraries. 
@@ -24,7 +24,7 @@ On a login node, we may build the container interactively by:
 
 ```bash
 $ module load CrayEnv cotainr
-$ cotainr build python312.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif --conda-env=examples/python312.yml
+$ cotainr build python312.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-mpich-u24r72f21m50t211-20261028_090706.sif --conda-env=examples/python312.yml
 ```
 
 On a LUMI-C compute node, we may build the container non-interactively by:
@@ -32,7 +32,7 @@ On a LUMI-C compute node, we may build the container non-interactively by:
 ```bash
 $ module purge
 $ module load CrayEnv cotainr
-$ srun --output=cotainr.out --error=cotainr.err --account=project_465003393 --time=00:15:00 --mem=60G --cpus-per-task=32 --partition=debug cotainr build python312.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif --conda-env=examples/python312.yml --accept-licenses
+$ srun --output=cotainr.out --error=cotainr.err --account=project_465003393 --time=00:15:00 --mem=60G --cpus-per-task=32 --partition=debug cotainr build python312.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-mpich-u24r72f21m50t211-20261028_090706.sif --conda-env=examples/python312.yml --accept-licenses
 ```
 
 > [!WARNING]
@@ -96,7 +96,7 @@ Now we can build the updated container:
 
 ```bash
 $ module load CrayEnv cotainr
-$ cotainr build python312_extra.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif --conda-env=python312_extra.yml0
+$ cotainr build python312_extra.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-mpich-u24r72f21m50t211-20261028_090706.sif --conda-env=python312_extra.yml0
 ```
 
 and open an interactive shell and an interactive Python interpreter in it, and import our added packages:
@@ -208,7 +208,7 @@ dependencies:
 
 ```bash
 $ module load CrayEnv cotainr
-$ cotainr build pytorch.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif --conda-env=minimal_pytorch.yml
+$ cotainr build pytorch.sif --base-image=/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-mpich-u24r72f21m50t211-20261028_090706.sif --conda-env=minimal_pytorch.yml
 ```
 
 You can also find a slightly more extensive `pytorch.yml` in the examples folder. This yaml pins the versions of some of the dependencies that torch installs. 

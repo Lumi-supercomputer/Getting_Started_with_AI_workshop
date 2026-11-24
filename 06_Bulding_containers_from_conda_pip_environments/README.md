@@ -3,7 +3,7 @@
 ## Examples
 
 - An absolute minimal conda environment specification only including Python 3.12 is provided in [python312.yml](examples/python312.yml).
-- The minimal conda environment PyTorch recipe for LUMI-G is provided in [minimal_pytorch.yml](examples/minimal_pytorch.yml). This environment file can also be used with the `/appl/local/laifs/containers/lumi-multitorch-u24r70f21m50t210-20260415_130625/lumi-multitorch-mpich-u24r70f21m50t210-20260415_130625.sif` base image. If you want to do exercise 3 on your own do not look at this example until after the exercise. 
+- The minimal conda environment PyTorch recipe for LUMI-G is provided in [minimal_pytorch.yml](examples/minimal_pytorch.yml). This environment file can also be used with the `/appl/local/laifs/containers/lumi-multitorch-u24r72f21m50t211-20261028_090706/lumi-multitorch-mpich-u24r72f21m50t211-20261028_090706.sif` base image. If you want to do exercise 3 on your own do not look at this example until after the exercise. 
 - A minimal conda environment for Jax is provided in [jax.yml](examples/jax.yml).
 
 ## Hands-on exercises
