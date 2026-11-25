@@ -16,12 +16,12 @@ cd /scratch/project_465003393/$(whoami)
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
-salloc -p small-g --account=project_465003393 --reservation=AI_workshop_Day1 --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
+salloc -p small-g --account=project_465003393 --reservation=AI_workshop --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
 ```
 This is very similar to what you have been doing with `sbatch` should you be using a run script with:
 ```
 #SBATCH --account=project_465003393
-#SBATCH --reservation=AI_workshop_Day1
+#SBATCH --reservation=AI_workshop
 #SBATCH --partition=small-g
 #SBATCH --gpus-per-node=1
 #SBATCH --ntasks-per-node=1
