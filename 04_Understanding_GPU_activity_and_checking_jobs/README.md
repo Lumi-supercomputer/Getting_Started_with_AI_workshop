@@ -16,13 +16,13 @@ cd /scratch/project_465003393/$(whoami)
 
 The examples also assume there is an allocation in place to be used for one or more nodes. That could be accomplished with, e.g.:
 ```
-salloc -p small-g --account=project_465003393 --reservation=AI_workshop --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
+salloc -p standard-g --account=project_465003393 --reservation=AI_workshop --gpus-per-node=2 --ntasks-per-node=1 --cpus-per-task=14 --mem-per-gpu=60G --time=0:30:00
 ```
 This is very similar to what you have been doing with `sbatch` should you be using a run script with:
 ```
 #SBATCH --account=project_465003393
 #SBATCH --reservation=AI_workshop
-#SBATCH --partition=small-g
+#SBATCH --partition=standard-g
 #SBATCH --gpus-per-node=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=7
@@ -83,7 +83,7 @@ Monitoring in a separate tab can be done by checking you jobID and connect to th
 ```
 squeue --me
              JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
-           7100665   small-g interact samantao  R    1:03:21      1 nid005021
+           7100665 stantard- interact samantao  R    1:03:21      1 nid005021
            ...
 ```
 * Start interactive parallel session:
